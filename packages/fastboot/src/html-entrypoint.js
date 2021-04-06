@@ -4,7 +4,7 @@ const { JSDOM } = require('jsdom');
 const fs = require('fs');
 const path = require('path');
 
-function htmlEntrypoint(appName, distPath, htmlPath, config) {
+function htmlEntrypoint(appName, distPath, htmlPath, config = {}) {
   let html = fs.readFileSync(path.join(distPath, htmlPath), 'utf8');
   let dom = new JSDOM(html);
   let scripts = [];

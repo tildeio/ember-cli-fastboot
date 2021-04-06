@@ -37,7 +37,7 @@ module.exports = class FastBootConfig extends Plugin {
     } else {
       this.htmlFile = 'index.html';
     }
-    
+
     this.prepareConfig();
     this.prepareDependencies();
   }
