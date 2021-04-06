@@ -9,7 +9,16 @@
     "packages/*",
     "test-packages/*"
   ],
+  "scripts": {
+    "test": "npm-run-all test:*",
+    "test:ember-cli-fastboot": "yarn workspace ember-cli-fastboot test:ember",
+    "test:fastboot": "yarn workspace fastboot test",
+    "test:fastboot-express-middleware": "yarn workspace fastboot-express-middleware test",
+    "test:fastboot-app-server": "yarn workspace fastboot-app-server test:mocha",
+    "test:integration": "yarn workspace integration-tests test"
+  },
   "devDependencies": {
+    "npm-run-all": "^4.1.5",
     "release-it": "^14.2.2",
     "release-it-lerna-changelog": "^3.1.0",
     "release-it-yarn-workspaces": "^2.0.0"

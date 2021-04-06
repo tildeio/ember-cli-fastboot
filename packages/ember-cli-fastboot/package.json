@@ -37,6 +37,7 @@
     "fastboot-express-middleware": "3.2.0-beta.2",
     "fastboot-transform": "^0.1.3",
     "fs-extra": "^7.0.0",
+    "jsdom": "^16.2.2",
     "json-stable-stringify": "^1.0.1",
     "md5-hex": "^2.0.0",
     "recast": "^0.19.1",

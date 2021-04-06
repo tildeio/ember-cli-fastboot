@@ -4,20 +4,10 @@ const { JSDOM } = require('jsdom');
 const fs = require('fs');
 const path = require('path');
 
-function htmlEntrypoint(appName, distPath, htmlPath) {
+function htmlEntrypoint(appName, distPath, htmlPath, config) {
   let html = fs.readFileSync(path.join(distPath, htmlPath), 'utf8');
   let dom = new JSDOM(html);
   let scripts = [];
-
-  let config = {};
-  for (let element of dom.window.document.querySelectorAll('meta')) {
-    let name = element.getAttribute('name');
-    if (name && name.endsWith('/config/environment')) {
-      let content = JSON.parse(decodeURIComponent(element.getAttribute('content')));
-      content.APP = Object.assign({ autoboot: false }, content.APP);
-      config[name.slice(0, -1 * '/config/environment'.length)] = content;
-    }
-  }
 
   let rootURL = getRootURL(appName, config);
 
@@ -34,7 +24,7 @@ function htmlEntrypoint(appName, distPath, htmlPath) {
     }
   }
 
-  return { config, html: dom.serialize(), scripts };
+  return { html: dom.serialize(), scripts };
 }
 
 function extractSrc(element) {
