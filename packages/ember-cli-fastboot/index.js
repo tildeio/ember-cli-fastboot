@@ -323,6 +323,7 @@ module.exports = {
         appName,
         manifest,
         appJsPath: this.app.options.outputPaths.app.js,
+        outputPaths: this.app.options.outputPaths,
       });
 
       // Merge the package.json with the existing tree

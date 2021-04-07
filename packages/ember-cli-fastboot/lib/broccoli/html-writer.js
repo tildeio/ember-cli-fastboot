@@ -4,7 +4,7 @@ const Filter = require('broccoli-persistent-filter');
 const { JSDOM } = require('jsdom');
 
 module.exports = class BasePageWriter extends Filter {
-  constructor(inputNodes, { annotation, fastbootConfig, appName, manifest, appJsPath }) {
+  constructor(inputNodes, { annotation, fastbootConfig, appName, manifest, outputPaths }) {
     super(inputNodes, {
       annotation,
       extensions: ['html'],
@@ -12,7 +12,8 @@ module.exports = class BasePageWriter extends Filter {
     });
     this._manifest = manifest;
     this._rootURL = getRootURL(fastbootConfig, appName);
-    this._appJsPath = appJsPath;
+    this._appJsPath = outputPaths.app.js;
+    this._expectedFiles = expectedFiles(outputPaths);
   }
 
   getDestFilePath() {
@@ -29,26 +30,49 @@ module.exports = class BasePageWriter extends Filter {
     // do we need to concat rootURL here?
     let rootURL = this._rootURL;
 
+    ignoreUnexpectedScripts(scriptTags, this._expectedFiles);
+
+    let fastbootScripts = this._findFastbootScriptToInsert(scriptTags);
+
+    let appJsTag = findAppJsTag(scriptTags, this._appJsPath, rootURL);
+
+    insertFastbootScriptsBeforeAppJsTags(fastbootScripts, appJsTag);
+
+    return dom.serialize();
+  }
+
+  _findFastbootScriptToInsert(scriptTags) {
+    let rootURL = this._rootURL;
     let scriptSrcs = [];
     for (let element of scriptTags) {
       scriptSrcs.push(urlWithin(element.getAttribute('src'), rootURL));
     }
 
-    let fastbootScripts = this._manifest.vendorFiles
+    return this._manifest.vendorFiles
       .concat(this._manifest.appFiles)
       .map(src => urlWithin(src, rootURL))
       .filter(src => !scriptSrcs.includes(src));
-
-    let appJsTag = findAppJsTag(scriptTags, this._appJsPath, rootURL);
-    let range = new NodeRange(appJsTag);
-
-    for (let src of fastbootScripts) {
-      range.insertAsScriptTag(src);
-    }
-
-    return dom.serialize();
   }
 };
+
+function expectedFiles(outputPaths) {
+  function stripLeadingSlash(filePath) {
+    return filePath.replace(/^\//, '');
+  }
+
+  let appFilePath = stripLeadingSlash(outputPaths.app.js);
+  let appFastbootFilePath = appFilePath.replace(/\.js$/, '') + '-fastboot.js';
+  let vendorFilePath = stripLeadingSlash(outputPaths.vendor.js);
+  return [appFilePath, appFastbootFilePath, vendorFilePath];
+}
+
+function ignoreUnexpectedScripts(scriptTags, expectedFiles) {
+  for (let element of scriptTags) {
+    if (!expectedFiles.includes(urlWithin(element.getAttribute('src')))) {
+      element.setAttribute('data-fastboot-ignore', '');
+    }
+  }
+}
 
 function getRootURL(appName, config) {
   let rootURL = (config[appName] && config[appName].rootURL) || '/';
@@ -72,6 +96,14 @@ function findAppJsTag(scriptTags, appJsPath, rootURL) {
     if (urlWithin(e.getAttribute('src'), rootURL) === appJsPath) {
       return e;
     }
+  }
+}
+
+function insertFastbootScriptsBeforeAppJsTags(fastbootScripts, appJsTag) {
+  let range = new NodeRange(appJsTag);
+
+  for (let src of fastbootScripts) {
+    range.insertAsScriptTag(src);
   }
 }
 
