@@ -79,8 +79,7 @@ function loadConfig(distPath) {
     ({ appName, config, html, scripts } = loadManifest(distPath, pkg.fastboot, schemaVersion));
   } else {
     appName = pkg.name;
-    config = pkg.fastboot.config;
-    ({ html, scripts } = htmlEntrypoint(appName, distPath, pkg.fastboot.htmlEntrypoint, config));
+    ({ config, html, scripts } = htmlEntrypoint(appName, distPath, pkg.fastboot.htmlEntrypoint));
   }
 
   let sandboxRequire = buildWhitelistedRequire(

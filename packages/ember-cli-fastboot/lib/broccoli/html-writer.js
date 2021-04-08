@@ -12,6 +12,7 @@ module.exports = class BasePageWriter extends Filter {
     });
     this._manifest = manifest;
     this._rootURL = getRootURL(fastbootConfig, appName);
+    this._fastbootConfig = fastbootConfig;
     this._appJsPath = outputPaths.app.js;
     this._expectedFiles = expectedFiles(outputPaths);
   }
@@ -24,15 +25,46 @@ module.exports = class BasePageWriter extends Filter {
 
   processString(content) {
     let dom = new JSDOM(content);
+    this._handleConfig(dom);
+    this._handleScripts(dom);
+    return dom.serialize();
+  }
+
+  _handleConfig(dom) {
+    function findFistConfigMeta(dom) {
+      let metaTags = dom.window.document.querySelectorAll('meta');
+      for (let element of metaTags) {
+        let name = element.getAttribute('name');
+        if (name && name.endsWith('/config/environment')) {
+          return element;
+        }
+      }
+    }
+    let firstConfigMeta;
+    if (firstConfigMeta) {
+      firstConfigMeta = findFistConfigMeta(dom);
+    } else {
+      firstConfigMeta = dom.window.document.createTextNode('\n');
+      dom.window.document.head.appendChild(firstConfigMeta);
+    }
+    let nodeRange = new NodeRange(firstConfigMeta);
+    for (let [name, options] of Object.entries(this._fastbootConfig)) {
+      nodeRange.insertJsonAsMetaTag(`${name}/config/fastboot-environment`, options);
+    }
+  }
+
+  _handleScripts(dom) {
     let scriptTags = dom.window.document.querySelectorAll('script');
 
     this._ignoreUnexpectedScripts(scriptTags);
 
     let fastbootScripts = this._findFastbootScriptToInsert(scriptTags);
     let appJsTag = findAppJsTag(scriptTags, this._appJsPath, this._rootURL);
-    insertFastbootScriptsBeforeAppJsTags(fastbootScripts, appJsTag);
+    if (!appJsTag) {
+      throw new Error('ember-cli-fastboot cannot find own app script tag');
+    }
 
-    return dom.serialize();
+    insertFastbootScriptsBeforeAppJsTags(fastbootScripts, appJsTag);
   }
 
   _findFastbootScriptToInsert(scriptTags) {
@@ -79,6 +111,10 @@ function getRootURL(appName, config) {
 }
 
 function urlWithin(candidate, root) {
+  // this is a null or relative path
+  if (!candidate || !candidate.startsWith('/')) {
+    return candidate;
+  }
   let candidateURL = new URL(candidate, 'http://_the_current_origin_');
   let rootURL = new URL(root, 'http://_the_current_origin_');
   if (candidateURL.href.startsWith(rootURL.href)) {
@@ -114,6 +150,18 @@ class NodeRange {
     let newTag = this.end.ownerDocument.createElement('fastboot-script');
     newTag.setAttribute('src', src);
     this.insertNode(newTag);
+    this.insertNewLine();
+  }
+
+  insertJsonAsMetaTag(name, content) {
+    let newTag = this.end.ownerDocument.createElement('meta');
+    newTag.setAttribute('name', name);
+    newTag.setAttribute('content', encodeURIComponent(JSON.stringify(content)));
+    this.insertNode(newTag);
+    this.insertNewLine();
+  }
+
+  insertNewLine() {
     this.insertNode(this.end.ownerDocument.createTextNode('\n'));
   }
 

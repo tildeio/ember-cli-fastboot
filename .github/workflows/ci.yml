@@ -66,7 +66,7 @@ jobs:
       - name: Yarn Install
         run: yarn install --ignore-engines --frozen-lockfile
       - name: Integration Tests
-        run: yarn workspace integration-tests test 
+        run: yarn workspace integration-tests test
 
   test-packages:
     name: Test Packages

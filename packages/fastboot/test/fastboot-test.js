@@ -455,18 +455,4 @@ describe('FastBoot', function() {
       usedPrebuiltSandbox: true,
     });
   });
-
-  it('htmlEntrypoint works', function() {
-    var fastboot = new FastBoot({
-      distPath: fixture('html-entrypoint'),
-    });
-
-    return fastboot
-      .visit('/')
-      .then(r => r.html())
-      .then(html => {
-        expect(html).to.match(/Welcome to Ember/);
-        expect(html).to.not.match(/fastboot-script/);
-      });
-  });
 });

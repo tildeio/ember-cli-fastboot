@@ -182,7 +182,9 @@ module.exports = class FastBootConfig extends Plugin {
           moduleWhitelist: this.moduleWhitelist,
           schemaVersion: LATEST_SCHEMA_VERSION,
           hostWhitelist: this.normalizeHostWhitelist(),
-          config: this.fastbootConfig,
+          // We can't drop manifest until broccoli-asset-rev also supports v5 HTML based manifest
+          // https://github.com/ember-cli/broccoli-asset-rev/blob/78f6047c15acb3bd348611f658b03bdd1041911f/lib/fastboot-manifest-rewrite.js
+          manifest: this.manifest,
           htmlEntrypoint: this.manifest.htmlFile
         }
       },
