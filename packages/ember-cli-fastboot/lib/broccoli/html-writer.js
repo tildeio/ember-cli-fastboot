@@ -26,16 +26,10 @@ module.exports = class BasePageWriter extends Filter {
     let dom = new JSDOM(content);
     let scriptTags = dom.window.document.querySelectorAll('script');
 
-    // In fastboot-config.js the paths are transformed with stripLeadingSlash
-    // do we need to concat rootURL here?
-    let rootURL = this._rootURL;
-
-    ignoreUnexpectedScripts(scriptTags, this._expectedFiles);
+    this._ignoreUnexpectedScripts(scriptTags);
 
     let fastbootScripts = this._findFastbootScriptToInsert(scriptTags);
-
-    let appJsTag = findAppJsTag(scriptTags, this._appJsPath, rootURL);
-
+    let appJsTag = findAppJsTag(scriptTags, this._appJsPath, this._rootURL);
     insertFastbootScriptsBeforeAppJsTags(fastbootScripts, appJsTag);
 
     return dom.serialize();
@@ -53,6 +47,16 @@ module.exports = class BasePageWriter extends Filter {
       .map(src => urlWithin(src, rootURL))
       .filter(src => !scriptSrcs.includes(src));
   }
+
+  _ignoreUnexpectedScripts(scriptTags) {
+    let expectedFiles = this._expectedFiles;
+    let rootURL = this._rootURL;
+    for (let element of scriptTags) {
+      if (!expectedFiles.includes(urlWithin(element.getAttribute('src'), rootURL))) {
+        element.setAttribute('data-fastboot-ignore', '');
+      }
+    }
+  }
 };
 
 function expectedFiles(outputPaths) {
@@ -64,14 +68,6 @@ function expectedFiles(outputPaths) {
   let appFastbootFilePath = appFilePath.replace(/\.js$/, '') + '-fastboot.js';
   let vendorFilePath = stripLeadingSlash(outputPaths.vendor.js);
   return [appFilePath, appFastbootFilePath, vendorFilePath];
-}
-
-function ignoreUnexpectedScripts(scriptTags, expectedFiles) {
-  for (let element of scriptTags) {
-    if (!expectedFiles.includes(urlWithin(element.getAttribute('src')))) {
-      element.setAttribute('data-fastboot-ignore', '');
-    }
-  }
 }
 
 function getRootURL(appName, config) {
@@ -118,6 +114,7 @@ class NodeRange {
     let newTag = this.end.ownerDocument.createElement('fastboot-script');
     newTag.setAttribute('src', src);
     this.insertNode(newTag);
+    this.insertNode(this.end.ownerDocument.createTextNode('\n'));
   }
 
   insertNode(node) {
