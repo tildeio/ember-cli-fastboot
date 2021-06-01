@@ -3,12 +3,19 @@
 const FastBoot           = require('fastboot');
 const fastbootMiddleware = require('fastboot-express-middleware');
 const ExpressHTTPServer  = require('./express-http-server');
+const deserialize        = require('./utils/serialization').deserialize;
+const UI                 = require('./ui');
 
 class Worker {
-  constructor(options) {
+  constructor(argOptions) {
+    this.forkOptions = deserialize(process.argv[2])
+    // Define the enumerated options set.
+    // Combination of any launch options and any directly passed options.
+    const options = Object.assign({}, this.forkOptions, argOptions);
+
+    this.ui = new UI();
     this.distPath = options.distPath;
     this.httpServer = options.httpServer;
-    this.ui = options.ui;
     this.cache = options.cache;
     this.gzip = options.gzip;
     this.host = options.host;
@@ -56,6 +63,11 @@ class Worker {
     process.on('message', message => this.handleMessage(message));
   }
 
+  /**
+   * received messages from primary
+   * @method handleMessage
+   * @param {Object} message
+   */
   handleMessage(message) {
     switch (message.event) {
       case 'reload':
