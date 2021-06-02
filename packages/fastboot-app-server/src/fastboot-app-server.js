@@ -221,7 +221,6 @@ class FastBootAppServer {
    */
   clusterSetupPrimary() {
     const workerOptions = {
-      ui: this.ui,
       distPath: this.distPath || process.env.FASTBOOT_DIST_PATH,
       cache: this.cache,
       gzip: this.gzip,
