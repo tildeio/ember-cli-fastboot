@@ -186,4 +186,24 @@ describe("FastBoot", function() {
       .then((r) => r.html());
     expect(html).to.match(/foo from sandbox: 5/);
   });
+  
+  it('removes fastboot config and scripts from response html', async function() {
+    const basicApp = await buildDist('basic-app');
+    const fastboot = new FastBoot({
+      distPath: basicApp,
+    });
+    const distHtml = fs.readFileSync(`${basicApp}/index.html`, 'utf-8');
+    expect(distHtml).to.match(/fastboot-script/);
+    expect(distHtml).to.match(/basic-app\/config\/fastboot-environment/);
+    expect(distHtml).to.match(/example-addon\/config\/fastboot-environment/);
+
+    const html = await fastboot
+      .visit('/', {
+        request: dummyRequest(),
+        response: dummyResponse(),
+      })
+      .then(r => r.html());
+    expect(html).to.not.match(/fastboot-script/);
+    expect(html).to.not.match(/config\/fastboot-environment/);
+  });
 });

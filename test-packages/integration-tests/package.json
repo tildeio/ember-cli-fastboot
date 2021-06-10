@@ -4,6 +4,7 @@
   "version": "3.2.0-beta.1",
   "repository": "",
   "scripts": {
+    "clean": "node helpers/clean-dists.js",
     "test": "node helpers/clean-dists.js && mocha"
   },
   "devDependencies": {

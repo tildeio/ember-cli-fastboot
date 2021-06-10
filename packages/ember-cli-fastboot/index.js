@@ -11,6 +11,7 @@ const chalk = require('chalk');
 
 const fastbootAppBoot = require('./lib/utilities/fastboot-app-boot');
 const FastBootConfig = require('./lib/broccoli/fastboot-config');
+const HTMLWriter = require('./lib/broccoli/html-writer');
 const fastbootAppFactoryModule = require('./lib/utilities/fastboot-app-factory-module');
 const migrateInitializers = require('./lib/build-utilities/migrate-initializers');
 const SilentError = require('silent-error');
@@ -219,6 +220,7 @@ module.exports = {
     return finalFastbootTree;
   },
 
+  // Note: this hook is ignored when built with embroider
   treeForPublic(tree) {
     let fastbootTree = this._getFastbootTree();
     let trees = [];
@@ -229,7 +231,7 @@ module.exports = {
 
     let newTree = new MergeTrees(trees);
 
-    let fastbootConfigTree = this._buildFastbootConfigTree(newTree);
+    let fastbootConfigTree = (this._fastbootConfigTree = this._buildFastbootConfigTree(newTree));
 
     // Merge the package.json with the existing tree
     return new MergeTrees([newTree, fastbootConfigTree], { overwrite: true });
@@ -304,6 +306,29 @@ module.exports = {
       fastbootAppConfig: fastbootAppConfig,
       appConfig: appConfig,
     });
+  },
+
+  /**
+   * Write fastboot-script tags to the html file
+   */
+  postprocessTree(type, tree) {
+    this._super(...arguments);
+    if (type === 'all') {
+      let { fastbootConfig, appName, manifest } = this._fastbootConfigTree;
+      let fastbootHTMLTree = new HTMLWriter(tree, {
+        annotation: 'FastBoot HTML Writer',
+        fastbootConfig,
+        appName,
+        manifest,
+        appJsPath: this.app.options.outputPaths.app.js,
+        outputPaths: this.app.options.outputPaths,
+      });
+
+      // Merge the package.json with the existing tree
+      return new MergeTrees([tree, fastbootHTMLTree], { overwrite: true });
+    }
+
+    return tree;
   },
 
   serverMiddleware(options) {

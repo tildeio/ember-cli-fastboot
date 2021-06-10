@@ -219,14 +219,38 @@ describe('htmlEntrypoint', function() {
     expect(scripts).to.deep.equal([]);
   });
 
-  it('extracts configs from meta', function() {
+  it('support config in HTML', function() {
     let tmpobj = tmp.dirSync();
     let tmpLocation = tmpobj.name;
+    let configObj = {
+      'my-app': {
+        APP: {
+          autoboot: false,
+        },
+        configKey: 'someValue',
+      },
+      'my-engine': {
+        APP: {
+          autoboot: false,
+        },
+        engineKey: 'engineValue',
+      },
+    };
+    let metaTags = Object.entries(configObj)
+      .map(
+        ([name, options]) =>
+          `<meta name="${name}/config/fastboot-environment" content="${encodeURIComponent(
+            JSON.stringify(options)
+          )}"></meta>`
+      )
+      .join('\n');
 
     let project = {
       'index.html': `
         <html>
-          <meta name="my-app/config/environment" content="%7B%22rootURL%22%3A%22%2Fcustom-root-url%2F%22%7D" >
+          <head>
+            ${metaTags}
+          </head>
           <body>
             <script src="/custom-root-url/bar.js"></script>
           </body>
@@ -235,20 +259,80 @@ describe('htmlEntrypoint', function() {
     };
 
     fixturify.writeSync(tmpLocation, project);
+
     let { config } = htmlEntrypoint('my-app', tmpLocation, 'index.html');
-    expect(config).to.deep.equal({
-      'my-app': { APP: { autoboot: false }, rootURL: '/custom-root-url/' },
-    });
+    expect(config).to.deep.equal(configObj);
+  });
+
+  it('support config fallback name "config/environement" instead of fastboot-environement in HTML', function() {
+    let tmpobj = tmp.dirSync();
+    let tmpLocation = tmpobj.name;
+    let configObj = {
+      'my-app': {
+        APP: {
+          autoboot: false,
+        },
+        configKey: 'someValue',
+      },
+      'my-engine': {
+        APP: {
+          autoboot: false,
+        },
+        engineKey: 'engineValue',
+      },
+    };
+    let metaTags = Object.entries(configObj)
+      .map(
+        ([name, options]) =>
+          `<meta name="${name}/config/environment" content="${encodeURIComponent(
+            JSON.stringify(options)
+          )}"></meta>`
+      )
+      .join('\n');
+
+    let project = {
+      'index.html': `
+        <html>
+          <head>
+            ${metaTags}
+          </head>
+          <body>
+            <script src="/custom-root-url/bar.js"></script>
+          </body>
+        </html>
+      `,
+    };
+
+    fixturify.writeSync(tmpLocation, project);
+
+    let { config } = htmlEntrypoint('my-app', tmpLocation, 'index.html');
+    expect(config).to.deep.equal(configObj);
   });
 
   it('understands customized rootURL', function() {
     let tmpobj = tmp.dirSync();
     let tmpLocation = tmpobj.name;
+    let config = {
+      'my-app': {
+        rootURL: '/custom-root-url/',
+      },
+    };
+
+    let metaTags = Object.entries(config)
+      .map(
+        ([name, options]) =>
+          `<meta name="${name}/config/fastboot-environment" content="${encodeURIComponent(
+            JSON.stringify(options)
+          )}"></meta>`
+      )
+      .join('\n');
 
     let project = {
       'index.html': `
         <html>
-          <meta name="my-app/config/environment" content="%7B%22rootURL%22%3A%22%2Fcustom-root-url%2F%22%7D" >
+          <head>
+            ${metaTags}
+          </head>
           <body>
             <script src="/custom-root-url/bar.js"></script>
           </body>

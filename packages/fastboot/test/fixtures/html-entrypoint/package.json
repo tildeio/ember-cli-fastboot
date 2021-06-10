@@ -1,9 +1,0 @@
-{
-  "name": "fastboot-test",
-  "dependencies": {},
-  "fastboot": {
-    "schemaVersion": 5,
-    "moduleWhitelist": [],
-    "htmlEntrypoint": "index.html"
-  }
-}

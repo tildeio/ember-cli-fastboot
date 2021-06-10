@@ -65,7 +65,6 @@
 
     if (isFastBoot) {
       let fastbootService = owner.lookup('service:fastboot');
-      debugger
       fastbootRequestPath = fastbootService.request.path;
     } // normally only done in prod builds, but this makes the demo easier
 

@@ -52,10 +52,10 @@ describe("generating package.json", function () {
     describe('with custom htmlFile', function() {
       it('uses custom htmlFile in the manifest', function() {
         let pkg = fs.readJSONSync("dist/package.json");
-        let manifest = pkg.fastboot.manifest;
+        let { htmlEntrypoint} = pkg.fastboot;
 
-        expect(manifest.htmlFile).to.equal('custom-index.html');
-        expect(`dist/${manifest.htmlFile}`).to.be.a.file();
+        expect(htmlEntrypoint).to.equal('custom-index.html');
+        expect(`dist/${htmlEntrypoint}`).to.be.a.file();
       });
     });
   });
