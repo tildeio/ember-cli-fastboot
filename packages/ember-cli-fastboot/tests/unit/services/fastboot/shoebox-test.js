@@ -58,33 +58,27 @@ module('Unit | Service | fastboot | shoebox', function(hooks) {
   });
 
   test('retrieve returns undefined if isFastBoot true and shoebox is missing', function(assert) {
+    this.owner.register('info:-fastboot', {}, { instantiate: false });
     let service = this.owner.factoryFor('service:fastboot').create({
-      isFastBoot: true,
-      _fastbootInfo: {}
+      isFastBoot: true
     });
 
     assert.strictEqual(service.get('shoebox').retrieve('foo'), undefined);
   });
 
   test('retrieve returns undefined if isFastBoot true and key is missing', function(assert) {
+    this.owner.register('info:-fastboot', { shoebox: {} }, { instantiate: false });
     let service = this.owner.factoryFor('service:fastboot').create({
-      isFastBoot: true,
-      _fastbootInfo: {
-        shoebox: {}
-      }
+      isFastBoot: true
     });
 
     assert.strictEqual(service.get('shoebox').retrieve('foo'), undefined);
   });
 
   test('retrieve returns value if isFastBoot true and key is present', function(assert) {
+    this.owner.register('info:-fastboot', { shoebox: { foo: 'bar' } }, { instantiate: false });
     let service = this.owner.factoryFor('service:fastboot').create({
-      isFastBoot: true,
-      _fastbootInfo: {
-        shoebox: {
-          foo: 'bar'
-        }
-      }
+      isFastBoot: true
     });
 
     assert.strictEqual(service.get('shoebox').retrieve('foo'), 'bar');

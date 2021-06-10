@@ -78,6 +78,7 @@ const FastBootService = Service.extend({
 
     let shoebox = Shoebox.create({ fastboot: this });
     this.set('shoebox', shoebox);
+    this.set('_fastbootInfo', getOwner(this).lookup('info:-fastboot'));
   },
 
   response: readOnly('_fastbootInfo.response'),

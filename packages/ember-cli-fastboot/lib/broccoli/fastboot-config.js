@@ -11,7 +11,7 @@ const Plugin = require('broccoli-plugin');
 
 const stringify = require('json-stable-stringify');
 
-const LATEST_SCHEMA_VERSION = 3;
+const LATEST_SCHEMA_VERSION = 6;
 
 module.exports = class FastBootConfig extends Plugin {
   constructor(inputNode, options) {

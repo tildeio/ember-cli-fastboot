@@ -23,12 +23,13 @@ const htmlEntrypoint = require('./html-entrypoint');
  * should be added in fastboot lib) everytime fastboot addon schema version is bumped.
  */
 const FastBootSchemaVersions = {
-  latest: 5, // latest schema version supported by fastboot library
+  latest: 6, // latest schema version supported by fastboot library
   base: 1, // first schema version supported by fastboot library
   manifestFileArrays: 2, // schema version when app and vendor in manifest supported an array of files
   configExtension: 3, // schema version when FastBoot.config can read arbitrary indexed config
   strictWhitelist: 4, // schema version when fastbootDependencies and whitelist support only package names
   htmlEntrypoint: 5, // schema version where we switch to loading the configuration directly from HTML
+  fastbootInfoLookup: 6, // schema version when `info:-fastboot` is looked up by `service:fastboot` instead of inject implicitly
 };
 
 /**
@@ -88,6 +89,10 @@ function loadConfig(distPath) {
     schemaVersion < FastBootSchemaVersions.strictWhitelist
   );
 
+  let registerFastBootInfo = buildRegisterFastBootInfo(
+    schemaVersion < FastBootSchemaVersions.fastbootInfoLookup
+  );
+
   return {
     scripts,
     html,
@@ -95,6 +100,21 @@ function loadConfig(distPath) {
     config,
     appName,
     sandboxRequire,
+    registerFastBootInfo,
+  };
+}
+
+/**
+ * Registers this FastBootInfo instance in the registry of an Ember
+ * ApplicationInstance. It can be later looked up by the fastboot service
+ */
+function buildRegisterFastBootInfo(isLegacySchema) {
+  return (info, instance) => {
+    instance.register('info:-fastboot', info, { instantiate: false });
+    if (isLegacySchema) {
+      // In legacy fastboot versions, it is implicitly injected
+      instance.inject('service:fastboot', '_fastbootInfo', 'info:-fastboot');
+    }
   };
 }
 

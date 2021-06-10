@@ -40,6 +40,7 @@ class EmberApp {
     this.appName = config.appName;
     this.html = config.html;
     this.sandboxRequire = config.sandboxRequire;
+    this.registerFastBootInfo = config.registerFastBootInfo;
 
     if (process.env.APP_CONFIG) {
       let appConfig = JSON.parse(process.env.APP_CONFIG);
@@ -223,17 +224,17 @@ class EmberApp {
    * that promise for deferred rendering from the app.
    *
    * @param {string} path the URL path to render, like `/photos/1`
-   * @param {Object} fastbootInfo An object holding per request info
    * @param {Object} bootOptions An object containing the boot options that are used by
    *                             by ember to decide whether it needs to do rendering or not.
    * @param {Object} result
+   * @param {Object} result._fastbootInfo An object holding per request info
    * @param {Boolean} buildSandboxPerVisit if true, a new sandbox will
    *                                       **always** be created, otherwise one
    *                                       is created for the first request
    *                                       only
    * @return {Promise<instance>} instance
    */
-  async _visit(path, fastbootInfo, bootOptions, result, buildSandboxPerVisit) {
+  async _visit(path, bootOptions, result, buildSandboxPerVisit) {
     let shouldBuildApp = buildSandboxPerVisit || this._applicationInstance === undefined;
 
     let { app, isSandboxPreBuilt } = shouldBuildApp
@@ -259,11 +260,11 @@ class EmberApp {
     let instance = await app.buildInstance();
     result.applicationInstanceInstance = instance;
 
-    registerFastBootInfo(fastbootInfo, instance);
+    this.registerFastBootInfo(result._fastbootInfo, instance);
 
     await instance.boot(bootOptions);
     await instance.visit(path, bootOptions);
-    await fastbootInfo.deferredPromise;
+    await result._fastbootInfo.deferredPromise;
   }
 
   /**
@@ -322,11 +323,11 @@ class EmberApp {
     }
 
     try {
-      await this._visit(path, fastbootInfo, bootOptions, result, buildSandboxPerVisit);
+      await this._visit(path, bootOptions, result, buildSandboxPerVisit);
 
       if (!disableShoebox) {
         // if shoebox is not disabled, then create the shoebox and send API data
-        createShoebox(doc, fastbootInfo);
+        createShoebox(doc, fastbootInfo.shoebox);
       }
     } catch (error) {
       // eslint-disable-next-line require-atomic-updates
@@ -379,8 +380,7 @@ function buildBootOptions(shouldRender) {
  */
 const hasOwnProperty = Object.prototype.hasOwnProperty; // jshint ignore:line
 
-function createShoebox(doc, fastbootInfo) {
-  let shoebox = fastbootInfo.shoebox;
+function createShoebox(doc, shoebox) {
   if (!shoebox) {
     return;
   }
@@ -417,14 +417,6 @@ function escapeJSONString(string) {
   return string.replace(JSON_ESCAPE_REGEXP, function(match) {
     return JSON_ESCAPE[match];
   });
-}
-
-/*
- * Builds a new FastBootInfo instance with the request and response and injects
- * it into the application instance.
- */
-function registerFastBootInfo(info, instance) {
-  info.register(instance);
 }
 
 function buildScripts(filePaths) {
