@@ -8,7 +8,7 @@ module.exports = function(environment) {
     locationType: 'auto',
 
     fastboot: {
-      htmlFile: 'custom-index.html'
+      htmlFile: 'custom-index.html',
     },
 
     EmberENV: {

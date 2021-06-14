@@ -4,8 +4,8 @@ const cookie = require('cookie');
 const FastBootHeaders = require('./fastboot-headers');
 
 class FastBootRequest {
-  constructor(request, hostWhitelist) {
-    this.hostWhitelist = hostWhitelist;
+  constructor(request, hostAllowList) {
+    this.hostAllowList = hostAllowList;
 
     this.protocol = `${request.protocol}:`;
     this.headers = new FastBootHeaders(request.headers);
@@ -18,12 +18,12 @@ class FastBootRequest {
   }
 
   host() {
-    if (!this.hostWhitelist) {
-      throw new Error('You must provide a hostWhitelist to retrieve the host');
+    if (!this.hostAllowList) {
+      throw new Error('You must provide a hostAllowList to retrieve the host');
     }
 
     var host = this.headers.get('host');
-    var matchFound = this.hostWhitelist.some(function(entry) {
+    var matchFound = this.hostAllowList.some(function(entry) {
       if (entry[0] === '/' && entry.slice(-1) === '/') {
         var regexp = new RegExp(entry.slice(1, -1));
         return regexp.test(host);
@@ -33,7 +33,7 @@ class FastBootRequest {
     });
 
     if (!matchFound) {
-      throw new Error(`The host header did not match a hostWhitelist entry. Host header: ${host}`);
+      throw new Error(`The host header did not match a hostAllowList entry. Host header: ${host}`);
     }
 
     return host;

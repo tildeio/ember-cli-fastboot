@@ -39,10 +39,10 @@ describe("generating package.json", function () {
       expect(pkg.fastboot.schemaVersion).to.deep.equal(3);
     });
 
-    it("contains a whitelist of allowed module names", function () {
+    it("contains a list of allowed module names", function () {
       let pkg = fs.readJSONSync("dist/package.json");
 
-      expect(pkg.fastboot.moduleWhitelist).to.deep.equal([
+      expect(pkg.fastboot.moduleAllowlist).to.deep.equal([
         "node-fetch",
         "abortcontroller-polyfill",
         "abortcontroller-polyfill/dist/cjs-ponyfill",
@@ -73,10 +73,10 @@ describe("generating package.json", function () {
       });
     });
 
-    it("contains a list of whitelisted hosts from environment.js", function () {
+    it("contains a list of allowed hosts from environment.js", function () {
       let pkg = fs.readJSONSync("dist/package.json");
 
-      expect(pkg.fastboot.hostWhitelist).to.deep.equal([
+      expect(pkg.fastboot.hostAllowList).to.deep.equal([
         "example.com",
         "subdomain.example.com",
         "/localhost:\\d+/",
@@ -117,7 +117,7 @@ describe("generating package.json", function () {
           autoboot: false,
         },
         fastboot: {
-          hostWhitelist: [
+          hostAllowList: [
             "example.com",
             "subdomain.example.com",
             "/localhost:\\d+/",

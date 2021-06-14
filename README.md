@@ -92,13 +92,13 @@ server.start();
 
 ## Using Node/npm Dependencies
 
-### Whitelisting Packages
+### Allowlisting Packages
 
 When your app is running in FastBoot, it may need to use Node packages
 to replace features that are available only in the browser.
 
 For security reasons, your Ember app running in FastBoot can only access
-packages that you have explicitly whitelisted.
+packages that you have explicitly listed as allowed.
 
 To allow your app to require a package, add it to the
 `fastbootDependencies` array in your app's `package.json`:
@@ -132,14 +132,14 @@ hash.** Built-in modules (`path`, `fs`, etc.) only need to be added to
 
 From your Ember.js app, you can run `FastBoot.require()` to require a
 package. This is identical to the CommonJS `require` except it checks
-all requests against the whitelist first.
+all requests against the allowlist first.
 
 ```js
 let path = FastBoot.require('path');
 let filePath = path.join('tmp', session.getID());
 ```
 
-If you attempt to require a package that is not in the whitelist,
+If you attempt to require a package that is not in the allowlist,
 FastBoot will raise an exception.
 
 Note that the `FastBoot` global is **only** available when running in
@@ -273,14 +273,14 @@ module.exports = function(environment) {
     },
 
     fastboot: {
-      hostWhitelist: ['example.com', 'subdomain.example.com', /^localhost:\d+$/]
+      hostAllowList: ['example.com', 'subdomain.example.com', /^localhost:\d+$/]
     }
   };
   // ...
 };
 ```
 
-The `hostWhitelist` can be a string or RegExp to match multiple hosts.
+The `hostAllowList` can be a string or RegExp to match multiple hosts.
 Care should be taken when using a RegExp, as the host function relies on
 the `Host` HTTP header, which can be forged. You could potentially allow
 a malicious request if your RegExp is too permissive when using the `host`
@@ -288,8 +288,8 @@ when making subsequent requests.
 
 Retrieving `host` will error on 2 conditions:
 
- 1. you do not have a `hostWhitelist` defined
- 2. the `Host` header does not match an entry in your `hostWhitelist`
+ 1. you do not have a `hostAllowList` defined
+ 2. the `Host` header does not match an entry in your `hostAllowList`
 
 ### Query Parameters
 

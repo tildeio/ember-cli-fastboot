@@ -11,16 +11,16 @@ const FastBootResponse = require('./fastboot-response');
  * @param {ClientRequest} the incoming request object
  * @param {ClientResponse} the response object
  * @param {Object} additional options passed to fastboot info
- * @param {Array} [options.hostWhitelist] expected hosts in your application
+ * @param {Array} [options.hostAllowList] expected hosts in your application
  * @param {Object} [options.metaData] per request meta data
  */
 module.exports = class FastBootInfo {
   constructor(request, response, options) {
     this.deferredPromise = Promise.resolve();
-    let { hostWhitelist, metadata } = options;
+    let { hostAllowList, metadata } = options;
 
     if (request) {
-      this.request = new FastBootRequest(request, hostWhitelist);
+      this.request = new FastBootRequest(request, hostAllowList);
     }
 
     this.response = new FastBootResponse(response || {});

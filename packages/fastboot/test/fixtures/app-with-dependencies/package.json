@@ -29,7 +29,7 @@
       "htmlFile": "index.html",
       "vendorFiles": ["assets/vendor.js"]
     },
-    "moduleWhitelist": ["url", "foo"],
+    "moduleAllowlist": ["url", "foo"],
     "schemaVersion": 4
   }
 }

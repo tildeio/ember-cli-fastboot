@@ -23,7 +23,7 @@ module.exports = function(environment) {
     },
 
     fastboot: {
-      hostWhitelist: [
+      hostAllowList: [
         'example.com',
         'subdomain.example.com',
         '/localhost:\\d+/',

@@ -83,7 +83,7 @@ function loadConfig(distPath) {
   }
 
   let sandboxRequire = buildWhitelistedRequire(
-    pkg.fastboot.moduleWhitelist,
+    pkg.fastboot.moduleAllowlist,
     distPath,
     schemaVersion < FastBootSchemaVersions.strictWhitelist
   );
@@ -91,7 +91,7 @@ function loadConfig(distPath) {
   return {
     scripts,
     html,
-    hostWhitelist: pkg.fastboot.hostWhitelist,
+    hostAllowList: pkg.fastboot.hostAllowList,
     config,
     appName,
     sandboxRequire,

@@ -3,7 +3,7 @@
   "dependencies": {},
   "fastboot": {
     "schemaVersion": 5,
-    "moduleWhitelist": [],
+    "moduleAllowlist": [],
     "htmlEntrypoint": "index.html"
   }
 }

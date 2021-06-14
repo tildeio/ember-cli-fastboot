@@ -1,7 +1,7 @@
 {
   "dependencies": {},
   "fastboot": {
-    "moduleWhitelist": [],
+    "moduleAllowlist": [],
     "manifest": {
       "appFile": "assets/fastboot-test.js",
       "htmlFile": "index.html",

@@ -1,6 +1,6 @@
 {
   "fastboot": {
-    "moduleWhitelist": [],
+    "moduleAllowlist": [],
     "manifest": {
       "appFile": "app.js",
       "vendorFile": "vendor.js",

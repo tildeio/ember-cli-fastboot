@@ -11104,23 +11104,23 @@ enifed('@ember/application/instance', ['exports', 'ember-babel', '@ember/polyfil
   /**
     The `ApplicationInstance` encapsulates all of the stateful aspects of a
     running `Application`.
-  
+
     At a high-level, we break application boot into two distinct phases:
-  
+
     * Definition time, where all of the classes, templates, and other
       dependencies are loaded (typically in the browser).
     * Run time, where we begin executing the application once everything
       has loaded.
-  
+
     Definition time can be expensive and only needs to happen once since it is
     an idempotent operation. For example, between test runs and FastBoot
     requests, the application stays the same. It is only the state that we want
     to reset.
-  
+
     That state is what the `ApplicationInstance` manages: it is responsible for
     creating the container that contains all application state, and disposing of
     it once the particular test run or FastBoot request has finished.
-  
+
     @public
     @class ApplicationInstance
     @extends EngineInstance
@@ -11316,21 +11316,21 @@ enifed('@ember/application/instance', ['exports', 'ember-babel', '@ember/polyfil
   /**
     A list of boot-time configuration options for customizing the behavior of
     an `ApplicationInstance`.
-  
+
     This is an interface class that exists purely to document the available
     options; you do not need to construct it manually. Simply pass a regular
     JavaScript object containing the desired options into methods that require
     one of these options object:
-  
+
     ```javascript
     MyApp.visit("/", { location: "none", rootElement: "#container" });
     ```
-  
+
     Not all combinations of the supported options are valid. See the documentation
     on `Application#visit` for the supported configurations.
-  
+
     Internal, experimental or otherwise unstable flags are marked as private.
-  
+
     @class BootOptions
     @namespace ApplicationInstance
     @public
@@ -11517,69 +11517,69 @@ enifed('@ember/application/lib/application', ['exports', 'ember-babel', 'ember-u
     An instance of `Application` is the starting point for every Ember
     application. It helps to instantiate, initialize and coordinate the many
     objects that make up your app.
-  
+
     Each Ember app has one and only one `Application` object. In fact, the
     very first thing you should do in your application is create the instance:
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     window.App = Application.create();
     ```
-  
+
     Typically, the application object is the only global variable. All other
     classes in your app should be properties on the `Application` instance,
     which highlights its first role: a global namespace.
-  
+
     For example, if you define a view class, it might look like this:
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     App.MyView = Ember.View.extend();
     ```
-  
+
     By default, calling `Application.create()` will automatically initialize
     your application by calling the `Application.initialize()` method. If
     you need to delay initialization, you can call your app's `deferReadiness()`
     method. When you are ready for your app to be initialized, call its
     `advanceReadiness()` method.
-  
+
     You can define a `ready` method on the `Application` instance, which
     will be run by Ember when the application is initialized.
-  
+
     Because `Application` inherits from `Ember.Namespace`, any classes
     you create will have useful string representations when calling `toString()`.
     See the `Ember.Namespace` documentation for more information.
-  
+
     While you can think of your `Application` as a container that holds the
     other classes in your application, there are several other responsibilities
     going on under-the-hood that you may want to understand.
-  
+
     ### Event Delegation
-  
+
     Ember uses a technique called _event delegation_. This allows the framework
     to set up a global, shared event listener instead of requiring each view to
     do it manually. For example, instead of each view registering its own
     `mousedown` listener on its associated element, Ember sets up a `mousedown`
     listener on the `body`.
-  
+
     If a `mousedown` event occurs, Ember will look at the target of the event and
     start walking up the DOM node tree, finding corresponding views and invoking
     their `mouseDown` method as it goes.
-  
+
     `Application` has a number of default events that it listens for, as
     well as a mapping from lowercase events to camel-cased view method names. For
     example, the `keypress` event causes the `keyPress` method on the view to be
     called, the `dblclick` event causes `doubleClick` to be called, and so on.
-  
+
     If there is a bubbling browser event that Ember does not listen for by
     default, you can specify custom events and their corresponding view method
     names by setting the application's `customEvents` property:
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     let App = Application.create({
       customEvents: {
         // add support for the paste event
@@ -11587,14 +11587,14 @@ enifed('@ember/application/lib/application', ['exports', 'ember-babel', 'ember-u
       }
     });
     ```
-  
+
     To prevent Ember from setting up a listener for a default event,
     specify the event name with a `null` value in the `customEvents`
     property:
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     let App = Application.create({
       customEvents: {
         // prevent listeners for mouseenter/mouseleave events
@@ -11603,80 +11603,80 @@ enifed('@ember/application/lib/application', ['exports', 'ember-babel', 'ember-u
       }
     });
     ```
-  
+
     By default, the application sets up these event listeners on the document
     body. However, in cases where you are embedding an Ember application inside
     an existing page, you may want it to set up the listeners on an element
     inside the body.
-  
+
     For example, if only events inside a DOM element with the ID of `ember-app`
     should be delegated, set your application's `rootElement` property:
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     let App = Application.create({
       rootElement: '#ember-app'
     });
     ```
-  
+
     The `rootElement` can be either a DOM element or a jQuery-compatible selector
     string. Note that *views appended to the DOM outside the root element will
     not receive events.* If you specify a custom root element, make sure you only
     append views inside it!
-  
+
     To learn more about the events Ember components use, see
-  
+
     [components/handling-events](https://guides.emberjs.com/release/components/handling-events/#toc_event-names).
-  
+
     ### Initializers
-  
+
     Libraries on top of Ember can add initializers, like so:
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     Application.initializer({
       name: 'api-adapter',
-  
+
       initialize: function(application) {
         application.register('api-adapter:main', ApiAdapter);
       }
     });
     ```
-  
+
     Initializers provide an opportunity to access the internal registry, which
     organizes the different components of an Ember application. Additionally
     they provide a chance to access the instantiated application. Beyond
     being used for libraries, initializers are also a great way to organize
     dependency injection or setup in your own application.
-  
+
     ### Routing
-  
+
     In addition to creating your application's router, `Application` is
     also responsible for telling the router when to start routing. Transitions
     between routes can be logged with the `LOG_TRANSITIONS` flag, and more
     detailed intra-transition logging can be logged with
     the `LOG_TRANSITIONS_INTERNAL` flag:
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     let App = Application.create({
       LOG_TRANSITIONS: true, // basic logging of successful transitions
       LOG_TRANSITIONS_INTERNAL: true // detailed logging of all routing steps
     });
     ```
-  
+
     By default, the router will begin trying to translate the current URL into
     application state once the browser emits the `DOMContentReady` event. If you
     need to defer routing, you can call the application's `deferReadiness()`
     method. Once routing can begin, call the `advanceReadiness()` method.
-  
+
     If there is any setup required before routing begins, you can implement a
     `ready()` method on your app that will be invoked immediately before routing
     begins.
-  
+
     @class Application
     @extends Engine
     @uses RegistryProxyMixin
@@ -12126,18 +12126,18 @@ enifed('@ember/application/lib/lazy_load', ['exports', 'ember-environment', 'emb
   /**
     Detects when a specific package of Ember (e.g. 'Application')
     has fully loaded and is available for extension.
-  
+
     The provided `callback` will be called with the `name` passed
     resolved from a string into the object:
-  
+
     ``` javascript
     import { onLoad } from '@ember/application';
-  
+
     onLoad('Ember.Application' function(hbars) {
       hbars.registerHelper(...);
     });
     ```
-  
+
     @method onLoad
     @static
     @for @ember/application
@@ -12159,7 +12159,7 @@ enifed('@ember/application/lib/lazy_load', ['exports', 'ember-environment', 'emb
   /**
     Called when an Ember.js package (e.g Application) has finished
     loading. Triggers any callbacks registered for this event.
-  
+
     @method runLoadHooks
     @static
     @for @ember/application
@@ -12232,10 +12232,10 @@ enifed('@ember/canary-features/index', ['exports', '@ember/polyfills', 'ember-en
     /**
       The hash of enabled Canary features. Add to this, any canary features
       before creating your application.
-    
+
       Alternatively (and recommended), you can also define `EmberENV.FEATURES`
       if you need to enable features flagged at runtime.
-    
+
       @class FEATURES
       @namespace Ember
       @static
@@ -12246,12 +12246,12 @@ enifed('@ember/canary-features/index', ['exports', '@ember/polyfills', 'ember-en
     /**
       Determine whether the specified `feature` is enabled. Used by Ember's
       build tools to exclude experimental features from beta/stable builds.
-    
+
       You can define the following configuration options:
-    
+
       * `EmberENV.ENABLE_OPTIONAL_FEATURES` - enable any features that have not been explicitly
         enabled/disabled.
-    
+
       @method isEnabled
       @param {String} feature The feature to check
       @return {Boolean}
@@ -12307,23 +12307,23 @@ enifed('@ember/controller/index', ['exports', 'ember-runtime', '@ember/controlle
   /**
     Creates a property that lazily looks up another controller in the container.
     Can only be used when defining another controller.
-  
+
     Example:
-  
+
     ```app/controllers/post.js
     import Controller, {
       inject as controller
     } from '@ember/controller';
-  
+
     export default Controller.extend({
       posts: controller()
     });
     ```
-  
+
     This example will create a `posts` property on the `post` controller that
     looks up the `posts` controller in the container, making it easy to
     reference other controllers.
-  
+
     @method inject
     @static
     @for @ember/controller
@@ -12666,10 +12666,10 @@ enifed('@ember/debug/lib/deprecate', ['exports', '@ember/deprecated-features', '
       Deprecations are invoked by calls to [@ember/application/deprecations/deprecate](https://emberjs.com/api/ember/release/classes/@ember%2Fapplication%2Fdeprecations/methods/deprecate?anchor=deprecate).
       The following example demonstrates its usage by registering a handler that throws an error if the
       message contains the word "should", otherwise defers to the default handler.
-    
+
       ```javascript
       import { registerDeprecationHandler } from '@ember/debug';
-    
+
       registerDeprecationHandler((message, options, next) => {
         if (message.indexOf('should') !== -1) {
           throw new Error(`Deprecation message with should: ${message}`);
@@ -12679,9 +12679,9 @@ enifed('@ember/debug/lib/deprecate', ['exports', '@ember/deprecated-features', '
         }
       });
       ```
-    
+
       The handler function takes the following arguments:
-    
+
       <ul>
         <li> <code>message</code> - The message received from the deprecation call.</li>
         <li> <code>options</code> - An object passed in with the deprecation call containing additional information including:</li>
@@ -12691,7 +12691,7 @@ enifed('@ember/debug/lib/deprecate', ['exports', '@ember/deprecated-features', '
           </ul>
         <li> <code>next</code> - A function that calls into the previously registered handler.</li>
       </ul>
-    
+
       @public
       @static
       @method registerDeprecationHandler
@@ -13027,14 +13027,14 @@ enifed('@ember/engine/index', ['exports', '@ember/engine/lib/engine-parent', 'em
   /**
     The `Engine` class contains core functionality for both applications and
     engines.
-  
+
     Each engine manages a registry that's used for dependency injection and
     exposed through `RegistryProxy`.
-  
+
     Engines also manage initializers and instance initializers.
-  
+
     Engines can spawn `EngineInstance` instances via `buildInstance()`.
-  
+
     @class Engine
     @extends Ember.Namespace
     @uses RegistryProxy
@@ -13321,15 +13321,15 @@ enifed('@ember/engine/index', ['exports', '@ember/engine/lib/engine-parent', 'em
 
   /**
     This function defines the default lookup rules for container lookups:
-  
+
     * templates are looked up on `Ember.TEMPLATES`
     * other names are looked up on the application after classifying the name.
       For example, `controller:post` looks up `App.PostController` by default.
     * if the default lookup fails, look for registered classes on the container
-  
+
     This allows the application to register default injections in the container
     that could be overridden by the normal naming convention.
-  
+
     @private
     @method resolverFor
     @param {Ember.Namespace} namespace the namespace to look for classes
@@ -13413,7 +13413,7 @@ enifed('@ember/engine/instance', ['exports', 'ember-babel', 'ember-utils', 'embe
   /**
     The `EngineInstance` encapsulates all of the stateful aspects of a
     running `Engine`.
-  
+
     @public
     @class EngineInstance
     @extends EmberObject
@@ -13569,7 +13569,7 @@ enifed('@ember/engine/lib/engine-parent', ['exports', 'ember-utils'], function (
 
   /**
     `getEngineParent` retrieves an engine instance's parent instance.
-  
+
     @method getEngineParent
     @param {EngineInstance} engine An engine instance.
     @return {EngineInstance} The parent engine instance.
@@ -13586,7 +13586,7 @@ enifed('@ember/engine/lib/engine-parent', ['exports', 'ember-utils'], function (
 
   /**
     `setEngineParent` sets an engine instance's parent instance.
-  
+
     @method setEngineParent
     @param {EngineInstance} engine An engine instance.
     @param {EngineInstance} parent The parent engine instance.
@@ -13612,7 +13612,7 @@ enifed("@ember/error/index", ["exports", "ember-babel"], function (exports, _emb
     }
     /**
       A subclass of the JavaScript Error object for use in Ember.
-    
+
       @class EmberError
       @extends Error
       @constructor
@@ -13667,48 +13667,48 @@ enifed('@ember/instrumentation/index', ['exports', 'ember-environment'], functio
       The purpose of the Ember Instrumentation module is
       to provide efficient, general-purpose instrumentation
       for Ember.
-    
+
       Subscribe to a listener by using `subscribe`:
-    
+
       ```javascript
       import { subscribe } from '@ember/instrumentation';
-    
+
       subscribe("render", {
         before(name, timestamp, payload) {
-    
+
         },
-    
+
         after(name, timestamp, payload) {
-    
+
         }
       });
       ```
-    
+
       If you return a value from the `before` callback, that same
       value will be passed as a fourth parameter to the `after`
       callback.
-    
+
       Instrument a block of code by using `instrument`:
-    
+
       ```javascript
       import { instrument } from '@ember/instrumentation';
-    
+
       instrument("render.handlebars", payload, function() {
         // rendering logic
       }, binding);
       ```
-    
+
       Event names passed to `instrument` are namespaced
       by periods, from more general to more specific. Subscribers
       can listen for events by whatever level of granularity they
       are interested in.
-    
+
       In the above example, the event is `render.handlebars`,
       and the subscriber listened for all events beginning with
       `render`. It would receive callbacks for events named
       `render`, `render.handlebars`, `render.container`, or
       even `render.handlebars.layout`.
-    
+
       @class Instrumentation
       @static
       @private
@@ -13828,14 +13828,14 @@ enifed('@ember/instrumentation/index', ['exports', 'ember-environment'], functio
     }
     /**
       Subscribes to a particular event or instrumented block of code.
-    
+
       @method subscribe
       @for @ember/instrumentation
       @static
-    
+
       @param {String} [pattern] Namespaced event name.
       @param {Object} [object] Before and After hooks.
-    
+
       @return {Subscriber}
       @private
     */
@@ -13864,11 +13864,11 @@ enifed('@ember/instrumentation/index', ['exports', 'ember-environment'], functio
     }
     /**
       Unsubscribes from a particular event or instrumented block of code.
-    
+
       @method unsubscribe
       @for @ember/instrumentation
       @static
-    
+
       @param {Object} [subscriber]
       @private
     */
@@ -13884,7 +13884,7 @@ enifed('@ember/instrumentation/index', ['exports', 'ember-environment'], functio
     }
     /**
       Resets `Instrumentation` by flushing list of subscribers.
-    
+
       @method reset
       @for @ember/instrumentation
       @static
@@ -14066,7 +14066,7 @@ enifed('@ember/map/lib/ordered-set', ['exports', 'ember-babel', '@ember/debug', 
     This class is used internally by Ember and Ember Data.
     Please do not use it at this time. We plan to clean it up
     and add many tests soon.
-  
+
     @class OrderedSet
     @namespace Ember
     @constructor
@@ -14641,26 +14641,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns true if the value of the dependent
     property is null, an empty string, empty array, or empty function.
-  
+
     Example
-  
+
     ```javascript
     import { empty } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let ToDoList = EmberObject.extend({
       isDone: empty('todos')
     });
-  
+
     let todoList = ToDoList.create({
       todos: ['Unit Test', 'Documentation', 'Release']
     });
-  
+
     todoList.get('isDone'); // false
     todoList.get('todos').clear();
     todoList.get('isDone'); // true
     ```
-  
+
     @since 1.6.0
     @method empty
     @static
@@ -14669,7 +14669,7 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     @return {ComputedProperty} computed property which returns true if
     the value of the dependent property is null, an empty string, empty array,
     or empty function and false if the underlying value is not empty.
-  
+
     @public
   */
   function empty(dependentKey) {
@@ -14681,24 +14681,24 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns true if the value of the dependent
     property is NOT null, an empty string, empty array, or empty function.
-  
+
     Example
-  
+
     ```javascript
     import { notEmpty } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       hasStuff: notEmpty('backpack')
     });
-  
+
     let hamster = Hamster.create({ backpack: ['Food', 'Sleeping Bag', 'Tent'] });
-  
+
     hamster.get('hasStuff');         // true
     hamster.get('backpack').clear(); // []
     hamster.get('hasStuff');         // false
     ```
-  
+
     @method notEmpty
     @static
     @for @ember/object/computed
@@ -14717,26 +14717,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     A computed property that returns true if the value of the dependent
     property is null or undefined. This avoids errors from JSLint complaining
     about use of ==, which can be technically confusing.
-  
+
     Example
-  
+
     ```javascript
     import { none } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       isHungry: none('food')
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('isHungry'); // true
     hamster.set('food', 'Banana');
     hamster.get('isHungry'); // false
     hamster.set('food', null);
     hamster.get('isHungry'); // true
     ```
-  
+
     @method none
     @static
     @for @ember/object/computed
@@ -14754,24 +14754,24 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns the inverse boolean value
     of the original value for the dependent property.
-  
+
     Example
-  
+
     ```javascript
     import { not } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let User = EmberObject.extend({
       isAnonymous: not('loggedIn')
     });
-  
+
     let user = User.create({loggedIn: false});
-  
+
     user.get('isAnonymous'); // true
     user.set('loggedIn', true);
     user.get('isAnonymous'); // false
     ```
-  
+
     @method not
     @static
     @for @ember/object/computed
@@ -14789,17 +14789,17 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that converts the provided dependent property
     into a boolean value.
-  
+
     ```javascript
     import { bool } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       hasBananas: bool('numBananas')
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('hasBananas'); // false
     hamster.set('numBananas', 0);
     hamster.get('hasBananas'); // false
@@ -14808,7 +14808,7 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     hamster.set('numBananas', null);
     hamster.get('hasBananas'); // false
     ```
-  
+
     @method bool
     @static
     @for @ember/object/computed
@@ -14827,26 +14827,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     A computed property which matches the original value for the
     dependent property against a given RegExp, returning `true`
     if the value matches the RegExp and `false` if it does not.
-  
+
     Example
-  
+
     ```javascript
     import { match } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let User = EmberObject.extend({
       hasValidEmail: match('email', /^.+@.+\..+$/)
     });
-  
+
     let user = User.create({loggedIn: false});
-  
+
     user.get('hasValidEmail'); // false
     user.set('email', '');
     user.get('hasValidEmail'); // false
     user.set('email', 'ember_hamster@example.com');
     user.get('hasValidEmail'); // true
     ```
-  
+
     @method match
     @static
     @for @ember/object/computed
@@ -14866,26 +14866,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns true if the provided dependent property
     is equal to the given value.
-  
+
     Example
-  
+
     ```javascript
     import { equal } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       satisfied: equal('percentCarrotsEaten', 100)
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('satisfied'); // false
     hamster.set('percentCarrotsEaten', 100);
     hamster.get('satisfied'); // true
     hamster.set('percentCarrotsEaten', 50);
     hamster.get('satisfied'); // false
     ```
-  
+
     @method equal
     @static
     @for @ember/object/computed
@@ -14904,26 +14904,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns true if the provided dependent property
     is greater than the provided value.
-  
+
     Example
-  
+
     ```javascript
     import { gt } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       hasTooManyBananas: gt('numBananas', 10)
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('hasTooManyBananas'); // false
     hamster.set('numBananas', 3);
     hamster.get('hasTooManyBananas'); // false
     hamster.set('numBananas', 11);
     hamster.get('hasTooManyBananas'); // true
     ```
-  
+
     @method gt
     @static
     @for @ember/object/computed
@@ -14942,26 +14942,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns true if the provided dependent property
     is greater than or equal to the provided value.
-  
+
     Example
-  
+
     ```javascript
     import { gte } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       hasTooManyBananas: gte('numBananas', 10)
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('hasTooManyBananas'); // false
     hamster.set('numBananas', 3);
     hamster.get('hasTooManyBananas'); // false
     hamster.set('numBananas', 10);
     hamster.get('hasTooManyBananas'); // true
     ```
-  
+
     @method gte
     @static
     @for @ember/object/computed
@@ -14980,26 +14980,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns true if the provided dependent property
     is less than the provided value.
-  
+
     Example
-  
+
     ```javascript
     import { lt } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       needsMoreBananas: lt('numBananas', 3)
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('needsMoreBananas'); // true
     hamster.set('numBananas', 3);
     hamster.get('needsMoreBananas'); // false
     hamster.set('numBananas', 2);
     hamster.get('needsMoreBananas'); // true
     ```
-  
+
     @method lt
     @static
     @for @ember/object/computed
@@ -15018,26 +15018,26 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that returns true if the provided dependent property
     is less than or equal to the provided value.
-  
+
     Example
-  
+
     ```javascript
     import { lte } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       needsMoreBananas: lte('numBananas', 3)
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('needsMoreBananas'); // true
     hamster.set('numBananas', 5);
     hamster.get('needsMoreBananas'); // false
     hamster.set('numBananas', 3);
     hamster.get('needsMoreBananas'); // true
     ```
-  
+
     @method lte
     @static
     @for @ember/object/computed
@@ -15056,25 +15056,25 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property that performs a logical `and` on the
     original values for the provided dependent properties.
-  
+
     You may pass in more than two properties and even use
     property brace expansion.  The computed property will
     return the first falsy value or last truthy value
     just like JavaScript's `&&` operator.
-  
+
     Example
-  
+
     ```javascript
     import { and } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       readyForCamp: and('hasTent', 'hasBackpack'),
       readyForHike: and('hasWalkingStick', 'hasBackpack')
     });
-  
+
     let tomster = Hamster.create();
-  
+
     tomster.get('readyForCamp'); // false
     tomster.set('hasTent', true);
     tomster.get('readyForCamp'); // false
@@ -15085,7 +15085,7 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     tomster.set('hasWalkingStick', null);
     tomster.get('readyForHike'); // null
     ```
-  
+
     @method and
     @static
     @for @ember/object/computed
@@ -15101,25 +15101,25 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     A computed property which performs a logical `or` on the
     original values for the provided dependent properties.
-  
+
     You may pass in more than two properties and even use
     property brace expansion.  The computed property will
     return the first truthy value or last falsy value just
     like JavaScript's `||` operator.
-  
+
     Example
-  
+
     ```javascript
     import { or } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       readyForRain: or('hasJacket', 'hasUmbrella'),
       readyForBeach: or('{hasSunscreen,hasUmbrella}')
     });
-  
+
     let tomster = Hamster.create();
-  
+
     tomster.get('readyForRain'); // undefined
     tomster.set('hasUmbrella', true);
     tomster.get('readyForRain'); // true
@@ -15128,7 +15128,7 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     tomster.set('hasSunscreen', 'Check');
     tomster.get('readyForBeach'); // 'Check'
     ```
-  
+
     @method or
     @static
     @for @ember/object/computed
@@ -15145,25 +15145,25 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     Creates a new property that is an alias for another property
     on an object. Calls to `get` or `set` this property behave as
     though they were called on the original property.
-  
+
     ```javascript
     import { alias } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Person = EmberObject.extend({
       name: 'Alex Matchneer',
       nomen: alias('name')
     });
-  
+
     let alex = Person.create();
-  
+
     alex.get('nomen'); // 'Alex Matchneer'
     alex.get('name');  // 'Alex Matchneer'
-  
+
     alex.set('nomen', '@machty');
     alex.get('name');  // '@machty'
     ```
-  
+
     @method alias
     @static
     @for @ember/object/computed
@@ -15179,29 +15179,29 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     not mutate the upstream property, rather causes the current property to
     become the value set. This causes the downstream property to permanently
     diverge from the upstream property.
-  
+
     Example
-  
+
     ```javascript
     import { oneWay } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let User = EmberObject.extend({
       firstName: null,
       lastName: null,
       nickName: oneWay('firstName')
     });
-  
+
     let teddy = User.create({
       firstName: 'Teddy',
       lastName: 'Zeenny'
     });
-  
+
     teddy.get('nickName');              // 'Teddy'
     teddy.set('nickName', 'TeddyBear'); // 'TeddyBear'
     teddy.get('firstName');             // 'Teddy'
     ```
-  
+
     @method oneWay
     @static
     @for @ember/object/computed
@@ -15217,7 +15217,7 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
   /**
     This is a more semantically meaningful alias of `computed.oneWay`,
     whose name is somewhat ambiguous as to which direction the data flows.
-  
+
     @method reads
     @static
     @for @ember/object/computed
@@ -15231,32 +15231,32 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     Where `computed.oneWay` provides oneWay bindings, `computed.readOnly` provides
     a readOnly one way binding. Very often when using `computed.oneWay` one does
     not also want changes to propagate back up, as they will replace the value.
-  
+
     This prevents the reverse flow, and also throws an exception when it occurs.
-  
+
     Example
-  
+
     ```javascript
     import { readOnly } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let User = EmberObject.extend({
       firstName: null,
       lastName: null,
       nickName: readOnly('firstName')
     });
-  
+
     let teddy = User.create({
       firstName: 'Teddy',
       lastName:  'Zeenny'
     });
-  
+
     teddy.get('nickName');              // 'Teddy'
     teddy.set('nickName', 'TeddyBear'); // throws Exception
     // throw new EmberError('Cannot Set: nickName on: <User:ember27288>' );`
     teddy.get('firstName');             // 'Teddy'
     ```
-  
+
     @method readOnly
     @static
     @for @ember/object/computed
@@ -15275,24 +15275,24 @@ enifed('@ember/object/lib/computed/computed_macros', ['exports', 'ember-metal', 
     on an object. Calls to `get` or `set` this property behave as
     though they were called on the original property, but also
     print a deprecation warning.
-  
+
     ```javascript
     import { deprecatingAlias } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       bananaCount: deprecatingAlias('cavendishCount', {
         id: 'hamster.deprecate-banana',
         until: '3.0.0'
       })
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.set('bananaCount', 5); // Prints a deprecation warning.
     hamster.get('cavendishCount'); // 5
     ```
-  
+
     @method deprecatingAlias
     @static
     @for @ember/object/computed
@@ -15401,7 +15401,7 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
   /**
     A computed property that returns the sum of the values
     in the dependent array.
-  
+
     @method sum
     @for @ember/object/computed
     @static
@@ -15420,18 +15420,18 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     A computed property that calculates the maximum value in the
     dependent array. This will return `-Infinity` when the dependent
     array is empty.
-  
+
     ```javascript
     import { mapBy, max } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Person = EmberObject.extend({
       childAges: mapBy('children', 'age'),
       maxChildAge: max('childAges')
     });
-  
+
     let lordByron = Person.create({ children: [] });
-  
+
     lordByron.get('maxChildAge'); // -Infinity
     lordByron.get('children').pushObject({
       name: 'Augusta Ada Byron', age: 7
@@ -15446,14 +15446,14 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     }]);
     lordByron.get('maxChildAge'); // 8
     ```
-  
+
     If the types of the arguments are not numbers,
     they will be converted to numbers and the type
     of the return value will always be `Number`.
     For example, the max of a list of Date objects will be
     the highest timestamp as a `Number`.
     This behavior is consistent with `Math.max`.
-  
+
     @method max
     @for @ember/object/computed
     @static
@@ -15471,18 +15471,18 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     A computed property that calculates the minimum value in the
     dependent array. This will return `Infinity` when the dependent
     array is empty.
-  
+
     ```javascript
     import { mapBy, min } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Person = EmberObject.extend({
       childAges: mapBy('children', 'age'),
       minChildAge: min('childAges')
     });
-  
+
     let lordByron = Person.create({ children: [] });
-  
+
     lordByron.get('minChildAge'); // Infinity
     lordByron.get('children').pushObject({
       name: 'Augusta Ada Byron', age: 7
@@ -15497,14 +15497,14 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     }]);
     lordByron.get('minChildAge'); // 5
     ```
-  
+
     If the types of the arguments are not numbers,
     they will be converted to numbers and the type
     of the return value will always be `Number`.
     For example, the min of a list of Date objects will be
     the lowest timestamp as a `Number`.
     This behavior is consistent with `Math.min`.
-  
+
     @method min
     @for @ember/object/computed
     @static
@@ -15520,34 +15520,34 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
 
   /**
     Returns an array mapped via the callback
-  
+
     The callback method you provide should have the following signature.
     `item` is the current item in the iteration.
     `index` is the integer index of the current item in the iteration.
-  
+
     ```javascript
     function(item, index);
     ```
-  
+
     Example
-  
+
     ```javascript
     import { map } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       excitingChores: map('chores', function(chore, index) {
         return chore.toUpperCase() + '!';
       })
     });
-  
+
     let hamster = Hamster.create({
       chores: ['clean', 'write more unit tests']
     });
-  
+
     hamster.get('excitingChores'); // ['CLEAN!', 'WRITE MORE UNIT TESTS!']
     ```
-  
+
     @method map
     @for @ember/object/computed
     @static
@@ -15564,17 +15564,17 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
 
   /**
     Returns an array mapped to the specified key.
-  
+
     ```javascript
     import { mapBy } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Person = EmberObject.extend({
       childAges: mapBy('children', 'age')
     });
-  
+
     let lordByron = Person.create({ children: [] });
-  
+
     lordByron.get('childAges'); // []
     lordByron.get('children').pushObject({ name: 'Augusta Ada Byron', age: 7 });
     lordByron.get('childAges'); // [7]
@@ -15587,7 +15587,7 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     }]);
     lordByron.get('childAges'); // [7, 5, 8]
     ```
-  
+
     @method mapBy
     @for @ember/object/computed
     @static
@@ -15608,26 +15608,26 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
 
   /**
     Filters the array by the callback.
-  
+
     The callback method you provide should have the following signature.
     `item` is the current item in the iteration.
     `index` is the integer index of the current item in the iteration.
     `array` is the dependant array itself.
-  
+
     ```javascript
     function(item, index, array);
     ```
-  
+
     ```javascript
     import { filter } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       remainingChores: filter('chores', function(chore, index, array) {
         return !chore.done;
       })
     });
-  
+
     let hamster = Hamster.create({
       chores: [
         { name: 'cook', done: true },
@@ -15635,23 +15635,23 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
         { name: 'write more unit tests', done: false }
       ]
     });
-  
+
     hamster.get('remainingChores'); // [{name: 'write more unit tests', done: false}]
     ```
-  
+
     You can also use `@each.property` in your dependent key, the callback will still use the underlying array:
-  
+
     ```javascript
     import { A } from '@ember/array';
     import { filter } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       remainingChores: filter('chores.@each.done', function(chore, index, array) {
         return !chore.get('done');
       })
     });
-  
+
     let hamster = Hamster.create({
       chores: A([
         EmberObject.create({ name: 'cook', done: true }),
@@ -15663,8 +15663,8 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     hamster.get('chores').objectAt(2).set('done', true);
     hamster.get('remainingChores'); // []
     ```
-  
-  
+
+
     @method filter
     @for @ember/object/computed
     @static
@@ -15681,15 +15681,15 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
 
   /**
     Filters the array by the property and value
-  
+
     ```javascript
     import { filterBy } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       remainingChores: filterBy('chores', 'done', false)
     });
-  
+
     let hamster = Hamster.create({
       chores: [
         { name: 'cook', done: true },
@@ -15697,10 +15697,10 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
         { name: 'write more unit tests', done: false }
       ]
     });
-  
+
     hamster.get('remainingChores'); // [{ name: 'write more unit tests', done: false }]
     ```
-  
+
     @method filterBy
     @for @ember/object/computed
     @static
@@ -15731,17 +15731,17 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
   /**
     A computed property which returns a new array with all the unique
     elements from one or more dependent arrays.
-  
+
     Example
-  
+
     ```javascript
     import { uniq } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       uniqueFruits: uniq('fruits')
     });
-  
+
     let hamster = Hamster.create({
       fruits: [
         'banana',
@@ -15750,10 +15750,10 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
         'banana'
       ]
     });
-  
+
     hamster.get('uniqueFruits'); // ['banana', 'grape', 'kale']
     ```
-  
+
     @method uniq
     @for @ember/object/computed
     @static
@@ -15792,13 +15792,13 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
   /**
     A computed property which returns a new array with all the unique
     elements from an array, with uniqueness determined by specific key.
-  
+
     Example
-  
+
     ```javascript
     import { uniqBy } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       uniqueFruits: uniqBy('fruits', 'id')
     });
@@ -15812,7 +15812,7 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     });
     hamster.get('uniqueFruits'); // [ { id: 1, 'banana' }, { id: 2, 'grape' }, { id: 3, 'peach' }]
     ```
-  
+
     @method uniqBy
     @for @ember/object/computed
     @static
@@ -15837,17 +15837,17 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
   /**
     A computed property which returns a new array with all the unique
     elements from one or more dependent arrays.
-  
+
     Example
-  
+
     ```javascript
     import { union } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       uniqueFruits: union('fruits', 'vegetables')
     });
-  
+
     let hamster = Hamster.create({
       fruits: [
         'banana',
@@ -15862,10 +15862,10 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
         'lettuce'
       ]
     });
-  
+
     hamster.get('uniqueFruits'); // ['banana', 'grape', 'kale', 'tomato', 'carrot', 'lettuce']
     ```
-  
+
     @method union
     @for @ember/object/computed
     @static
@@ -15879,23 +15879,23 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
   /**
     A computed property which returns a new array with all the elements
     two or more dependent arrays have in common.
-  
+
     Example
-  
+
     ```javascript
     import { intersect } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let obj = EmberObject.extend({
       friendsInCommon: intersect('adaFriends', 'charlesFriends')
     }).create({
       adaFriends: ['Charles Babbage', 'John Hobhouse', 'William King', 'Mary Somerville'],
       charlesFriends: ['William King', 'Mary Somerville', 'Ada Lovelace', 'George Peacock']
     });
-  
+
     obj.get('friendsInCommon'); // ['William King', 'Mary Somerville']
     ```
-  
+
     @method intersect
     @for @ember/object/computed
     @static
@@ -15944,28 +15944,28 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     A computed property which returns a new array with all the
     properties from the first dependent array that are not in the second
     dependent array.
-  
+
     Example
-  
+
     ```javascript
     import { setDiff } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       likes: ['banana', 'grape', 'kale'],
       wants: setDiff('likes', 'fruits')
     });
-  
+
     let hamster = Hamster.create({
       fruits: [
         'grape',
         'kale',
       ]
     });
-  
+
     hamster.get('wants'); // ['banana']
     ```
-  
+
     @method setDiff
     @for @ember/object/computed
     @static
@@ -16006,25 +16006,25 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
   /**
     A computed property that returns the array of values
     for the provided dependent properties.
-  
+
     Example
-  
+
     ```javascript
     import { collect } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let Hamster = EmberObject.extend({
       clothes: collect('hat', 'shirt')
     });
-  
+
     let hamster = Hamster.create();
-  
+
     hamster.get('clothes'); // [null, null]
     hamster.set('hat', 'Camp Hat');
     hamster.set('shirt', 'Camp Shirt');
     hamster.get('clothes'); // ['Camp Hat', 'Camp Shirt']
     ```
-  
+
     @method collect
     @for @ember/object/computed
     @static
@@ -16058,38 +16058,38 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
     A computed property which returns a new array with all the
     properties from the first dependent array sorted based on a property
     or sort function.
-  
+
     The callback method you provide should have the following signature:
-  
+
     ```javascript
     function(itemA, itemB);
     ```
-  
+
     - `itemA` the first item to compare.
     - `itemB` the second item to compare.
-  
+
     This function should return negative number (e.g. `-1`) when `itemA` should come before
     `itemB`. It should return positive number (e.g. `1`) when `itemA` should come after
     `itemB`. If the `itemA` and `itemB` are equal this function should return `0`.
-  
+
     Therefore, if this function is comparing some numeric values, simple `itemA - itemB` or
     `itemA.get( 'foo' ) - itemB.get( 'foo' )` can be used instead of series of `if`.
-  
+
     Example
-  
+
     ```javascript
     import { sort } from '@ember/object/computed';
     import EmberObject from '@ember/object';
-  
+
     let ToDoList = EmberObject.extend({
       // using standard ascending sort
       todosSorting: Object.freeze(['name']),
       sortedTodos: sort('todos', 'todosSorting'),
-  
+
       // using descending sort
       todosSortingDesc: Object.freeze(['name:desc']),
       sortedTodosDesc: sort('todos', 'todosSortingDesc'),
-  
+
       // using a custom sort function
       priorityTodos: sort('todos', function(a, b){
         if (a.priority > b.priority) {
@@ -16097,22 +16097,22 @@ enifed('@ember/object/lib/computed/reduce_computed_macros', ['exports', '@ember/
         } else if (a.priority < b.priority) {
           return -1;
         }
-  
+
         return 0;
       })
     });
-  
+
     let todoList = ToDoList.create({todos: [
       { name: 'Unit Test', priority: 2 },
       { name: 'Documentation', priority: 3 },
       { name: 'Release', priority: 1 }
     ]});
-  
+
     todoList.get('sortedTodos');      // [{ name:'Documentation', priority:3 }, { name:'Release', priority:1 }, { name:'Unit Test', priority:2 }]
     todoList.get('sortedTodosDesc');  // [{ name:'Unit Test', priority:2 }, { name:'Release', priority:1 }, { name:'Documentation', priority:3 }]
     todoList.get('priorityTodos');    // [{ name:'Release', priority:1 }, { name:'Unit Test', priority:2 }, { name:'Documentation', priority:3 }]
     ```
-  
+
     @method sort
     @for @ember/object/computed
     @static
@@ -16267,16 +16267,16 @@ enifed("@ember/polyfills/lib/assign", ["exports"], function (exports) {
     */
     /**
       Copy properties from a source object to a target object.
-    
+
       ```javascript
       import { assign } from '@ember/polyfills';
-    
+
       var a = { first: 'Yehuda' };
       var b = { last: 'Katz' };
       var c = { company: 'Tilde Inc.' };
       assign(a, b, c); // a === { first: 'Yehuda', last: 'Katz', company: 'Tilde Inc.' }, b === { last: 'Katz' }, c === { company: 'Tilde Inc.' }
       ```
-    
+
       @method assign
       @for @ember/polyfills
       @param {Object} target The object to assign into
@@ -16315,16 +16315,16 @@ enifed('@ember/polyfills/lib/merge', ['exports'], function (exports) {
     */
     /**
       Merge the contents of two objects together into the first object.
-    
+
       ```javascript
       import { merge } from '@ember/polyfills';
-    
+
       merge({ first: 'Tom' }, { last: 'Dale' }); // { first: 'Tom', last: 'Dale' }
       var a = { first: 'Yehuda' };
       var b = { last: 'Katz' };
       merge(a, b); // a == { first: 'Yehuda', last: 'Katz' }, b == { last: 'Katz' }
       ```
-    
+
       @method merge
       @static
       @for @ember/polyfills
@@ -16387,7 +16387,7 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     are flushed at the end of the RunLoop. You can define your own queues by
     simply adding the queue name to this array. Normally you should not need
     to inspect or modify this property.
-  
+
     @property queues
     @type Array
     @default ['actions', 'destroy']
@@ -16433,15 +16433,15 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     Runs the passed target and method inside of a RunLoop, ensuring any
     deferred actions including bindings and views updates are flushed at the
     end.
-  
+
     Normally you should not need to invoke this method yourself. However if
     you are implementing raw event handlers when interfacing with other
     libraries or plugins, you should probably wrap all of your code inside this
     call.
-  
+
     ```javascript
     import { run } from '@ember/runloop';
-  
+
     run(function() {
       // code to be executed within a RunLoop
     });
@@ -16468,34 +16468,34 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     If no run-loop is present, it creates a new one. If a run loop is
     present it will queue itself to run on the existing run-loops action
     queue.
-  
+
     Please note: This is not for normal usage, and should be used sparingly.
-  
+
     If invoked when not within a run loop:
-  
+
     ```javascript
     import { join } from '@ember/runloop';
-  
+
     join(function() {
       // creates a new run-loop
     });
     ```
-  
+
     Alternatively, if called within an existing run loop:
-  
+
     ```javascript
     import { run, join } from '@ember/runloop';
-  
+
     run(function() {
       // creates a new run-loop
-  
+
       join(function() {
         // joins with the existing run-loop, and queues for invocation on
         // the existing run-loops action queue.
       });
     });
     ```
-  
+
     @method join
     @static
     @for @ember/runloop
@@ -16517,22 +16517,22 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     adding the execution of that function to the Ember run loop. This ability
     makes this method a great way to asynchronously integrate third-party libraries
     into your Ember application.
-  
+
     `bind` takes two main arguments, the desired context and the function to
     invoke in that context. Any additional arguments will be supplied as arguments
     to the function that is passed in.
-  
+
     Let's use the creation of a TinyMCE component as an example. Currently,
     TinyMCE provides a setup configuration option we can use to do some processing
     after the TinyMCE instance is initialized but before it is actually rendered.
     We can use that setup option to do some additional setup for our component.
     The component itself could look something like the following:
-  
+
     ```app/components/rich-text-editor.js
     import Component from '@ember/component';
     import { on } from '@ember/object/evented';
     import { bind } from '@ember/runloop';
-  
+
     export default Component.extend({
       initializeTinyMCE: on('didInsertElement', function() {
         tinymce.init({
@@ -16540,28 +16540,28 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
           setup: bind(this, this.setupEditor)
         });
       }),
-  
+
       didInsertElement() {
         tinymce.init({
           selector: '#' + this.$().prop('id'),
           setup: bind(this, this.setupEditor)
         });
       }
-  
+
       setupEditor(editor) {
         this.set('editor', editor);
-  
+
         editor.on('change', function() {
           console.log('content changed!');
         });
       }
     });
     ```
-  
+
     In this example, we use `bind` to bind the setupEditor method to the
     context of the RichTextEditor component and to have the invocation of that
     method be safely handled and executed by the Ember run loop.
-  
+
     @method bind
     @static
     @for @ember/runloop
@@ -16618,15 +16618,15 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     Begins a new RunLoop. Any deferred actions invoked after the begin will
     be buffered until you invoke a matching call to `end()`. This is
     a lower-level way to use a RunLoop instead of using `run()`.
-  
+
     ```javascript
     import { begin, end } from '@ember/runloop';
-  
+
     begin();
     // code to be executed within a RunLoop
     end();
     ```
-  
+
     @method begin
     @static
     @for @ember/runloop
@@ -16641,15 +16641,15 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     Ends a RunLoop. This must be called sometime after you call
     `begin()` to flush any deferred actions. This is a lower-level way
     to use a RunLoop instead of using `run()`.
-  
+
     ```javascript
     import { begin, end } from '@ember/runloop';
-  
+
     begin();
     // code to be executed within a RunLoop
     end();
     ```
-  
+
     @method end
     @static
     @for @ember/runloop
@@ -16665,25 +16665,25 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     queue to be executed at the end of the RunLoop. If you have not already
     started a RunLoop when calling this method one will be started for you
     automatically.
-  
+
     At the end of a RunLoop, any methods scheduled in this way will be invoked.
     Methods will be invoked in an order matching the named queues defined in
     the `queues` property.
-  
+
     ```javascript
     import { schedule } from '@ember/runloop';
-  
+
     schedule('actions', this, function() {
       // this will be executed in the 'actions' queue, after bindings have synced.
       console.log('scheduled on actions queue');
     });
-  
+
     // Note the functions will be run in order based on the run queues order.
     // Output would be:
     //   scheduled on sync queue
     //   scheduled on actions queue
     ```
-  
+
     @method schedule
     @static
     @for @ember/runloop
@@ -16720,20 +16720,20 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     Invokes the passed target/method and optional arguments after a specified
     period of time. The last parameter of this method must always be a number
     of milliseconds.
-  
+
     You should use this method whenever you need to run some action after a
     period of time instead of using `setTimeout()`. This method will ensure that
     items that expire during the same script execution cycle all execute
     together, which is often more efficient than using a real setTimeout.
-  
+
     ```javascript
     import { later } from '@ember/runloop';
-  
+
     later(myContext, function() {
       // code here will execute within a RunLoop in about 500ms with this == myContext
     }, 500);
     ```
-  
+
     @method later
     @static
     @for @ember/runloop
@@ -16753,7 +16753,7 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
   /**
    Schedule a function to run one time during the current RunLoop. This is equivalent
     to calling `scheduleOnce` with the "actions" queue.
-  
+
     @method once
     @static
     @for @ember/runloop
@@ -16778,62 +16778,62 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     Schedules a function to run one time in a given queue of the current RunLoop.
     Calling this method with the same queue/target/method combination will have
     no effect (past the initial call).
-  
+
     Note that although you can pass optional arguments these will not be
     considered when looking for duplicates. New arguments will replace previous
     calls.
-  
+
     ```javascript
     import { run, scheduleOnce } from '@ember/runloop';
-  
+
     function sayHi() {
       console.log('hi');
     }
-  
+
     run(function() {
       scheduleOnce('afterRender', myContext, sayHi);
       scheduleOnce('afterRender', myContext, sayHi);
       // sayHi will only be executed once, in the afterRender queue of the RunLoop
     });
     ```
-  
+
     Also note that for `scheduleOnce` to prevent additional calls, you need to
     pass the same function instance. The following case works as expected:
-  
+
     ```javascript
     function log() {
       console.log('Logging only once');
     }
-  
+
     function scheduleIt() {
       scheduleOnce('actions', myContext, log);
     }
-  
+
     scheduleIt();
     scheduleIt();
     ```
-  
+
     But this other case will schedule the function multiple times:
-  
+
     ```javascript
     import { scheduleOnce } from '@ember/runloop';
-  
+
     function scheduleIt() {
       scheduleOnce('actions', myContext, function() {
         console.log('Closure');
       });
     }
-  
+
     scheduleIt();
     scheduleIt();
-  
+
     // "Closure" will print twice, even though we're using `scheduleOnce`,
     // because the function we pass to it won't match the
     // previously scheduled operation.
     ```
-  
+
     Available queues, and their order, can be found at `queues`
-  
+
     @method scheduleOnce
     @static
     @for @ember/runloop
@@ -16859,40 +16859,40 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     Schedules an item to run from within a separate run loop, after
     control has been returned to the system. This is equivalent to calling
     `later` with a wait time of 1ms.
-  
+
     ```javascript
     import { next } from '@ember/runloop';
-  
+
     next(myContext, function() {
       // code to be executed in the next run loop,
       // which will be scheduled after the current one
     });
     ```
-  
+
     Multiple operations scheduled with `next` will coalesce
     into the same later run loop, along with any other operations
     scheduled by `later` that expire right around the same
     time that `next` operations will fire.
-  
+
     Note that there are often alternatives to using `next`.
     For instance, if you'd like to schedule an operation to happen
     after all DOM element operations have completed within the current
     run loop, you can make use of the `afterRender` run loop queue (added
     by the `ember-views` package, along with the preceding `render` queue
     where all the DOM element operations happen).
-  
+
     Example:
-  
+
     ```app/components/my-component.js
     import Component from '@ember/component';
     import { scheduleOnce } from '@ember/runloop';
-  
+
     export Component.extend({
       didInsertElement() {
         this._super(...arguments);
         scheduleOnce('afterRender', this, 'processChildElements');
       },
-  
+
       processChildElements() {
         // ... do something with component's child component
         // elements after they've finished rendering, which
@@ -16902,18 +16902,18 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
       }
     });
     ```
-  
+
     One benefit of the above approach compared to using `next` is
     that you will be able to perform DOM/CSS operations before unprocessed
     elements are rendered to the screen, which may prevent flickering or
     other artifacts caused by delaying processing until after rendering.
-  
+
     The other major benefit to the above approach is that `next`
     introduces an element of non-determinism, which can make things much
     harder to test, due to its reliance on `setTimeout`; it's much harder
     to guarantee the order of scheduled operations when they are scheduled
     outside of the current run loop, i.e. with `next`.
-  
+
     @method next
     @static
     @for @ember/runloop
@@ -16938,7 +16938,7 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     Cancels a scheduled item. Must be a value returned by `later()`,
     `once()`, `scheduleOnce()`, `next()`, `debounce()`, or
     `throttle()`.
-  
+
     ```javascript
     import {
       next,
@@ -16949,51 +16949,51 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
       throttle,
       debounce
     } from '@ember/runloop';
-  
+
     let runNext = next(myContext, function() {
       // will not be executed
     });
-  
+
     cancel(runNext);
-  
+
     let runLater = later(myContext, function() {
       // will not be executed
     }, 500);
-  
+
     cancel(runLater);
-  
+
     let runScheduleOnce = scheduleOnce('afterRender', myContext, function() {
       // will not be executed
     });
-  
+
     cancel(runScheduleOnce);
-  
+
     let runOnce = once(myContext, function() {
       // will not be executed
     });
-  
+
     cancel(runOnce);
-  
+
     let throttle = throttle(myContext, function() {
       // will not be executed
     }, 1, false);
-  
+
     cancel(throttle);
-  
+
     let debounce = debounce(myContext, function() {
       // will not be executed
     }, 1);
-  
+
     cancel(debounce);
-  
+
     let debounceImmediate = debounce(myContext, function() {
       // will be executed since we passed in true (immediate)
     }, 100, true);
-  
+
     // the 100ms delay until this method can be called again will be canceled
     cancel(debounceImmediate);
     ```
-  
+
     @method cancel
     @static
     @for @ember/runloop
@@ -17010,61 +17010,61 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
     with no additional debounce calls. If `debounce` is called again before
     the specified time has elapsed, the timer is reset and the entire period
     must pass again before the target method is called.
-  
+
     This method should be used when an event may be called multiple times
     but the action should only be called once when the event is done firing.
     A common example is for scroll events where you only want updates to
     happen once scrolling has ceased.
-  
+
     ```javascript
     import { debounce } from '@ember/runloop';
-  
+
     function whoRan() {
       console.log(this.name + ' ran.');
     }
-  
+
     let myContext = { name: 'debounce' };
-  
+
     debounce(myContext, whoRan, 150);
-  
+
     // less than 150ms passes
     debounce(myContext, whoRan, 150);
-  
+
     // 150ms passes
     // whoRan is invoked with context myContext
     // console logs 'debounce ran.' one time.
     ```
-  
+
     Immediate allows you to run the function immediately, but debounce
     other calls for this function until the wait time has elapsed. If
     `debounce` is called again before the specified time has elapsed,
     the timer is reset and the entire period must pass again before
     the method can be called again.
-  
+
     ```javascript
     import { debounce } from '@ember/runloop';
-  
+
     function whoRan() {
       console.log(this.name + ' ran.');
     }
-  
+
     let myContext = { name: 'debounce' };
-  
+
     debounce(myContext, whoRan, 150, true);
-  
+
     // console logs 'debounce ran.' one time immediately.
     // 100ms passes
     debounce(myContext, whoRan, 150, true);
-  
+
     // 150ms passes and nothing else is logged to the console and
     // the debouncee is no longer being watched
     debounce(myContext, whoRan, 150, true);
-  
+
     // console logs 'debounce ran.' one time immediately.
     // 150ms passes and nothing else is logged to the console and
     // the debouncee is no longer being watched
     ```
-  
+
     @method debounce
     @static
     @for @ember/runloop
@@ -17086,32 +17086,32 @@ enifed('@ember/runloop/index', ['exports', '@ember/debug', 'ember-error-handling
   /**
     Ensure that the target method is never called more frequently than
     the specified spacing period. The target method is called immediately.
-  
+
     ```javascript
     import { throttle } from '@ember/runloop';
-  
+
     function whoRan() {
       console.log(this.name + ' ran.');
     }
-  
+
     let myContext = { name: 'throttle' };
-  
+
     throttle(myContext, whoRan, 150);
     // whoRan is invoked with context myContext
     // console logs 'throttle ran.'
-  
+
     // 50ms passes
     throttle(myContext, whoRan, 150);
-  
+
     // 50ms passes
     throttle(myContext, whoRan, 150);
-  
+
     // 150ms passes
     throttle(myContext, whoRan, 150);
     // whoRan is invoked with context myContext
     // console logs 'throttle ran.'
     ```
-  
+
     @method throttle
     @static
     @for @ember/runloop
@@ -17144,26 +17144,26 @@ enifed('@ember/service/index', ['exports', 'ember-runtime', 'ember-metal'], func
   /**
     Creates a property that lazily looks up a service in the container. There
     are no restrictions as to what objects a service can be injected into.
-  
+
     Example:
-  
+
     ```app/routes/application.js
     import Route from '@ember/routing/route';
     import { inject as service } from '@ember/service';
-  
+
     export default Route.extend({
       authManager: service('auth'),
-  
+
       model() {
         return this.get('authManager').findCurrentUser();
       }
     });
     ```
-  
+
     This example will create an `authManager` property on the application route
     that looks up the `auth` service in the container, making it easily
     accessible in the `model` hook.
-  
+
     @method inject
     @static
     @since 1.10.0
@@ -17266,7 +17266,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
       Defines string helper methods including string formatting and localization.
       Unless `EmberENV.EXTEND_PROTOTYPES.String` is `false` these methods will also be
       added to the `String.prototype` as well.
-    
+
       @class String
       @public
     */
@@ -17282,23 +17282,23 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
     /**
       Formats the passed string, but first looks up the string in the localized
       strings hash. This is a convenient way to localize text.
-    
+
       Note that it is traditional but not required to prefix localized string
       keys with an underscore or other character so you can easily identify
       localized strings.
-    
+
       ```javascript
       import { loc } from '@ember/string';
-    
+
       Ember.STRINGS = {
         '_Hello World': 'Bonjour le monde',
         '_Hello %@ %@': 'Bonjour %@ %@'
       };
-    
+
       loc("_Hello World");  // 'Bonjour le monde';
       loc("_Hello %@ %@", ["John", "Smith"]);  // "Bonjour John Smith";
       ```
-    
+
       @method loc
       @param {String} str The string to format
       @param {Array} formats Optional array of parameters to interpolate into string.
@@ -17316,19 +17316,19 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
       Splits a string into separate units separated by spaces, eliminating any
       empty strings in the process. This is a convenience method for split that
       is mostly useful when applied to the `String.prototype`.
-    
+
       ```javascript
       import { w } from '@ember/string';
-    
+
       w("alpha beta gamma").forEach(function(key) {
         console.log(key);
       });
-    
+
       // > alpha
       // > beta
       // > gamma
       ```
-    
+
       @method w
       @param {String} str The string to split
       @return {Array} array containing the split strings
@@ -17339,14 +17339,14 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
     }
     /**
       Converts a camelized string into all lower case separated by underscores.
-    
+
       ```javascript
       'innerHTML'.decamelize();           // 'inner_html'
       'action_name'.decamelize();        // 'action_name'
       'css-class-name'.decamelize();     // 'css-class-name'
       'my favorite items'.decamelize();  // 'my favorite items'
       ```
-    
+
       @method decamelize
       @param {String} str The string to decamelize.
       @return {String} the decamelized string.
@@ -17357,7 +17357,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
     }
     /**
       Replaces underscores, spaces, or camelCase with dashes.
-    
+
       ```javascript
       'innerHTML'.dasherize();          // 'inner-html'
       'action_name'.dasherize();        // 'action-name'
@@ -17365,7 +17365,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
       'my favorite items'.dasherize();  // 'my-favorite-items'
       'privateDocs/ownerInvoice'.dasherize(); // 'private-docs/owner-invoice'
       ```
-    
+
       @method dasherize
       @param {String} str The string to dasherize.
       @return {String} the dasherized string.
@@ -17376,7 +17376,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
     }
     /**
       Returns the lowerCamelCase form of a string.
-    
+
       ```javascript
       'innerHTML'.camelize();          // 'innerHTML'
       'action_name'.camelize();        // 'actionName'
@@ -17385,7 +17385,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
       'My Favorite Items'.camelize();  // 'myFavoriteItems'
       'private-docs/owner-invoice'.camelize(); // 'privateDocs/ownerInvoice'
       ```
-    
+
       @method camelize
       @param {String} str The string to camelize.
       @return {String} the camelized string.
@@ -17396,7 +17396,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
     }
     /**
       Returns the UpperCamelCase form of a string.
-    
+
       ```javascript
       'innerHTML'.classify();          // 'InnerHTML'
       'action_name'.classify();        // 'ActionName'
@@ -17404,7 +17404,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
       'my favorite items'.classify();  // 'MyFavoriteItems'
       'private-docs/owner-invoice'.classify(); // 'PrivateDocs/OwnerInvoice'
       ```
-    
+
       @method classify
       @param {String} str the string to classify
       @return {String} the classified string
@@ -17416,7 +17416,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
     /**
       More general than decamelize. Returns the lower\_case\_and\_underscored
       form of a string.
-    
+
       ```javascript
       'innerHTML'.underscore();          // 'inner_html'
       'action_name'.underscore();        // 'action_name'
@@ -17424,7 +17424,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
       'my favorite items'.underscore();  // 'my_favorite_items'
       'privateDocs/ownerInvoice'.underscore(); // 'private_docs/owner_invoice'
       ```
-    
+
       @method underscore
       @param {String} str The string to underscore.
       @return {String} the underscored string.
@@ -17435,7 +17435,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
     }
     /**
       Returns the Capitalized form of a string
-    
+
       ```javascript
       'innerHTML'.capitalize()         // 'InnerHTML'
       'action_name'.capitalize()       // 'Action_name'
@@ -17443,7 +17443,7 @@ enifed('@ember/string/index', ['exports', '@ember/string/lib/string_registry', '
       'my favorite items'.capitalize() // 'My favorite items'
       'privateDocs/ownerInvoice'.capitalize(); // 'PrivateDocs/ownerInvoice'
       ```
-    
+
       @method capitalize
       @param {String} str The string to capitalize.
       @return {String} The capitalized string.
@@ -28358,14 +28358,14 @@ enifed('container', ['exports', 'ember-babel', '@ember/debug', '@ember/polyfills
     }
     /**
      A container used to instantiate and cache objects.
-    
+
      Every `Container` must be associated with a `Registry`, which is referenced
      to determine the factory and options that should be used to instantiate
      objects.
-    
+
      The public API for `Container` is still in flux and should not be considered
      stable.
-    
+
      @private
      @class Container
      */
@@ -28764,12 +28764,12 @@ enifed('container', ['exports', 'ember-babel', '@ember/debug', '@ember/polyfills
     /**
      A registry used to store factory and option information keyed
      by type.
-    
+
      A `Registry` stores the factory and option information needed by a
      `Container` to instantiate and cache objects.
-    
+
      The API for `Registry` is still in flux and should not be considered stable.
-    
+
      @private
      @class Registry
      @since 1.11.0
@@ -29485,10 +29485,10 @@ enifed('ember-console/index', ['exports', '@ember/debug', '@ember/deprecated-fea
   /**
     Inside Ember-Metal, simply uses the methods from `imports.console`.
     Override this to provide more robust logging functionality.
-  
+
     @class Logger
     @deprecated Use 'console' instead
-  
+
     @namespace Ember
     @public
   */
@@ -29613,7 +29613,7 @@ enifed('ember-environment', ['exports'], function (exports) {
       desired properties to a global hash named `EmberENV` (or `ENV` for
       backwards compatibility with earlier versions of Ember). The `EmberENV`
       hash must be created before loading Ember.
-    
+
       @class EmberENV
       @type Object
       @public
@@ -30415,39 +30415,39 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       Ember Helpers are functions that can compute values, and are used in templates.
       For example, this code calls a helper named `format-currency`:
-    
+
       ```handlebars
       <div>{{format-currency cents currency="$"}}</div>
       ```
-    
+
       Additionally a helper can be called as a nested helper (sometimes called a
       subexpression). In this example, the computed value of a helper is passed
       to a component named `show-money`:
-    
+
       ```handlebars
       {{show-money amount=(format-currency cents currency="$")}}
       ```
-    
+
       Helpers defined using a class must provide a `compute` function. For example:
-    
+
       ```app/helpers/format-currency.js
       import Helper from '@ember/component/helper';
-    
+
       export default Helper.extend({
         compute([cents], { currency }) {
           return `${currency}${cents * 0.01}`;
         }
       });
       ```
-    
+
       Each time the input to a helper changes, the `compute` function will be
       called again.
-    
+
       As instances, these helpers also have access to the container and will accept
       injected dependencies.
-    
+
       Additionally, class helpers can call `recompute` to force a new computation.
-    
+
       @class Helper
       @public
       @since 1.13.0
@@ -30485,17 +30485,17 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       In many cases, the ceremony of a full `Helper` class is not required.
       The `helper` method create pure-function helpers without instances. For
       example:
-    
+
       ```app/helpers/format-currency.js
       import { helper } from '@ember/component/helper';
-    
+
       export default helper(function(params, hash) {
         let cents = params[0];
         let currency = hash.currency;
         return `${currency}${cents * 0.01}`;
       });
       ```
-    
+
       @static
       @param {Function} helper The helper function
       @method helper
@@ -31019,52 +31019,52 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       the view object. There is no access to the
       surrounding context or outer controller; all
       contextual information must be passed in.
-    
+
       The easiest way to create a `Component` is via
       a template. If you name a template
       `app/components/my-foo.hbs`, you will be able to use
       `{{my-foo}}` in other templates, which will make
       an instance of the isolated component.
-    
+
       ```app/components/my-foo.hbs
       {{person-profile person=currentUser}}
       ```
-    
+
       ```app/components/person-profile.hbs
       <h1>{{person.title}}</h1>
       <img src={{person.avatar}}>
       <p class='signature'>{{person.signature}}</p>
       ```
-    
+
       You can use `yield` inside a template to
       include the **contents** of any block attached to
       the component. The block will be executed in the
       context of the surrounding context or outer controller:
-    
+
       ```handlebars
       {{#person-profile person=currentUser}}
         <p>Admin mode</p>
         {{! Executed in the controller's context. }}
       {{/person-profile}}
       ```
-    
+
       ```app/components/person-profile.hbs
       <h1>{{person.title}}</h1>
       {{! Executed in the component's context. }}
       {{yield}} {{! block contents }}
       ```
-    
+
       If you want to customize the component, in order to
       handle events or actions, you implement a subclass
       of `Component` named after the name of the
       component.
-    
+
       For example, you could implement the action
       `hello` for the `person-profile` component:
-    
+
       ```app/components/person-profile.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         actions: {
           hello(name) {
@@ -31073,9 +31073,9 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       And then use it in the component's template:
-    
+
       ```app/templates/components/person-profile.hbs
       <h1>{{person.title}}</h1>
       {{yield}} <!-- block contents -->
@@ -31083,208 +31083,208 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         Say Hello to {{person.name}}
       </button>
       ```
-    
+
       Components must have a `-` in their name to avoid
       conflicts with built-in controls that wrap HTML
       elements. This is consistent with the same
       requirement in web components.
-    
+
       ## HTML Tag
-    
+
       The default HTML tag name used for a component's DOM representation is `div`.
       This can be customized by setting the `tagName` property.
       The following component class:
-    
+
       ```app/components/emphasized-paragraph.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         tagName: 'em'
       });
       ```
-    
+
       Would result in instances with the following HTML:
-    
+
       ```html
       <em id="ember1" class="ember-view"></em>
       ```
-    
+
       ## HTML `class` Attribute
-    
+
       The HTML `class` attribute of a component's tag can be set by providing a
       `classNames` property that is set to an array of strings:
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         classNames: ['my-class', 'my-other-class']
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view my-class my-other-class"></div>
       ```
-    
+
       `class` attribute values can also be set by providing a `classNameBindings`
       property set to an array of properties names for the component. The return value
       of these properties will be added as part of the value for the components's `class`
       attribute. These properties can be computed properties:
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
       import { computed } from '@ember/object';
-    
+
       export default Component.extend({
         classNameBindings: ['propertyA', 'propertyB'],
-    
+
         propertyA: 'from-a',
         propertyB: computed(function() {
           if (someLogic) { return 'from-b'; }
         })
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view from-a from-b"></div>
       ```
-    
+
       If the value of a class name binding returns a boolean the property name
       itself will be used as the class name if the property is true.
       The class name will not be added if the value is `false` or `undefined`.
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         classNameBindings: ['hovered'],
-    
+
         hovered: true
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view hovered"></div>
       ```
-    
+
       When using boolean class name bindings you can supply a string value other
       than the property name for use as the `class` HTML attribute by appending the
       preferred value after a ":" character when defining the binding:
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         classNameBindings: ['awesome:so-very-cool'],
-    
+
         awesome: true
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view so-very-cool"></div>
       ```
-    
+
       Boolean value class name bindings whose property names are in a
       camelCase-style format will be converted to a dasherized format:
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         classNameBindings: ['isUrgent'],
-    
+
         isUrgent: true
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view is-urgent"></div>
       ```
-    
+
       Class name bindings can also refer to object values that are found by
       traversing a path relative to the component itself:
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
       import EmberObject from '@ember/object';
-    
+
       export default Component.extend({
         classNameBindings: ['messages.empty'],
-    
+
         messages: EmberObject.create({
           empty: true
         })
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view empty"></div>
       ```
-    
+
       If you want to add a class name for a property which evaluates to true and
       and a different class name if it evaluates to false, you can pass a binding
       like this:
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         classNameBindings: ['isEnabled:enabled:disabled'],
         isEnabled: true
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view enabled"></div>
       ```
-    
+
       When isEnabled is `false`, the resulting HTML representation looks like
       this:
-    
+
       ```html
       <div id="ember1" class="ember-view disabled"></div>
       ```
-    
+
       This syntax offers the convenience to add a class if a property is `false`:
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
-    
+
       // Applies no class when isEnabled is true and class 'disabled' when isEnabled is false
       export default Component.extend({
         classNameBindings: ['isEnabled::disabled'],
         isEnabled: true
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view"></div>
       ```
-    
+
       When the `isEnabled` property on the component is set to `false`, it will result
       in component instances with an HTML representation of:
-    
+
       ```html
       <div id="ember1" class="ember-view disabled"></div>
       ```
-    
+
       Updates to the value of a class name binding will result in automatic
       update of the  HTML `class` attribute in the component's rendered HTML
       representation. If the value becomes `false` or `undefined` the class name
@@ -31292,101 +31292,101 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       Both `classNames` and `classNameBindings` are concatenated properties. See
       [EmberObject](/api/ember/release/classes/EmberObject) documentation for more
       information about concatenated properties.
-    
+
       ## HTML Attributes
-    
+
       The HTML attribute section of a component's tag can be set by providing an
       `attributeBindings` property set to an array of property names on the component.
       The return value of these properties will be used as the value of the component's
       HTML associated attribute:
-    
+
       ```app/components/my-anchor.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         tagName: 'a',
         attributeBindings: ['href'],
-    
+
         href: 'http://google.com'
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <a id="ember1" class="ember-view" href="http://google.com"></a>
       ```
-    
+
       One property can be mapped on to another by placing a ":" between
       the source property and the destination property:
-    
+
       ```app/components/my-anchor.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         tagName: 'a',
         attributeBindings: ['url:href'],
-    
+
         url: 'http://google.com'
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <a id="ember1" class="ember-view" href="http://google.com"></a>
       ```
-    
+
       Namespaced attributes (e.g. `xlink:href`) are supported, but have to be
       mapped, since `:` is not a valid character for properties in Javascript:
-    
+
       ```app/components/my-use.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         tagName: 'use',
         attributeBindings: ['xlinkHref:xlink:href'],
-    
+
         xlinkHref: '#triangle'
       });
       ```
-    
+
       Will result in component instances with an HTML representation of:
-    
+
       ```html
       <use xlink:href="#triangle"></use>
       ```
-    
+
       If the return value of an `attributeBindings` monitored property is a boolean
       the attribute will be present or absent depending on the value:
-    
+
       ```app/components/my-text-input.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         tagName: 'input',
         attributeBindings: ['disabled'],
-    
+
         disabled: false
       });
       ```
-    
+
       Will result in a component instance with an HTML representation of:
-    
+
       ```html
       <input id="ember1" class="ember-view" />
       ```
-    
+
       `attributeBindings` can refer to computed properties:
-    
+
       ```app/components/my-text-input.js
       import Component from '@ember/component';
       import { computed } from '@ember/object';
-    
+
       export default Component.extend({
         tagName: 'input',
         attributeBindings: ['disabled'],
-    
+
         disabled: computed(function() {
           if (someLogic) {
             return true;
@@ -31396,50 +31396,50 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         })
       });
       ```
-    
+
       To prevent setting an attribute altogether, use `null` or `undefined` as the
       return value of the `attributeBindings` monitored property:
-    
+
       ```app/components/my-text-input.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         tagName: 'form',
         attributeBindings: ['novalidate'],
         novalidate: null
       });
       ```
-    
+
       Updates to the property of an attribute binding will result in automatic
       update of the  HTML attribute in the component's rendered HTML representation.
       `attributeBindings` is a concatenated property. See [EmberObject](/api/ember/release/classes/EmberObject)
       documentation for more information about concatenated properties.
-    
+
       ## Layouts
-    
+
       See [Ember.Templates.helpers.yield](/api/ember/release/classes/Ember.Templates.helpers/methods/yield?anchor=yield)
       for more information.
-    
+
       Layout can be used to wrap content in a component. In addition
       to wrapping content in a Component's template, you can also use
       the public layout API in your Component JavaScript.
-    
+
       ```app/templates/components/person-profile.hbs
         <h1>Person's Title</h1>
         <div class='details'>{{yield}}</div>
       ```
-    
+
       ```app/components/person-profile.js
         import Component from '@ember/component';
         import layout from '../templates/components/person-profile';
-    
+
         export default Component.extend({
           layout
         });
       ```
-    
+
       The above will result in the following HTML output:
-    
+
       ```html
         <h1>Person's Title</h1>
         <div class="details">
@@ -31447,22 +31447,22 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
           <h3>Fisherman Industries</h3>
         </div>
       ```
-    
+
       ## Responding to Browser Events
-    
+
       Components can respond to user-initiated events in one of three ways: method
       implementation, through an event manager, and through `{{action}}` helper use
       in their template or layout.
-    
+
       ### Method Implementation
-    
+
       Components can respond to user-initiated events by implementing a method that
       matches the event name. A `jQuery.Event` object will be passed as the
       argument to this method.
-    
+
       ```app/components/my-widget.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         click(event) {
           // will be called when an instance's
@@ -31470,33 +31470,33 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       ### `{{action}}` Helper
-    
+
       See [Ember.Templates.helpers.action](/api/ember/release/classes/Ember.Templates.helpers/methods/yield?anchor=yield).
-    
+
       ### Event Names
-    
+
       All of the event handling approaches described above respond to the same set
       of events. The names of the built-in events are listed below. (The hash of
       built-in events exists in `Ember.EventDispatcher`.) Additional, custom events
       can be registered by using `Application.customEvents`.
-    
+
       Touch events:
-    
+
       * `touchStart`
       * `touchMove`
       * `touchEnd`
       * `touchCancel`
-    
+
       Keyboard events:
-    
+
       * `keyDown`
       * `keyUp`
       * `keyPress`
-    
+
       Mouse events:
-    
+
       * `mouseDown`
       * `mouseUp`
       * `contextMenu`
@@ -31507,17 +31507,17 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       * `focusOut`
       * `mouseEnter`
       * `mouseLeave`
-    
+
       Form events:
-    
+
       * `submit`
       * `change`
       * `focusIn`
       * `focusOut`
       * `input`
-    
+
       HTML5 drag and drop events:
-    
+
       * `dragStart`
       * `drag`
       * `dragEnter`
@@ -31525,7 +31525,7 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       * `dragOver`
       * `dragEnd`
       * `drop`
-    
+
       @class Component
       @extends Ember.CoreView
       @uses Ember.TargetActionSupport
@@ -31611,22 +31611,22 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       The internal class used to create text inputs when the `{{input}}`
       helper is used with `type` of `checkbox`.
-    
+
       See [Ember.Templates.helpers.input](/api/ember/release/classes/Ember.Templates.helpers/methods/input?anchor=input)  for usage details.
-    
+
       ## Direct manipulation of `checked`
-    
+
       The `checked` attribute of an `Checkbox` object should always be set
       through the Ember object or by interacting with its rendered element
       representation via the mouse, keyboard, or touch. Updating the value of the
       checkbox via jQuery will result in the checked value of the object and its
       element losing synchronization.
-    
+
       ## Layout and LayoutName properties
-    
+
       Because HTML `input` elements are self closing `layout` and `layoutName`
       properties will not be applied.
-    
+
       @class Checkbox
       @extends Component
       @public
@@ -31674,17 +31674,17 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         return inputTypes[type] = inputTypeTestElement.type === type;
     }
     /**
-    
+
       The internal class used to create text inputs when the `{{input}}`
       helper is used with `type` of `text`.
-    
+
       See [Ember.Templates.helpers.input](/api/ember/release/classes/Ember.Templates.helpers/methods/input?anchor=input)  for usage details.
-    
+
       ## Layout and LayoutName properties
-    
+
       Because HTML `input` elements are self closing `layout` and `layoutName`
       properties will not be applied.
-    
+
       @class TextField
       @extends Component
       @uses Ember.TextSupport
@@ -31769,9 +31769,9 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       `{{textarea}}` inserts a new instance of `<textarea>` tag into the template.
       The attributes of `{{textarea}}` match those of the native HTML tags as
       closely as possible.
-    
+
       The following HTML attributes can be set:
-    
+
         * `value`
         * `name`
         * `rows`
@@ -31790,74 +31790,74 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         * `form`
         * `spellcheck`
         * `required`
-    
+
       When set to a quoted string, these value will be directly applied to the HTML
       element. When left unquoted, these values will be bound to a property on the
       template's current rendering context (most typically a controller instance).
-    
+
       Unbound:
-    
+
       ```handlebars
       {{textarea value="Lots of static text that ISN'T bound"}}
       ```
-    
+
       Would result in the following HTML:
-    
+
       ```html
       <textarea class="ember-text-area">
         Lots of static text that ISN'T bound
       </textarea>
       ```
-    
+
       Bound:
-    
+
       In the following example, the `writtenWords` property on the application
       Controller will be updated live as the user types 'Lots of text that IS
       bound' into the text area of their browser's window.
-    
+
       ```app/controllers/application.js
       import Controller from '@ember/controller';
-    
+
       export default Controller.extend({
         writtenWords: "Lots of text that IS bound"
       });
       ```
-    
+
       ```handlebars
       {{textarea value=writtenWords}}
       ```
-    
+
       Would result in the following HTML:
-    
+
       ```html
       <textarea class="ember-text-area">
         Lots of text that IS bound
       </textarea>
       ```
-    
+
       If you wanted a one way binding between the text area and a div tag
       somewhere else on your screen, you could use `oneWay`:
-    
+
       ```app/controllers/application.js
       import Controller from '@ember/controller';
       import { oneWay } from '@ember/object/computed';
-    
+
       export default Controller.extend({
         writtenWords: "Lots of text that IS bound",
-    
+
         outputWrittenWords: oneWay("writtenWords")
       });
       ```
-    
+
       ```handlebars
       {{textarea value=writtenWords}}
       <div>
         {{outputWrittenWords}}
       </div>
       ```
-    
+
       Would result in the following HTML:
-    
+
       ```html
       <textarea class="ember-text-area">
         Lots of text that IS bound
@@ -31867,29 +31867,29 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         Lots of text that IS bound
       </div>
       ```
-    
+
       Finally, this example really shows the power and ease of Ember when two
       properties are bound to eachother via `alias`. Type into
       either text area box and they'll both stay in sync. Note that
       `alias` costs more in terms of performance, so only use it when
       your really binding in both directions:
-    
+
       ```app/controllers/application.js
       import Controller from '@ember/controller';
       import { alias } from '@ember/object/computed';
-    
+
       export default Controller.extend({
         writtenWords: "Lots of text that IS bound",
-    
+
         twoWayWrittenWords: alias("writtenWords")
       });
       ```
-    
+
       ```handlebars
       {{textarea value=writtenWords}}
       {{textarea value=twoWayWrittenWords}}
       ```
-    
+
       ```html
       <textarea id="ember1" class="ember-text-area">
         Lots of text that IS bound
@@ -31899,37 +31899,37 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         Lots of text that IS bound
       </textarea>
       ```
-    
+
       ### Actions
-    
+
       The helper can send multiple actions based on user events.
       The action property defines the action which is send when
       the user presses the return key.
-    
+
       ```handlebars
       {{input action="submit"}}
       ```
-    
+
       The helper allows some user events to send actions.
-    
+
       * `enter`
       * `insert-newline`
       * `escape-press`
       * `focus-in`
       * `focus-out`
       * `key-press`
-    
+
       For example, if you desire an action to be sent when the input is blurred,
       you only need to setup the action name to the event name property.
-    
+
       ```handlebars
       {{textarea focus-out="alertMessage"}}
       ```
-    
+
       See more about [Text Support Actions](/api/ember/release/classes/TextArea)
-    
+
       ### Extension
-    
+
       Internally, `{{textarea}}` creates an instance of `TextArea`, passing
       arguments from the helper to `TextArea`'s `create` method. You can
       extend the capabilities of text areas in your application by reopening this
@@ -31938,21 +31938,21 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       on all `{{textarea}}`s' in your app by reopening `TextArea` or
       `TextSupport` and adding it to the `attributeBindings` concatenated
       property:
-    
+
       ```javascript
       import TextArea from '@ember/component/text-area';
-    
+
       TextArea.reopen({
         attributeBindings: ['data-error']
       });
       ```
-    
+
       Keep in mind when writing `TextArea` subclasses that `TextArea`
       itself extends `Component`. Expect isolated component semantics, not
       legacy 1.x view semantics (like `controller` being present).
-    
+
       See more about [Ember components](/api/ember/release/classes/Component)
-    
+
       @method textarea
       @for Ember.Templates.helpers
       @param {Hash} options
@@ -31961,14 +31961,14 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       The internal class used to create textarea element when the `{{textarea}}`
       helper is used.
-    
+
       See [Ember.Templates.helpers.textarea](/api/ember/release/classes/Ember.Templates.helpers/methods/textarea?anchor=textarea)  for usage details.
-    
+
       ## Layout and LayoutName properties
-    
+
       Because HTML `textarea` elements do not contain inner HTML the `layout` and
       `layoutName` properties will not be applied.
-    
+
       @class TextArea
       @extends Component
       @uses Ember.TextSupport
@@ -31998,11 +31998,11 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       `LinkComponent` renders an element whose `click` event triggers a
       transition of the application's instance of `Router` to
       a supplied route by name.
-    
+
       `LinkComponent` components are invoked with {{#link-to}}. Properties
       of this class can be overridden with `reopen` to customize application-wide
       behavior.
-    
+
       @class LinkComponent
       @extends Component
       @see {Ember.Templates.helpers.link-to}
@@ -32489,32 +32489,32 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       of the base Handlebars `{{#each}}` helper.
       The default behavior of `{{#each}}` is to yield its inner block once for every
       item in an array passing the item as the first block parameter.
-    
+
       ```javascript
       var developers = [{ name: 'Yehuda' },{ name: 'Tom' }, { name: 'Paul' }];
       ```
-    
+
       ```handlebars
       {{#each developers key="name" as |person|}}
         {{person.name}}
         {{! `this` is whatever it was outside the #each }}
       {{/each}}
       ```
-    
+
       The same rules apply to arrays of primitives.
-    
+
       ```javascript
       var developerNames = ['Yehuda', 'Tom', 'Paul']
       ```
-    
+
       ```handlebars
       {{#each developerNames key="@index" as |name|}}
         {{name}}
       {{/each}}
       ```
-    
+
       During iteration, the index of each item in the array is provided as a second block parameter.
-    
+
       ```handlebars
       <ul>
         {{#each people as |person index|}}
@@ -32522,31 +32522,31 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         {{/each}}
       </ul>
       ```
-    
+
       ### Specifying Keys
-    
+
       The `key` option is used to tell Ember how to determine if the array being
       iterated over with `{{#each}}` has changed between renders. By helping Ember
       detect that some elements in the array are the same, DOM elements can be
       re-used, significantly improving rendering speed.
-    
+
       For example, here's the `{{#each}}` helper with its `key` set to `id`:
-    
+
       ```handlebars
       {{#each model key="id" as |item|}}
       {{/each}}
       ```
-    
+
       When this `{{#each}}` re-renders, Ember will match up the previously rendered
       items (and reorder the generated DOM elements) based on each item's `id`
       property.
       By default the item's own reference is used.
-    
+
       ### {{else}} condition
-    
+
       `{{#each}}` can have a matching `{{else}}`. The contents of this block will render
       if the collection is empty.
-    
+
       ```handlebars
       {{#each developers as |person|}}
         {{person.name}}
@@ -32554,26 +32554,26 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         <p>Sorry, nobody is available for this task.</p>
       {{/each}}
       ```
-    
+
       @method each
       @for Ember.Templates.helpers
       @public
      */
     /**
       The `{{each-in}}` helper loops over properties on an object.
-    
+
       For example, given a `user` object that looks like:
-    
+
       ```javascript
       {
         "name": "Shelly Sails",
         "age": 42
       }
       ```
-    
+
       This template would display all properties on the `user`
       object in a list:
-    
+
       ```handlebars
       <ul>
       {{#each-in user as |key value|}}
@@ -32581,9 +32581,9 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       {{/each-in}}
       </ul>
       ```
-    
+
       Outputting their name and age.
-    
+
       @method each-in
       @for Ember.Templates.helpers
       @public
@@ -33140,13 +33140,13 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       Mark a string as safe for unescaped output with Ember templates. If you
       return HTML from a helper, use this function to
       ensure Ember's rendering layer does not escape the HTML.
-    
+
       ```javascript
       import { htmlSafe } from '@ember/string';
-    
+
       htmlSafe('<div>someString</div>')
       ```
-    
+
       @method htmlSafe
       @for @ember/template
       @static
@@ -33163,17 +33163,17 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     }
     /**
       Detects if a string was decorated using `htmlSafe`.
-    
+
       ```javascript
       import { htmlSafe, isHTMLSafe } from '@ember/string';
-    
+
       var plainString = 'plain string',
           safeString = htmlSafe('<div>someValue</div>');
-    
+
       isHTMLSafe(plainString); // false
       isHTMLSafe(safeString);  // true
       ```
-    
+
       @method isHTMLSafe
       @for @ember/template
       @static
@@ -33564,7 +33564,7 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     */
     /**
       Represents the internal state of the component.
-    
+
       @class ComponentStateBucket
       @private
     */
@@ -34493,7 +34493,7 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       this context is defined as when all of the tags in use are "current" (e.g.
       `renderers.every(r => r._isValid())`). When this is checked at the _end_ of
       the run loop, this essentially guarantees that all rendering is completed.
-    
+
       @method renderSettled
       @returns {Promise<void>} a promise which fulfills when rendering has settled
     */
@@ -34836,28 +34836,28 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       Calls [loc](/api/classes/Ember.String.html#method_loc) with the
       provided string. This is a convenient way to localize text within a template.
       For example:
-    
+
       ```javascript
       Ember.STRINGS = {
         '_welcome_': 'Bonjour'
       };
       ```
-    
+
       ```handlebars
       <div class='message'>
         {{loc '_welcome_'}}
       </div>
       ```
-    
+
       ```html
       <div class='message'>
         Bonjour
       </div>
       ```
-    
+
       See [String.loc](/api/ember/release/classes/String/methods/loc?anchor=loc) for how to
       set up localized string references.
-    
+
       @method loc
       @for Ember.Templates.helpers
       @param {String} str The string to format.
@@ -34959,22 +34959,22 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       implementations that integrate seamlessly into Ember. This is accomplished
       through a delegate, registered with the custom component manager, which
       implements a set of hooks that determine component behavior.
-    
+
       To create a custom component manager, instantiate a new CustomComponentManager
       class and pass the delegate as the first argument:
-    
+
       ```js
       let manager = new CustomComponentManager({
         // ...delegate implementation...
       });
       ```
-    
+
       ## Delegate Hooks
-    
+
       Throughout the lifecycle of a component, the component manager will invoke
       delegate hooks that are responsible for surfacing those lifecycle changes to
       the end developer.
-    
+
       * `create()` - invoked when a new instance of a component should be created
       * `update()` - invoked when the arguments passed to a component change
       * `getContext()` - returns the object that should be
@@ -35246,12 +35246,12 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       The `{{action}}` helper provides a way to pass triggers for behavior (usually
       just a function) between components, and into components from controllers.
-    
+
       ### Passing functions with the action helper
-    
+
       There are three contexts an action helper can be used in. The first two
       contexts to discuss are attribute context, and Handlebars value context.
-    
+
       ```handlebars
       {{! An example of attribute context }}
       <div onclick={{action "save"}}></div>
@@ -35259,23 +35259,23 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       {{input on-input=(action "save")}}
       {{yield (action "refreshData") andAnotherParam}}
       ```
-    
+
       In these contexts,
       the helper is called a "closure action" helper. Its behavior is simple:
       If passed a function name, read that function off the `actions` property
       of the current context. Once that function is read, or immediately if a function was
       passed, create a closure over that function and any arguments.
       The resulting value of an action helper used this way is simply a function.
-    
+
       For example, in the attribute context:
-    
+
       ```handlebars
       {{! An example of attribute context }}
       <div onclick={{action "save"}}></div>
       ```
-    
+
       The resulting template render logic would be:
-    
+
       ```js
       var div = document.createElement('div');
       var actionFunction = (function(context){
@@ -35285,16 +35285,16 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       })(context);
       div.onclick = actionFunction;
       ```
-    
+
       Thus when the div is clicked, the action on that context is called.
       Because the `actionFunction` is just a function, closure actions can be
       passed between components and still execute in the correct context.
-    
+
       Here is an example action handler on a component:
-    
+
       ```app/components/my-component.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         actions: {
           save() {
@@ -35303,30 +35303,30 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       Actions are always looked up on the `actions` property of the current context.
       This avoids collisions in the naming of common actions, such as `destroy`.
       Two options can be passed to the `action` helper when it is used in this way.
-    
+
       * `target=someProperty` will look to `someProperty` instead of the current
         context for the `actions` hash. This can be useful when targeting a
         service for actions.
       * `value="target.value"` will read the path `target.value` off the first
         argument to the action when it is called and rewrite the first argument
         to be that value. This is useful when attaching actions to event listeners.
-    
+
       ### Invoking an action
-    
+
       Closure actions curry both their scope and any arguments. When invoked, any
       additional arguments are added to the already curried list.
       Actions should be invoked using the [sendAction](/api/ember/release/classes/Component/methods/sendAction?anchor=sendAction)
       method. The first argument to `sendAction` is the action to be called, and
       additional arguments are passed to the action function. This has interesting
       properties combined with currying of arguments. For example:
-    
+
       ```app/components/my-component.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         actions: {
           // Usage {{input on-input=(action (action 'setName' model) value="target.value")}}
@@ -35336,18 +35336,18 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       The first argument (`model`) was curried over, and the run-time argument (`event`)
       becomes a second argument. Action calls can be nested this way because each simply
       returns a function. Any function can be passed to the `{{action}}` helper, including
       other actions.
-    
+
       Actions invoked with `sendAction` have the same currying behavior as demonstrated
       with `on-input` above. For example:
-    
+
       ```app/components/my-input.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         actions: {
           setName(model, name) {
@@ -35356,14 +35356,14 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       ```handlebars
       {{my-input submit=(action 'setName' model)}}
       ```
-    
+
       ```app/components/my-component.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         click() {
           // Note that model is not passed, it was curried in the template
@@ -35371,57 +35371,57 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       ### Attaching actions to DOM elements
-    
+
       The third context of the `{{action}}` helper can be called "element space".
       For example:
-    
+
       ```handlebars
       {{! An example of element space }}
       <div {{action "save"}}></div>
       ```
-    
+
       Used this way, the `{{action}}` helper provides a useful shortcut for
       registering an HTML element in a template for a single DOM event and
       forwarding that interaction to the template's context (controller or component).
       If the context of a template is a controller, actions used this way will
       bubble to routes when the controller does not implement the specified action.
       Once an action hits a route, it will bubble through the route hierarchy.
-    
+
       ### Event Propagation
-    
+
       `{{action}}` helpers called in element space can control event bubbling. Note
       that the closure style actions cannot.
-    
+
       Events triggered through the action helper will automatically have
       `.preventDefault()` called on them. You do not need to do so in your event
       handlers. If you need to allow event propagation (to handle file inputs for
       example) you can supply the `preventDefault=false` option to the `{{action}}` helper:
-    
+
       ```handlebars
       <div {{action "sayHello" preventDefault=false}}>
         <input type="file" />
         <input type="checkbox" />
       </div>
       ```
-    
+
       To disable bubbling, pass `bubbles=false` to the helper:
-    
+
       ```handlebars
       <button {{action 'edit' post bubbles=false}}>Edit</button>
       ```
-    
+
       To disable bubbling with closure style actions you must create your own
       wrapper helper that makes use of `event.stopPropagation()`:
-    
+
       ```handlebars
       <div onclick={{disable-bubbling (action "sayHello")}}>Hello</div>
       ```
-    
+
       ```app/helpers/disable-bubbling.js
       import { helper } from '@ember/component/helper';
-    
+
       export function disableBubbling([action]) {
         return function(event) {
           event.stopPropagation();
@@ -35430,69 +35430,69 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       }
       export default helper(disableBubbling);
       ```
-    
+
       If you need the default handler to trigger you should either register your
       own event handler, or use event methods on your view class. See
       ["Responding to Browser Events"](/api/ember/release/classes/Component)
       in the documentation for `Component` for more information.
-    
+
       ### Specifying DOM event type
-    
+
       `{{action}}` helpers called in element space can specify an event type.
       By default the `{{action}}` helper registers for DOM `click` events. You can
       supply an `on` option to the helper to specify a different DOM event name:
-    
+
       ```handlebars
       <div {{action "anActionName" on="doubleClick"}}>
         click me
       </div>
       ```
-    
+
       See ["Event Names"](/api/ember/release/classes/Component) for a list of
       acceptable DOM event names.
-    
+
       ### Specifying whitelisted modifier keys
-    
+
       `{{action}}` helpers called in element space can specify modifier keys.
       By default the `{{action}}` helper will ignore click events with pressed modifier
       keys. You can supply an `allowedKeys` option to specify which keys should not be ignored.
-    
+
       ```handlebars
       <div {{action "anActionName" allowedKeys="alt"}}>
         click me
       </div>
       ```
-    
+
       This way the action will fire when clicking with the alt key pressed down.
       Alternatively, supply "any" to the `allowedKeys` option to accept any combination of modifier keys.
-    
+
       ```handlebars
       <div {{action "anActionName" allowedKeys="any"}}>
         click me with any key pressed
       </div>
       ```
-    
+
       ### Specifying a Target
-    
+
       A `target` option can be provided to the helper to change
       which object will receive the method call. This option must be a path
       to an object, accessible in the current context:
-    
+
       ```app/templates/application.hbs
       <div {{action "anActionName" target=someService}}>
         click me
       </div>
       ```
-    
+
       ```app/controllers/application.js
       import Controller from '@ember/controller';
       import { inject as service } from '@ember/service';
-    
+
       export default Controller.extend({
         someService: service()
       });
       ```
-    
+
       @method action
       @for Ember.Templates.helpers
       @public
@@ -35613,15 +35613,15 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     */
     /**
       Concatenates the given arguments into a string.
-    
+
       Example:
-    
+
       ```handlebars
       {{some-component name=(concat firstName " " lastName)}}
-    
+
       {{! would pass name="<first name value> <last name value>" to the component}}
       ```
-    
+
       @public
       @method concat
       @for Ember.Templates.helpers
@@ -35642,41 +35642,41 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       Dynamically look up a property on an object. The second argument to `{{get}}`
       should have a string value, although it can be bound.
-    
+
       For example, these two usages are equivalent:
-    
+
       ```handlebars
       {{person.height}}
       {{get person "height"}}
       ```
-    
+
       If there were several facts about a person, the `{{get}}` helper can dynamically
       pick one:
-    
+
       ```handlebars
       {{get person factName}}
       ```
-    
+
       For a more complex example, this template would allow the user to switch
       between showing the user's height and weight with a click:
-    
+
       ```handlebars
       {{get person factName}}
       <button {{action (action (mut factName)) "height"}}>Show height</button>
       <button {{action (action (mut factName)) "weight"}}>Show weight</button>
       ```
-    
+
       The `{{get}}` helper can also respect mutable values itself. For example:
-    
+
       ```handlebars
       {{input value=(mut (get person factName)) type="text"}}
       <button {{action (action (mut factName)) "height"}}>Show height</button>
       <button {{action (action (mut factName)) "weight"}}>Show weight</button>
       ```
-    
+
       Would allow the user to swap what fact is being displayed, and also edit
       that fact via a two-way mutable binding.
-    
+
       @public
       @method get
       @for Ember.Templates.helpers
@@ -35752,33 +35752,33 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
        Use the `{{hash}}` helper to create a hash to pass as an option to your
        components. This is specially useful for contextual components where you can
        just yield a hash:
-    
+
        ```handlebars
        {{yield (hash
           name='Sarah'
           title=office
        )}}
        ```
-    
+
        Would result in an object such as:
-    
+
        ```js
        { name: 'Sarah', title: this.get('office') }
        ```
-    
+
        Where the `title` is bound to updates of the `office` property.
-    
+
        Note that the hash is an empty object with no prototype chain, therefore
        common methods like `toString` are not available in the resulting hash.
        If you need to use such a method, you can use the `call` or `apply`
        approach:
-    
+
        ```js
        function toString(obj) {
          return Object.prototype.toString.apply(obj);
        }
        ```
-    
+
        @method hash
        @for Ember.Templates.helpers
        @param {Object} options
@@ -35832,27 +35832,27 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       The `if` helper allows you to conditionally render one of two branches,
       depending on the "truthiness" of a property.
       For example the following values are all falsey: `false`, `undefined`, `null`, `""`, `0`, `NaN` or an empty array.
-    
+
       This helper has two forms, block and inline.
-    
+
       ## Block form
-    
+
       You can use the block form of `if` to conditionally render a section of the template.
-    
+
       To use it, pass the conditional value to the `if` helper,
       using the block form to wrap the section of template you want to conditionally render.
       Like so:
-    
+
       ```handlebars
       {{! will not render if foo is falsey}}
       {{#if foo}}
         Welcome to the {{foo.bar}}
       {{/if}}
       ```
-    
+
       You can also specify a template to show if the property is falsey by using
       the `else` helper.
-    
+
       ```handlebars
       {{! is it raining outside?}}
       {{#if isRaining}}
@@ -35861,10 +35861,10 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         No, it's lovely outside!
       {{/if}}
       ```
-    
+
       You are also able to combine `else` and `if` helpers to create more complex
       conditional logic.
-    
+
       ```handlebars
       {{#if isMorning}}
         Good morning
@@ -35874,38 +35874,38 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         Good night
       {{/if}}
       ```
-    
+
       ## Inline form
-    
+
       The inline `if` helper conditionally renders a single property or string.
-    
+
       In this form, the `if` helper receives three arguments, the conditional value,
       the value to render when truthy, and the value to render when falsey.
-    
+
       For example, if `useLongGreeting` is truthy, the following:
-    
+
       ```handlebars
       {{if useLongGreeting "Hello" "Hi"}} Alex
       ```
-    
+
       Will render:
-    
+
       ```html
       Hello Alex
       ```
-    
+
       ### Nested `if`
-    
+
       You can use the `if` helper inside another helper as a nested helper:
-    
+
       ```handlebars
       {{some-component height=(if isBig "100" "10")}}
       ```
-    
+
       One detail to keep in mind is that both branches of the `if` helper will be evaluated,
       so if you have `{{if condition "foo" (expensive-operation "bar")`,
       `expensive-operation` will always calculate.
-    
+
       @method if
       @for Ember.Templates.helpers
       @public
@@ -35921,17 +35921,17 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       This helper acts like a ternary operator. If the first property is falsy,
       the second argument will be displayed, otherwise, the third argument will be
       displayed
-    
+
       ```handlebars
       {{unless useLongGreeting "Hi" "Hello"}} Ben
       ```
-    
+
       You can use the `unless` helper inside another helper as a subexpression.
-    
+
       ```handlebars
       {{some-component height=(unless isBig "10" "100")}}
       ```
-    
+
       @method unless
       @for Ember.Templates.helpers
       @public
@@ -35949,11 +35949,11 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       `log` allows you to output the value of variables in the current rendering
       context. `log` also accepts primitive types such as strings or numbers.
-    
+
       ```handlebars
       {{log "myVariable:" myVariable }}
       ```
-    
+
       @method log
       @for Ember.Templates.helpers
       @param {Array} params
@@ -35978,16 +35978,16 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       The `mut` helper lets you __clearly specify__ that a child `Component` can update the
       (mutable) value passed to it, which will __change the value of the parent component__.
-    
+
       To specify that a parameter is mutable, when invoking the child `Component`:
-    
+
       ```handlebars
       {{my-child childClickCount=(mut totalClicks)}}
       ```
-    
+
       The child `Component` can then modify the parent's value just by modifying its own
       property:
-    
+
       ```javascript
       // my-child.js
       export default Component.extend({
@@ -35996,19 +35996,19 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       Note that for curly components (`{{my-component}}`) the bindings are already mutable,
       making the `mut` unnecessary.
-    
+
       Additionally, the `mut` helper can be combined with the `action` helper to
       mutate a value. For example:
-    
+
       ```handlebars
       {{my-child childClickCount=totalClicks click-count-change=(action (mut totalClicks))}}
       ```
-    
+
       The child `Component` would invoke the action with the new click value:
-    
+
       ```javascript
       // my-child.js
       export default Component.extend({
@@ -36017,28 +36017,28 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       The `mut` helper changes the `totalClicks` value to what was provided as the action argument.
-    
+
       The `mut` helper, when used with `action`, will return a function that
       sets the value passed to `mut` to its first argument. This works like any other
       closure action and interacts with the other features `action` provides.
       As an example, we can create a button that increments a value passing the value
       directly to the `action`:
-    
+
       ```handlebars
       {{! inc helper is not provided by Ember }}
       <button onclick={{action (mut count) (inc count)}}>
         Increment count
       </button>
       ```
-    
+
       You can also use the `value` option:
-    
+
       ```handlebars
       <input value={{name}} oninput={{action (mut name) value="target.value"}}>
       ```
-    
+
       @method mut
       @param {Object} [attr] the "two-way" attribute that can be modified.
       @for Ember.Templates.helpers
@@ -36084,13 +36084,13 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
       This is a helper to be used in conjunction with the link-to helper.
       It will supply url query parameters to the target route.
-    
+
       Example
-    
+
       ```handlebars
       {{#link-to 'posts' (query-params direction="asc")}}Sort{{/link-to}}
       ```
-    
+
       @method query-params
       @for Ember.Templates.helpers
       @param {Object} hash takes a hash of query parameters
@@ -36114,22 +36114,22 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       When you pass a `readonly` binding from an outer context (e.g. parent component),
       to to an inner context (e.g. child component), you are saying that changing that
       property in the inner context does not change the value in the outer context.
-    
+
       To specify that a binding is read-only, when invoking the child `Component`:
-    
+
       ```app/components/my-parent.js
       export default Component.extend({
         totalClicks: 3
       });
       ```
-    
+
       ```app/templates/components/my-parent.hbs
       {{log totalClicks}} // -> 3
       {{my-child childClickCount=(readonly totalClicks)}}
       ```
-    
+
       Now, when you update `childClickCount`:
-    
+
       ```app/components/my-child.js
       export default Component.extend({
         click() {
@@ -36137,70 +36137,70 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         }
       });
       ```
-    
+
       The value updates in the child component, but not the parent component:
-    
+
       ```app/templates/components/my-child.hbs
       {{log childClickCount}} //-> 4
       ```
-    
+
       ```app/templates/components/my-parent.hbs
       {{log totalClicks}} //-> 3
       {{my-child childClickCount=(readonly totalClicks)}}
       ```
-    
+
       ### Objects and Arrays
-    
+
       When passing a property that is a complex object (e.g. object, array) instead of a primitive object (e.g. number, string),
       only the reference to the object is protected using the readonly helper.
       This means that you can change properties of the object both on the parent component, as well as the child component.
       The `readonly` binding behaves similar to the `const` keyword in JavaScript.
-    
+
       Let's look at an example:
-    
+
       First let's set up the parent component:
-    
+
       ```app/components/my-parent.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         clicks: null,
-    
+
         init() {
           this._super(...arguments);
           this.set('clicks', { total: 3 });
         }
       });
       ```
-    
+
       ```app/templates/components/my-parent.hbs
       {{log clicks.total}} //-> 3
       {{my-child childClicks=(readonly clicks)}}
       ```
-    
+
       Now, if you update the `total` property of `childClicks`:
-    
+
       ```app/components/my-child.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         click() {
           this.get('clicks').incrementProperty('total');
         }
       });
       ```
-    
+
       You will see the following happen:
-    
+
       ```app/templates/components/my-parent.hbs
       {{log clicks.total}} //-> 4
       {{my-child childClicks=(readonly clicks)}}
       ```
-    
+
       ```app/templates/components/my-child.hbs
       {{log childClicks.total}} //-> 4
       ```
-    
+
       @method readonly
       @param {Object} [attr] the read-only attribute.
       @for Ember.Templates.helpers
@@ -36219,24 +36219,24 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       essentially freezing its value at the moment of rendering. For example,
       in this example the display of the variable `name` will not change even
       if it is set with a new value:
-    
+
       ```handlebars
       {{unbound name}}
       ```
-    
+
       Like any helper, the `unbound` helper can accept a nested helper expression.
       This allows for custom helpers to be rendered unbound:
-    
+
       ```handlebars
       {{unbound (some-custom-helper)}}
       {{unbound (capitalize name)}}
       {{! You can use any helper, including unbound, in a nested expression }}
       {{capitalize (unbound name)}}
       ```
-    
+
       The `unbound` helper only accepts a single argument, and it return an
       unbound value.
-    
+
       @method unbound
       @for Ember.Templates.helpers
       @public
@@ -36481,19 +36481,19 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       It causes an `TextField` component to be rendered.  For more info,
       see the [TextField](/api/ember/release/classes/TextField) docs and
       the [templates guide](https://guides.emberjs.com/release/templates/input-helpers/).
-    
+
       ```handlebars
       {{input value="987"}}
       ```
-    
+
       renders as:
-    
+
       ```HTML
       <input type="text" value="987" />
       ```
-    
+
       ### Text field
-    
+
       If no `type` option is specified, a default of type 'text' is used.
       Many of the standard HTML attributes may be passed to this helper.
       <table>
@@ -36512,27 +36512,27 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       element. When left unquoted, these values will be bound to a property on the
       template's current rendering context (most typically a controller instance).
       A very common use of this helper is to bind the `value` of an input to an Object's attribute:
-    
+
       ```handlebars
       Search:
       {{input value=searchWord}}
       ```
-    
+
       In this example, the initial value in the `<input />` will be set to the value of `searchWord`.
       If the user changes the text, the value of `searchWord` will also be updated.
-    
+
       ### Actions
-    
+
       The helper can send multiple actions based on user events.
       The action property defines the action which is sent when
       the user presses the return key.
-    
+
       ```handlebars
       {{input action="submit"}}
       ```
-    
+
       The helper allows some user events to send actions.
-    
+
       * `enter`
       * `insert-newline`
       * `escape-press`
@@ -36540,49 +36540,49 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       * `focus-out`
       * `key-press`
       * `key-up`
-    
+
       For example, if you desire an action to be sent when the input is blurred,
       you only need to setup the action name to the event name property.
-    
+
       ```handlebars
       {{input focus-out="alertMessage"}}
       ```
       See more about [Text Support Actions](/api/ember/release/classes/TextField)
-    
+
       ### Extending `TextField`
-    
+
       Internally, `{{input type="text"}}` creates an instance of `TextField`, passing
       arguments from the helper to `TextField`'s `create` method. You can extend the
       capabilities of text inputs in your applications by reopening this class. For example,
       if you are building a Bootstrap project where `data-*` attributes are used, you
       can add one to the `TextField`'s `attributeBindings` property:
-    
+
       ```javascript
       import TextField from '@ember/component/text-field';
       TextField.reopen({
         attributeBindings: ['data-error']
       });
       ```
-    
+
       Keep in mind when writing `TextField` subclasses that `TextField`
       itself extends `Component`. Expect isolated component semantics, not
       legacy 1.x view semantics (like `controller` being present).
       See more about [Ember components](/api/ember/release/classes/Component)
-    
+
       ### Checkbox
-    
+
       Checkboxes are special forms of the `{{input}}` helper.  To create a `<checkbox />`:
-    
+
       ```handlebars
       Emberize Everything:
       {{input type="checkbox" name="isEmberized" checked=isEmberized}}
       ```
-    
+
       This will bind checked state of this checkbox to the value of `isEmberized`  -- if either one changes,
       it will be reflected in the other.
-    
+
       The following HTML attributes can be set via the helper:
-    
+
       * `checked`
       * `disabled`
       * `tabindex`
@@ -36590,22 +36590,22 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       * `name`
       * `autofocus`
       * `form`
-    
+
       ### Extending `Checkbox`
-    
+
       Internally, `{{input type="checkbox"}}` creates an instance of `Checkbox`, passing
       arguments from the helper to `Checkbox`'s `create` method. You can extend the
       capablilties of checkbox inputs in your applications by reopening this class. For example,
       if you wanted to add a css class to all checkboxes in your application:
-    
+
       ```javascript
       import Checkbox from '@ember/component/checkbox';
-    
+
       Checkbox.reopen({
         classNames: ['my-app-checkbox']
       });
       ```
-    
+
       @method input
       @for Ember.Templates.helpers
       @param {Hash} options
@@ -36645,20 +36645,20 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
     /**
         The `let` helper receives one or more positional arguments and yields
         them out as block params.
-    
+
         This allows the developer to introduce shorter names for certain computations
         in the template.
-    
+
         This is especially useful if you are passing properties to a component
         that receives a lot of options and you want to clean up the invocation.
-    
+
         For the following example, the template receives a `post` object with
         `content` and `title` properties.
-    
+
         We are going to call the `my-post` component, passing a title which is
         the title of the post suffixed with the name of the blog, the content
         of the post, and a series of options defined in-place.
-    
+
         ```handlebars
         {{#let
             (concat post.title ' | The Ember.js Blog')
@@ -36672,7 +36672,7 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
           {{my-post title=title content=content options=options}}
         {{/let}}
       ```
-    
+
       @method let
       @for Ember.Templates.helpers
       @public
@@ -36824,25 +36824,25 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       The `{{mount}}` helper lets you embed a routeless engine in a template.
       Mounting an engine will cause an instance to be booted and its `application`
       template to be rendered.
-    
+
       For example, the following template mounts the `ember-chat` engine:
-    
+
       ```handlebars
       {{! application.hbs }}
       {{mount "ember-chat"}}
       ```
-    
+
       Additionally, you can also pass in a `model` argument that will be
       set as the engines model. This can be an existing object:
-    
+
       ```
       <div>
         {{mount 'admin' model=userSettings}}
       </div>
       ```
-    
+
       Or an inline `hash`, and you can even pass components:
-    
+
       ```
       <div>
         <h1>Application template!</h1>
@@ -36852,7 +36852,7 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         )}}
       </div>
       ```
-    
+
       @method mount
       @param {String} name Name of the engine to mount.
       @param {Object} [model] Object that will be set as
@@ -37024,7 +37024,7 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       The `{{outlet}}` helper lets you specify where a child route will render in
       your template. An important use of the `{{outlet}}` helper is in your
       application's `application.hbs` file:
-    
+
       ```handlebars
       {{! app/templates/application.hbs }}
       <!-- header content goes here, and will always display -->
@@ -37036,33 +37036,33 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       <!-- footer content goes here, and will always display -->
       {{my-footer}}
       ```
-    
+
       You may also specify a name for the `{{outlet}}`, which is useful when using more than one
       `{{outlet}}` in a template:
-    
+
       ```handlebars
       {{outlet "menu"}}
       {{outlet "sidebar"}}
       {{outlet "main"}}
       ```
-    
+
       Your routes can then render into a specific one of these `outlet`s by specifying the `outlet`
       attribute in your `renderTemplate` function:
-    
+
       ```app/routes/menu.js
       import Route from '@ember/routing/route';
-    
+
       export default Route.extend({
         renderTemplate() {
           this.render({ outlet: 'menu' });
         }
       });
       ```
-    
+
       See the [routing guide](https://guides.emberjs.com/release/routing/rendering-a-template/) for more
       information on how your `route` interacts with the `{{outlet}}` helper.
       Note: Your content __will not render__ if there isn't an `{{outlet}}` for it.
-    
+
       @method outlet
       @param {String} [name]
       @for Ember.Templates.helpers
@@ -37341,56 +37341,56 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       template that matches the provided name. The inserted template will
       access its properties on its own controller (rather than the controller
       of the parent template).
-    
+
       If a view class with the same name exists, the view class also will be used.
       Note: A given controller may only be used *once* in your app in this manner.
       A singleton instance of the controller will be created for you.
-    
+
       Example:
-    
+
       ```app/controllers/navigation.js
       import Controller from '@ember/controller';
-    
+
       export default Controller.extend({
         who: "world"
       });
       ```
-    
+
       ```handlebars
       <!-- navigation.hbs -->
       Hello, {{who}}.
       ```
-    
+
       ```handlebars
       <!-- application.hbs -->
       <h1>My great app</h1>
       {{render "navigation"}}
       ```
-    
+
       ```html
       <h1>My great app</h1>
       <div class='ember-view'>
         Hello, world.
       </div>
       ```
-    
+
       Optionally you may provide a second argument: a property path
       that will be bound to the `model` property of the controller.
       If a `model` property path is specified, then a new instance of the
       controller will be created and `{{render}}` can be used multiple times
       with the same name.
-    
+
       For example if you had this `author` template.
-    
+
       ```handlebars
       <div class="author">
         Written by {{firstName}} {{lastName}}.
         Total Posts: {{postCount}}
       </div>
       ```
-    
+
       You could render it inside the `post` template using the `render` helper.
-    
+
       ```handlebars
       <div class="post">
         <h1>{{title}}</h1>
@@ -37398,7 +37398,7 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
         {{render "author" author}}
       </div>
       ```
-    
+
       @method render
       @for Ember.Templates.helpers
       @param {String} name
@@ -37947,50 +37947,50 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
 
     /**
       [Glimmer](https://github.com/tildeio/glimmer) is a templating engine used by Ember.js that is compatible with a subset of the [Handlebars](http://handlebarsjs.com/) syntax.
-    
+
       ### Showing a property
-    
+
       Templates manage the flow of an application's UI, and display state (through
       the DOM) to a user. For example, given a component with the property "name",
       that component's template can use the name in several ways:
-    
+
       ```app/components/person-profile.js
       import Component from '@ember/component';
-    
+
       export default Component.extend({
         name: 'Jill'
       });
       ```
-    
+
       ```app/components/person-profile.hbs
       {{name}}
       <div>{{name}}</div>
       <span data-name={{name}}></span>
       ```
-    
+
       Any time the "name" property on the component changes, the DOM will be
       updated.
-    
+
       Properties can be chained as well:
-    
+
       ```handlebars
       {{aUserModel.name}}
       <div>{{listOfUsers.firstObject.name}}</div>
       ```
-    
+
       ### Using Ember helpers
-    
+
       When content is passed in mustaches `{{}}`, Ember will first try to find a helper
       or component with that name. For example, the `if` helper:
-    
+
       ```handlebars
       {{if name "I have a name" "I have no name"}}
       <span data-has-name={{if name true}}></span>
       ```
-    
+
       The returned value is placed where the `{{}}` is called. The above style is
       called "inline". A second style of helper usage is called "block". For example:
-    
+
       ```handlebars
       {{#if name}}
       I have a name
@@ -37998,27 +37998,27 @@ enifed('ember-glimmer', ['exports', '@glimmer/runtime', '@glimmer/util', '@glimm
       I have no name
       {{/if}}
       ```
-    
+
       The block form of helpers allows you to control how the UI is created based
       on the values of properties.
       A third form of helper is called "nested". For example here the concat
       helper will add " Doe" to a displayed name if the person has no last name:
-    
+
       ```handlebars
       <span data-name={{concat firstName (
       if lastName (concat " " lastName) "Doe"
       )}}></span>
       ```
-    
+
       Ember's built-in helpers are described under the [Ember.Templates.helpers](/api/ember/release/classes/Ember.Templates.helpers)
       namespace. Documentation on creating custom helpers can be found under
       [Helper](/api/classes/Ember.Helper.html).
-    
+
       ### Invoking a Component
-    
+
       Ember components represent state to the UI of an application. Further
       reading on components can be found under [Component](/api/ember/release/classes/Component).
-    
+
       @module @ember/component
       @main @ember/component
       @public
@@ -38678,7 +38678,7 @@ enifed('ember-meta/lib/meta', ['exports', 'ember-babel', '@ember/debug', '@ember
     /**
       Tears down the meta on an object so that it can be garbage collected.
       Multiple calls will have no effect.
-    
+
       @method deleteMeta
       @for Ember
       @param {Object} obj  the object to destroy
@@ -38701,16 +38701,16 @@ enifed('ember-meta/lib/meta', ['exports', 'ember-babel', '@ember/debug', '@ember
     /**
       Retrieves the meta hash for an object. If `writable` is true ensures the
       hash is writable for this object as well.
-    
+
       The meta object contains information about computed property descriptors as
       well as any watched properties and other information. You generally will
       not access this information directly but instead work with higher level
       methods that manipulate this hash indirectly.
-    
+
       @method meta
       @for Ember
       @private
-    
+
       @param {Object} obj The object to retrieve meta for
       @param {Boolean} [writable=true] Pass `false` if you do not intend to modify
         the meta hash, allowing the method to avoid making an unnecessary copy.
@@ -38738,7 +38738,7 @@ enifed('ember-meta/lib/meta', ['exports', 'ember-babel', '@ember/debug', '@ember
     }
     /**
       Returns the CP descriptor assocaited with `obj` and `keyName`, if any.
-    
+
       @method descriptorFor
       @param {Object} obj the object to check
       @param {String} keyName the key to check
@@ -38757,7 +38757,7 @@ enifed('ember-meta/lib/meta', ['exports', 'ember-babel', '@ember/debug', '@ember
     }
     /**
       Check whether a value is a CP descriptor.
-    
+
       @method descriptorFor
       @param {any} possibleDesc the value to check
       @return {boolean}
@@ -38775,7 +38775,7 @@ enifed('ember-meta/lib/meta', ['exports', 'ember-babel', '@ember/debug', '@ember
      actually happen. This implies that we should make listener creation &
      destruction cheap, even at the cost of making event dispatch more
      expensive.
-    
+
      Thus we store a new listener with a single push and no new
      allocations, without even bothering to do deduplication -- we can
      save that for dispatch time, if an event actually happens.
@@ -38804,7 +38804,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       This can be useful for peeking at the value of a computed
       property that is generated lazily, without accidentally causing
       it to be created.
-    
+
       @method cacheFor
       @static
       @for @ember/object/internals
@@ -38871,9 +38871,9 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       The event system uses a series of nested hashes to store listeners on an
       object. When a listener is registered, or when an event arrives, these
       hashes are consulted to determine which target and action pair to invoke.
-    
+
       The hashes are stored in the object's meta hash, and look like this:
-    
+
           // Object's meta hash
           {
             listeners: {       // variable name: `listenerSet`
@@ -38882,11 +38882,11 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
               ]
             }
           }
-    
+
     */
     /**
       Add an event listener
-    
+
       @method addListener
       @static
       @for @ember/object/events
@@ -38917,9 +38917,9 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     }
     /**
       Remove an event listener
-    
+
       Arguments should match those passed to `addListener`.
-    
+
       @method removeListener
       @static
       @for @ember/object/events
@@ -38943,7 +38943,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       is skipped, and once listeners are removed. A listener without
       a target is executed on the passed object. If an array of actions
       is not passed, the actions stored on the passed object are invoked.
-    
+
       @method sendEvent
       @static
       @for @ember/object/events
@@ -39001,23 +39001,23 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Define a property as a function that should be executed when
       a specified event or events are triggered.
-    
+
       ``` javascript
       import EmberObject from '@ember/object';
       import { on } from '@ember/object/evented';
       import { sendEvent } from '@ember/object/events';
-    
+
       let Job = EmberObject.extend({
         logCompleted: on('completed', function() {
           console.log('Job completed!');
         })
       });
-    
+
       let job = Job.create();
-    
+
       sendEvent(job, 'completed'); // Logs 'Job completed!'
      ```
-    
+
       @method on
       @static
       @for @ember/object/evented
@@ -39047,15 +39047,15 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       ObserverSet is a data structure used to keep track of observers
       that have been deferred.
-    
+
       It ensures that observers are called in the same order that they
       were initially triggered.
-    
+
       It also ensures that observers for any object-key pairs are called
       only once, even if they were triggered multiple times while
       deferred. In this case, the order that the observer is called in
       will depend on the first time the observer was triggered.
-    
+
       @private
       @class ObserverSet
     */
@@ -39362,11 +39362,11 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       This function is called just after an object property has changed.
       It will notify any observers and clear caches among other things.
-    
+
       Normally you will not need to call this method directly but if for some
       reason you can't directly watch a property you can invoke this method
       manually.
-    
+
       @method notifyPropertyChange
       @for Ember
       @param {Object} obj The object with the property that will change
@@ -39472,14 +39472,14 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Make a series of property changes together in an
       exception-safe way.
-    
+
       ```javascript
       Ember.changeProperties(function() {
         obj1.set('foo', mayBlowUpWhenSet);
         obj2.set('bar', baz);
       });
       ```
-    
+
       @method changeProperties
       @param {Function} callback
       @private
@@ -39513,7 +39513,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Objects of this type can implement an interface to respond to requests to
       get and set. The default implementation handles simple properties.
-    
+
       @class Descriptor
       @private
     */
@@ -39582,21 +39582,21 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       NOTE: This is a low-level method used by other parts of the API. You almost
       never want to call this method directly. Instead you should use
       `mixin()` to define new properties.
-    
+
       Defines a property on an object. This method works much like the ES5
       `Object.defineProperty()` method except that it can also accept computed
       properties and other special descriptors.
-    
+
       Normally this method takes only three parameters. However if you pass an
       instance of `Descriptor` as the third param then you can pass an
       optional value as the fourth parameter. This is often more efficient than
       creating new descriptor hashes for each property.
-    
+
       ## Examples
-    
+
       ```javascript
       import { defineProperty, computed } from '@ember/object';
-    
+
       // ES5 compatible mode
       defineProperty(contact, 'firstName', {
         writable: true,
@@ -39604,16 +39604,16 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
         enumerable: true,
         value: 'Charles'
       });
-    
+
       // define a simple property
       defineProperty(contact, 'lastName', undefined, 'Jolley');
-    
+
       // define a computed property
       defineProperty(contact, 'fullName', computed('firstName', 'lastName', function() {
         return this.firstName+' '+this.lastName;
       }));
       ```
-    
+
       @public
       @method defineProperty
       @static
@@ -39879,7 +39879,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
 
     /**
       An object that that tracks @tracked properties that were consumed.
-    
+
       @private
      */
 
@@ -39922,62 +39922,62 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       @decorator
       @private
-    
+
       Marks a property as tracked.
-    
+
       By default, a component's properties are expected to be static,
       meaning you are not able to update them and have the template update accordingly.
       Marking a property as tracked means that when that property changes,
       a rerender of the component is scheduled so the template is kept up to date.
-    
+
       There are two usages for the `@tracked` decorator, shown below.
-    
+
       @example No dependencies
-    
+
       If you don't pass an argument to `@tracked`, only changes to that property
       will be tracked:
-    
+
       ```typescript
       import Component, { tracked } from '@glimmer/component';
-    
+
       export default class MyComponent extends Component {
         @tracked
         remainingApples = 10
       }
       ```
-    
+
       When something changes the component's `remainingApples` property, the rerender
       will be scheduled.
-    
+
       @example Dependents
-    
+
       In the case that you have a computed property that depends other
       properties, you want to track both so that when one of the
       dependents change, a rerender is scheduled.
-    
+
       In the following example we have two properties,
       `eatenApples`, and `remainingApples`.
-    
+
       ```typescript
       import Component, { tracked } from '@glimmer/component';
-    
+
       const totalApples = 100;
-    
+
       export default class MyComponent extends Component {
         @tracked
         eatenApples = 0
-    
+
         @tracked('eatenApples')
         get remainingApples() {
           return totalApples - this.eatenApples;
         }
-    
+
         increment() {
           this.eatenApples = this.eatenApples + 1;
         }
       }
       ```
-    
+
       @param dependencies Optional dependents to be tracked.
      */
     function tracked(_target, key, descriptor) {
@@ -39989,15 +39989,15 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     }
     /**
       @private
-    
+
       Whenever a tracked computed property is entered, the current tracker is
       saved off and a new tracker is replaced.
-    
+
       Any tracked properties consumed are added to the current tracker.
-    
+
       When a tracked computed property is exited, the tracker's tags are
       combined and added to the parent tracker.
-    
+
       The consequence is that each tracked computed property has a tag
       that corresponds to the tracked properties consumed inside of
       itself, including child tracked computed properties.
@@ -40043,11 +40043,11 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     }
     /**
       @private
-    
+
       A getter/setter for change tracking for a particular key. The accessor
       acts just like a normal property, but it triggers the `propertyDidChange`
       hook when written to.
-    
+
       Values are saved on the object using a "shadow key," or a symbol based on the
       tracked property name. Sets write the value to the shadow key, and gets read
       from it.
@@ -40100,25 +40100,25 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       Gets the value of a property on an object. If the property is computed,
       the function will be invoked. If the property is not defined but the
       object implements the `unknownProperty` method then that will be invoked.
-    
+
       ```javascript
       import { get } from '@ember/object';
       get(obj, "name");
       ```
-    
+
       If you plan to run on IE8 and older browsers then you should use this
       method anytime you want to retrieve a property on an object that you don't
       know for sure is private. (Properties beginning with an underscore '_'
       are considered private.)
-    
+
       On all newer browsers, you only need to use this method to retrieve
       properties if the property might not be defined on the object and you want
       to respect the `unknownProperty` handler. Otherwise you can ignore this
       method.
-    
+
       Note that if the object itself is `undefined`, this method will throw
       an error.
-    
+
       @method get
       @for @ember/object
       @static
@@ -40198,12 +40198,12 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Retrieves the value of a property from an Object, or a default value in the
       case that the property returns `undefined`.
-    
+
       ```javascript
       import { getWithDefault } from '@ember/object';
       getWithDefault(person, 'lastName', 'Doe');
       ```
-    
+
       @method getWithDefault
       @for @ember/object
       @static
@@ -40762,7 +40762,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       invokes `Ember.notifyPropertyChange`. This is the primitive used by observers
       and dependent keys; usually you will never call this method directly but instead
       use higher level methods like `addObserver()`.
-    
+
       @private
       @method watch
       @for Ember
@@ -40787,7 +40787,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Stops watching a property on an object. Usually you will never call this method directly but instead
       use higher level methods like `removeObserver()`.
-    
+
       @private
       @method unwatch
       @for Ember
@@ -40843,17 +40843,17 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     var END_WITH_EACH_REGEX = /\.@each$/;
     /**
       Expands `pattern`, invoking `callback` for each expansion.
-    
+
       The only pattern supported is brace-expansion, anything else will be passed
       once to `callback` directly.
-    
+
       Example
-    
+
       ```js
       import { expandProperties } from '@ember/object/computed';
-    
+
       function echo(arg){ console.log(arg); }
-    
+
       expandProperties('foo.bar', echo);              //=> 'foo.bar'
       expandProperties('{foo,bar}', echo);            //=> 'foo', 'bar'
       expandProperties('foo.{bar,baz}', echo);        //=> 'foo.bar', 'foo.baz'
@@ -40862,7 +40862,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       expandProperties('{foo,bar}.{spam,eggs}', echo) //=> 'foo.spam', 'foo.eggs', 'bar.spam', 'bar.eggs'
       expandProperties('{foo}.bar.{baz}')             //=> 'foo.bar.baz'
       ```
-    
+
       @method expandProperties
       @static
       @for @ember/object/computed
@@ -40914,12 +40914,12 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       implements the `setUnknownProperty` method, then instead of setting the
       value of the property on the object, its `setUnknownProperty` handler
       will be invoked with the two parameters `keyName` and `value`.
-    
+
       ```javascript
       import { set } from '@ember/object';
       set(obj, "name", value);
       ```
-    
+
       @method set
       @static
       @for @ember/object
@@ -41024,17 +41024,17 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Error-tolerant form of `set`. Will not blow up if any part of the
       chain is `undefined`, `null`, or destroyed.
-    
+
       This is primarily used when syncing bindings, which may try to update after
       an object has been destroyed.
-    
+
       ```javascript
       import { trySet } from '@ember/object';
-    
+
       let obj = { name: "Zoey" };
       trySet(obj, "contacts.twitter", "@emberjs");
       ```
-    
+
       @method trySet
       @static
       @for @ember/object
@@ -41054,110 +41054,110 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     function noop() {}
     /**
       A computed property transforms an object literal with object's accessor function(s) into a property.
-    
+
       By default the function backing the computed property will only be called
       once and the result will be cached. You can specify various properties
       that your computed property depends on. This will force the cached
       result to be recomputed if the dependencies are modified.
-    
+
       In the following example we declare a computed property - `fullName` - by calling
       `computed` with property dependencies (`firstName` and `lastName`) as leading arguments and getter accessor function. The `fullName` getter function
       will be called once (regardless of how many times it is accessed) as long
       as its dependencies have not changed. Once `firstName` or `lastName` are updated
       any future calls (or anything bound) to `fullName` will incorporate the new
       values.
-    
+
       ```javascript
       import EmberObject, { computed } from '@ember/object';
-    
+
       let Person = EmberObject.extend({
         // these will be supplied by `create`
         firstName: null,
         lastName: null,
-    
+
         fullName: computed('firstName', 'lastName', function() {
           let firstName = this.get('firstName'),
               lastName  = this.get('lastName');
-    
+
           return `${firstName} ${lastName}`;
         })
       });
-    
+
       let tom = Person.create({
         firstName: 'Tom',
         lastName: 'Dale'
       });
-    
+
       tom.get('fullName') // 'Tom Dale'
       ```
-    
+
       You can also define what Ember should do when setting a computed property by providing additional function (`set`) in hash argument.
       If you try to set a computed property, it will try to invoke setter accessor function with the key and
       value you want to set it to as arguments.
-    
+
       ```javascript
       import EmberObject, { computed } from '@ember/object';
-    
+
       let Person = EmberObject.extend({
         // these will be supplied by `create`
         firstName: null,
         lastName: null,
-    
+
         fullName: computed('firstName', 'lastName', {
           get(key) {
             let firstName = this.get('firstName'),
                 lastName  = this.get('lastName');
-    
+
             return firstName + ' ' + lastName;
           },
           set(key, value) {
             let [firstName, lastName] = value.split(' ');
-    
+
             this.set('firstName', firstName);
             this.set('lastName', lastName);
-    
+
             return value;
           }
         })
       });
-    
+
       let person = Person.create();
-    
+
       person.set('fullName', 'Peter Wagenet');
       person.get('firstName'); // 'Peter'
       person.get('lastName');  // 'Wagenet'
       ```
-    
+
       You can overwrite computed property with normal property (no longer computed), that won't change if dependencies change, if you set computed property and it won't have setter accessor function defined.
-    
+
       You can also mark computed property as `.readOnly()` and block all attempts to set it.
-    
+
       ```javascript
       import EmberObject, { computed } from '@ember/object';
-    
+
       let Person = EmberObject.extend({
         // these will be supplied by `create`
         firstName: null,
         lastName: null,
-    
+
         fullName: computed('firstName', 'lastName', {
           get(key) {
             let firstName = this.get('firstName');
             let lastName  = this.get('lastName');
-    
+
             return firstName + ' ' + lastName;
           }
         }).readOnly()
       });
-    
+
       let person = Person.create();
       person.set('fullName', 'Peter Wagenet'); // Uncaught Error: Cannot set read-only property "fullName" on object: <(...):emberXXX>
       ```
-    
+
       Additional resources:
       - [New CP syntax RFC](https://github.com/emberjs/rfcs/blob/master/text/0011-improved-cp-syntax.md)
       - [New computed syntax explained in "Ember 1.12 released" ](https://emberjs.com/blog/2015/05/13/ember-1-12-released.html#toc_new-computed-syntax)
-    
+
       @class ComputedProperty
       @public
     */
@@ -41406,48 +41406,48 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       This helper returns a new property descriptor that wraps the passed
       computed property function. You can use this helper to define properties
       with mixins or via `defineProperty()`.
-    
+
       If you pass a function as an argument, it will be used as a getter. A computed
       property defined in this way might look like this:
-    
+
       ```js
       import EmberObject, { computed } from '@ember/object';
-    
+
       let Person = EmberObject.extend({
         init() {
           this._super(...arguments);
-    
+
           this.firstName = 'Betty';
           this.lastName = 'Jones';
         },
-    
+
         fullName: computed('firstName', 'lastName', function() {
           return `${this.get('firstName')} ${this.get('lastName')}`;
         })
       });
-    
+
       let client = Person.create();
-    
+
       client.get('fullName'); // 'Betty Jones'
-    
+
       client.set('lastName', 'Fuller');
       client.get('fullName'); // 'Betty Fuller'
       ```
-    
+
       You can pass a hash with two functions, `get` and `set`, as an
       argument to provide both a getter and setter:
-    
+
       ```js
       import EmberObject, { computed } from '@ember/object';
-    
+
       let Person = EmberObject.extend({
         init() {
           this._super(...arguments);
-    
+
           this.firstName = 'Betty';
           this.lastName = 'Jones';
         },
-    
+
         fullName: computed('firstName', 'lastName', {
           get(key) {
             return `${this.get('firstName')} ${this.get('lastName')}`;
@@ -41459,29 +41459,29 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
           }
         })
       });
-    
+
       let client = Person.create();
       client.get('firstName'); // 'Betty'
-    
+
       client.set('fullName', 'Carroll Fuller');
       client.get('firstName'); // 'Carroll'
       ```
-    
+
       The `set` function should accept two parameters, `key` and `value`. The value
       returned from `set` will be the new value of the property.
-    
+
       _Note: This is the preferred way to define computed properties when writing third-party
       libraries that depend on or use Ember, since there is no guarantee that the user
       will have [prototype Extensions](https://guides.emberjs.com/release/configuring-ember/disabling-prototype-extensions/) enabled._
-    
+
       The alternative syntax, with prototype extensions, might look like:
-    
+
       ```js
       fullName: function() {
         return this.get('firstName') + ' ' + this.get('lastName');
       }.property('firstName', 'lastName')
       ```
-    
+
       @method computed
       @for @ember/object
       @static
@@ -41603,7 +41603,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Used internally to allow changing properties in a backwards compatible way, and print a helpful
       deprecation warning.
-    
+
       @method deprecateProperty
       @param {Object} object The object to add the deprecated property to.
       @param {String} deprecatedKey The property to add (and print deprecation warnings upon accessing).
@@ -41636,7 +41636,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       Returns true if the passed value is null or undefined. This avoids errors
       from JSLint complaining about use of ==, which can be technically
       confusing.
-    
+
       ```javascript
       isNone();              // true
       isNone(null);          // true
@@ -41645,7 +41645,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       isNone([]);            // false
       isNone(function() {}); // false
       ```
-    
+
       @method isNone
       @static
       @for @ember/utils
@@ -41663,13 +41663,13 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       Verifies that a value is `null` or `undefined`, an empty string, or an empty
       array.
-    
+
       Constrains the rules on `isNone` by returning true for empty strings and
       empty arrays.
-    
+
       If the value is an object with a `size` property of type number, it is used
       to check emptiness.
-    
+
       ```javascript
       isEmpty();                 // true
       isEmpty(null);             // true
@@ -41685,7 +41685,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       isEmpty({ size: 1 })       // false
       isEmpty({ size: () => 0 }) // false
       ```
-    
+
       @method isEmpty
       @static
       @for @ember/utils
@@ -41725,10 +41725,10 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     */
     /**
       A value is blank if it is empty or a whitespace string.
-    
+
       ```javascript
       import { isBlank } from '@ember/utils';
-    
+
       isBlank();                // true
       isBlank(null);            // true
       isBlank(undefined);       // true
@@ -41741,7 +41741,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       isBlank('Hello world');   // false
       isBlank([1,2,3]);         // false
       ```
-    
+
       @method isBlank
       @static
       @for @ember/utils
@@ -41759,7 +41759,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     */
     /**
       A value is present if it not `isBlank`.
-    
+
       ```javascript
       isPresent();                // false
       isPresent(null);            // false
@@ -41779,7 +41779,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       isPresent('\n\t Hello');    // true
       isPresent([1,2,3]);         // true
       ```
-    
+
       @method isPresent
       @static
       @for @ember/utils
@@ -41797,9 +41797,9 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     */
     /**
       Helper class that allows you to register your library with Ember.
-    
+
       Singleton created at `Ember.libraries`.
-    
+
       @class Libraries
       @constructor
       @private
@@ -41884,23 +41884,23 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       To get multiple properties at once, call `getProperties`
       with an object followed by a list of strings or an array:
-    
+
       ```javascript
       import { getProperties } from '@ember/object';
-    
+
       getProperties(record, 'firstName', 'lastName', 'zipCode');
       // { firstName: 'John', lastName: 'Doe', zipCode: '10011' }
       ```
-    
+
       is equivalent to:
-    
+
       ```javascript
       import { getProperties } from '@ember/object';
-    
+
       getProperties(record, ['firstName', 'lastName', 'zipCode']);
       // { firstName: 'John', lastName: 'Doe', zipCode: '10011' }
       ```
-    
+
       @method getProperties
       @static
       @for @ember/object
@@ -41930,18 +41930,18 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       Set a list of properties on an object. These properties are set inside
       a single `beginPropertyChanges` and `endPropertyChanges` batch, so
       observers will be buffered.
-    
+
       ```javascript
       import EmberObject from '@ember/object';
       let anObject = EmberObject.create();
-    
+
       anObject.setProperties({
         firstName: 'Stanley',
         lastName: 'Stuart',
         age: 21
       });
       ```
-    
+
       @method setProperties
       @static
       @for @ember/object
@@ -42405,10 +42405,10 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     /**
       The `Mixin` class allows you to create mixins, whose properties can be
       added to other classes. For instance,
-    
+
       ```javascript
       import Mixin from '@ember/object/mixin';
-    
+
       const EditableMixin = Mixin.create({
         edit() {
           console.log('starting to edit');
@@ -42417,47 +42417,47 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
         isEditing: false
       });
       ```
-    
+
       ```javascript
       import EmberObject from '@ember/object';
       import EditableMixin from '../mixins/editable';
-    
+
       // Mix mixins into classes by passing them as the first arguments to
       // `.extend.`
       const Comment = EmberObject.extend(EditableMixin, {
         post: null
       });
-    
+
       let comment = Comment.create({
         post: somePost
       });
-    
+
       comment.edit(); // outputs 'starting to edit'
       ```
-    
+
       Note that Mixins are created with `Mixin.create`, not
       `Mixin.extend`.
-    
+
       Note that mixins extend a constructor's prototype so arrays and object literals
       defined as properties will be shared amongst objects that implement the mixin.
       If you want to define a property in a mixin that is not shared, you can define
       it either as a computed property or have it be created on initialization of the object.
-    
+
       ```javascript
       // filters array will be shared amongst any object implementing mixin
       import Mixin from '@ember/object/mixin';
       import { A } from '@ember/array';
-    
+
       const FilterableMixin = Mixin.create({
         filters: A()
       });
       ```
-    
+
       ```javascript
       import Mixin from '@ember/object/mixin';
       import { A } from '@ember/array';
       import { computed } from '@ember/object';
-    
+
       // filters will be a separate array for every object implementing the mixin
       const FilterableMixin = Mixin.create({
         filters: computed(function() {
@@ -42465,22 +42465,22 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
         })
       });
       ```
-    
+
       ```javascript
       import Mixin from '@ember/object/mixin';
       import { A } from '@ember/array';
-    
+
       // filters will be created as a separate array during the object's initialization
       const Filterable = Mixin.create({
         filters: null,
-    
+
         init() {
           this._super(...arguments);
           this.set("filters", A());
         }
       });
       ```
-    
+
       @class Mixin
       @public
     */
@@ -42701,12 +42701,12 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
 
     /**
       Makes a method available via an additional name.
-    
+
       ```app/utils/person.js
       import EmberObject, {
         aliasMethod
       } from '@ember/object';
-    
+
       export default EmberObject.extend({
         name() {
           return 'Tomhuda Katzdale';
@@ -42714,14 +42714,14 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
         moniker: aliasMethod('name')
       });
       ```
-    
+
       ```javascript
       let goodGuy = Person.create();
-    
+
       goodGuy.name();    // 'Tomhuda Katzdale'
       goodGuy.moniker(); // 'Tomhuda Katzdale'
       ```
-    
+
       @method aliasMethod
       @static
       @for @ember/object
@@ -42736,21 +42736,21 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
     //
     /**
       Specify a method that observes property changes.
-    
+
       ```javascript
       import EmberObject from '@ember/object';
       import { observer } from '@ember/object';
-    
+
       export default EmberObject.extend({
         valueObserver: observer('value', function() {
           // Executes whenever the "value" property changes
         })
       });
       ```
-    
+
       Also available as `Function.prototype.observes` if prototype extensions are
       enabled.
-    
+
       @method observer
       @for @ember/object
       @param {String} propertyNames*
@@ -42790,7 +42790,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
      */
     /**
       Read-only property that returns the result of a container lookup.
-    
+
       @class InjectedProperty
       @namespace Ember
       @constructor
@@ -42850,7 +42850,7 @@ enifed('ember-metal', ['exports', 'ember-babel', '@ember/polyfills', 'ember-util
       A wrapper for a native ES5 descriptor. In an ideal world, we wouldn't need
       this at all, however, the way we currently flatten/merge our mixins require
       a special value to denote a descriptor.
-    
+
       @class Descriptor
       @private
     */
@@ -42983,19 +42983,19 @@ enifed('ember-owner/index', ['exports', 'ember-utils'], function (exports, _embe
     are created via a factory and dependency injection system. Each of these
     objects is the responsibility of an "owner", which handled its
     instantiation and manages its lifetime.
-  
+
     `getOwner` fetches the owner object responsible for an instance. This can
     be used to lookup or resolve other class instances, or register new factories
     into the owner.
-  
+
     For example, this component dynamically looks up a service based on the
     `audioType` passed as an attribute:
-  
+
     ```app/components/play-audio.js
     import Component from '@ember/component';
     import { computed } from '@ember/object';
     import { getOwner } from '@ember/application';
-  
+
     // Usage:
     //
     //   {{play-audio audioType=model.audioType audioFile=model.file}}
@@ -43005,14 +43005,14 @@ enifed('ember-owner/index', ['exports', 'ember-utils'], function (exports, _embe
         let owner = getOwner(this);
         return owner.lookup(`service:${this.get('audioType')}`);
       }),
-  
+
       click() {
         let player = this.get('audioService');
         player.play(this.get('audioFile'));
       }
     });
     ```
-  
+
     @method getOwner
     @static
     @for @ember/application
@@ -43030,7 +43030,7 @@ enifed('ember-owner/index', ['exports', 'ember-utils'], function (exports, _embe
   /**
     `setOwner` forces a new owner on a given object instance. This is primarily
     useful in some testing cases.
-  
+
     @method setOwner
     @static
     @for @ember/application
@@ -43402,13 +43402,13 @@ enifed('ember-routing/lib/location/auto_location', ['exports', 'ember-owner', 'e
     root URL, this function detects whether the browser supports the [History
     API](https://developer.mozilla.org/en-US/docs/Web/API/History) and returns a
     string representing the Location object to use based on its determination.
-  
+
     For example, if the page loads in an evergreen browser, this function would
     return the string "history", meaning the history API and thus HistoryLocation
     should be used. If the page is loaded in IE8, it will return the string
     "hash," indicating that the History API should be simulated by manipulating the
     hash portion of the location.
-  
+
   */
 
   function detectImplementation(options) {
@@ -43463,7 +43463,7 @@ enifed('ember-routing/lib/location/auto_location', ['exports', 'ember-owner', 'e
 
   /**
     @private
-  
+
     Returns the current path as it should appear for HistoryLocation supported
     browsers. This may very well differ from the real current path (e.g. if it
     starts off as a hashed URL)
@@ -43509,10 +43509,10 @@ enifed('ember-routing/lib/location/auto_location', ['exports', 'ember-owner', 'e
 
   /**
     @private
-  
+
     Returns the current path as it should appear for HashLocation supported
     browsers. This may very well differ from the real current path.
-  
+
     @method _getHashPath
   */
   function getHashPath(rootURL, location) {
@@ -43683,29 +43683,29 @@ enifed('ember-routing/lib/location/history_location', ['exports', 'ember-metal',
   /**
     HistoryLocation implements the location API using the browser's
     history.pushState API.
-  
+
     Using `HistoryLocation` results in URLs that are indistinguishable from a
     standard URL. This relies upon the browser's `history` API.
-  
+
     Example:
-  
+
     ```app/router.js
     Router.map(function() {
       this.route('posts', function() {
         this.route('new');
       });
     });
-  
+
     Router.reopen({
       location: 'history'
     });
     ```
-  
+
     This will result in a posts.new url of `/posts/new`.
-  
+
     Keep in mind that your server must serve the Ember app at all the routes you
     define.
-  
+
     @class HistoryLocation
     @extends EmberObject
     @protected
@@ -44067,7 +44067,7 @@ enifed('ember-routing/lib/location/util', ['exports'], function (exports) {
   exports.replacePath = replacePath;
   /**
     @private
-  
+
     Returns the current `location.pathname`, normalized for IE inconsistencies.
   */
   function getPath(location) {
@@ -44082,7 +44082,7 @@ enifed('ember-routing/lib/location/util', ['exports'], function (exports) {
 
   /**
     @private
-  
+
     Returns the current `location.search`.
   */
   function getQuery(location) {
@@ -44091,12 +44091,12 @@ enifed('ember-routing/lib/location/util', ['exports'], function (exports) {
 
   /**
     @private
-  
+
     Returns the current `location.hash` by parsing location.href since browsers
     inconsistently URL-decode `location.hash`.
-  
+
     Should be passed the browser's `location` object as the first argument.
-  
+
     https://bugzilla.mozilla.org/show_bug.cgi?id=483304
   */
   function getHash(location) {
@@ -44132,9 +44132,9 @@ enifed('ember-routing/lib/location/util', ['exports'], function (exports) {
   /*
     `documentMode` only exist in Internet Explorer, and it's tested because IE8 running in
     IE7 compatibility mode claims to support `onhashchange` but actually does not.
-  
+
     `global` is an object that may have an `onhashchange` property.
-  
+
     @private
     @function supportsHashChange
   */
@@ -44146,7 +44146,7 @@ enifed('ember-routing/lib/location/util', ['exports'], function (exports) {
     `userAgent` is a user agent string. We use user agent testing here, because
     the stock Android browser is known to have buggy versions of the History API,
     in some Android versions.
-  
+
     @private
     @function supportsHistory
   */
@@ -44168,7 +44168,7 @@ enifed('ember-routing/lib/location/util', ['exports'], function (exports) {
   /**
     Replaces the current location, making sure we explicitly include the origin
     to prevent redirecting to a different origin.
-  
+
     @private
   */
   function replacePath(location, path) {
@@ -44180,20 +44180,20 @@ enifed('ember-routing/lib/services/router', ['exports', '@ember/service', '@embe
 
   /**
      The Router service is the public API that provides access to the router.
-  
-     The immediate benefit of the Router service is that you can inject it into components, 
-     giving them a friendly way to initiate transitions and ask questions about the current 
+
+     The immediate benefit of the Router service is that you can inject it into components,
+     giving them a friendly way to initiate transitions and ask questions about the current
      global router state.
-  
-     In this example, the Router service is injected into a component to initiate a transition 
+
+     In this example, the Router service is injected into a component to initiate a transition
      to a dedicated route:
      ```javascript
      import Component from '@ember/component';
      import { inject as service } from '@ember/service';
-  
+
      export default Component.extend({
        router: service(),
-  
+
        actions: {
          next() {
            this.get('router').transitionTo('other.route');
@@ -44201,9 +44201,9 @@ enifed('ember-routing/lib/services/router', ['exports', '@ember/service', '@embe
        }
      });
      ```
-  
+
      Like any service, it can also be injected into helpers, routes, etc.
-  
+
      @public
      @class RouterService
      @category ember-routing-router-service
@@ -44488,7 +44488,7 @@ enifed("ember-routing/lib/system/controller_for", ["exports"], function (exports
 
   /**
     Finds a controller instance.
-  
+
     @for Ember
     @method controllerFor
     @private
@@ -44727,7 +44727,7 @@ enifed('ember-routing/lib/system/generate_controller', ['exports', 'ember-metal'
 
   /**
     Generates a controller factory
-  
+
     @for Ember
     @method generateControllerFactory
     @private
@@ -44752,7 +44752,7 @@ enifed('ember-routing/lib/system/generate_controller', ['exports', 'ember-metal'
   /**
     Generates and instantiates a controller extending from `controller:basic`
     if present, or `Controller` if not.
-  
+
     @for Ember
     @method generateController
     @private
@@ -44829,7 +44829,7 @@ enifed('ember-routing/lib/system/route', ['exports', '@ember/polyfills', '@ember
   /**
     The `Route` class is used to define individual routes. Refer to
     the [routing guide](https://guides.emberjs.com/release/routing/) for documentation.
-  
+
     @class Route
     @extends EmberObject
     @uses ActionHandler
@@ -46193,7 +46193,7 @@ enifed('ember-routing/lib/system/router', ['exports', 'ember-owner', '@ember/pol
   /**
     The `EmberRouter` class manages the application state and URLs. Refer to
     the [routing guide](https://guides.emberjs.com/release/routing/) for documentation.
-  
+
     @class EmberRouter
     @extends EmberObject
     @uses Evented
@@ -46977,9 +46977,9 @@ enifed('ember-routing/lib/system/router', ['exports', 'ember-owner', '@ember/pol
     and the handlerInfos given were for 'foo.bar.baz', then the given callback
     will be invoked with the routes for 'foo.bar', 'foo', and 'application'
     individually.
-  
+
     If the callback returns anything other than `true`, then iteration will stop.
-  
+
     @private
     @param {Route} originRoute
     @param {Array<HandlerInfo>} handlerInfos
@@ -47109,7 +47109,7 @@ enifed('ember-routing/lib/system/router', ['exports', 'ember-owner', '@ember/pol
   /**
     Finds the name of the substate route if it exists for the given route. A
     substate route is of the form `route_state`, such as `foo_loading`.
-  
+
     @private
     @param {Route} route
     @param {String} state
@@ -47132,7 +47132,7 @@ enifed('ember-routing/lib/system/router', ['exports', 'ember-owner', '@ember/pol
     Finds the name of the state route if it exists for the given route. A state
     route is of the form `route.state`, such as `foo.loading`. Properly Handles
     `application` named routes.
-  
+
     @private
     @param {Route} route
     @param {String} state
@@ -47154,7 +47154,7 @@ enifed('ember-routing/lib/system/router', ['exports', 'ember-owner', '@ember/pol
   /**
     Determines whether or not a route has been defined by checking that the route
     is in the Router's map and the owner has a registration for that route.
-  
+
     @private
     @param {Owner} owner
     @param {Router} router
@@ -47749,7 +47749,7 @@ enifed('ember-routing/lib/utils', ['exports', 'ember-owner', '@ember/polyfills',
 
   /*
     Controller-defined query parameters can come in three shapes:
-  
+
     Array
       queryParams: ['foo', 'bar']
     Array of simple objects where value is an alias
@@ -47775,7 +47775,7 @@ enifed('ember-routing/lib/utils', ['exports', 'ember-owner', '@ember/polyfills',
           }
         }
       ]
-  
+
     This helper normalizes all three possible styles into the
     'Array of fully defined objects' style.
   */
@@ -47817,7 +47817,7 @@ enifed('ember-routing/lib/utils', ['exports', 'ember-owner', '@ember/polyfills',
 
   /*
     Check if a routeName resembles a url instead
-  
+
     @private
   */
   function resemblesURL(str) {
@@ -47826,7 +47826,7 @@ enifed('ember-routing/lib/utils', ['exports', 'ember-owner', '@ember/polyfills',
 
   /*
     Returns an arguments array where the route name arg is prefixed based on the mount point
-  
+
     @private
   */
   function prefixRouteNameArg(route, args) {
@@ -48120,23 +48120,23 @@ enifed('ember-runtime/lib/compare', ['exports', 'ember-runtime/lib/type-of', 'em
 
   /**
    Compares two javascript values and returns:
-  
+
     - -1 if the first is smaller than the second,
     - 0 if both are equal,
     - 1 if the first is greater than the second.
-  
+
     ```javascript
     import { compare } from '@ember/utils';
-  
+
     compare('hello', 'hello');  // 0
     compare('abc', 'dfg');      // -1
     compare(2, 1);              // 1
     ```
-  
+
    If the types of the two objects are different precedence occurs in the
    following order, with types earlier in the list considered `<` types
    later in the list:
-  
+
     - undefined
     - null
     - boolean
@@ -48148,14 +48148,14 @@ enifed('ember-runtime/lib/compare', ['exports', 'ember-runtime/lib/type-of', 'em
     - function
     - class
     - date
-  
+
     ```javascript
     import { compare } from '@ember/utils';
-  
+
     compare('hello', 50);       // 1
     compare(50, 'hello');       // -1
     ```
-  
+
    @method compare
    @for @ember/utils
    @static
@@ -48298,14 +48298,14 @@ enifed('ember-runtime/lib/copy', ['exports', '@ember/debug', 'ember-runtime/lib/
   /**
     Creates a shallow copy of the passed object. A deep copy of the object is
     returned if the optional `deep` argument is `true`.
-  
+
     If the passed object implements the `Copyable` interface, then this
     function will delegate to the object's `copy()` method and return the
     result. See `Copyable` for further details.
-  
+
     For primitive values (which are immutable in JavaScript), the passed object
     is simply returned.
-  
+
     @method copy
     @deprecated Use 'ember-copy' addon instead
     @static
@@ -48535,42 +48535,42 @@ enifed('ember-runtime/lib/is-equal', ['exports'], function (exports) {
   */
   /**
     Compares two objects, returning true if they are equal.
-  
+
     ```javascript
     import { isEqual } from '@ember/utils';
-  
+
     isEqual('hello', 'hello');                   // true
     isEqual(1, 2);                               // false
     ```
-  
+
     `isEqual` is a more specific comparison than a triple equal comparison.
     It will call the `isEqual` instance method on the objects being
     compared, allowing finer control over when objects should be considered
     equal to each other.
-  
+
     ```javascript
     import { isEqual } from '@ember/utils';
     import EmberObject from '@ember/object';
-  
+
     let Person = EmberObject.extend({
       isEqual(other) { return this.ssn == other.ssn; }
     });
-  
+
     let personA = Person.create({name: 'Muhammad Ali', ssn: '123-45-6789'});
     let personB = Person.create({name: 'Cassius Clay', ssn: '123-45-6789'});
-  
+
     isEqual(personA, personB); // true
     ```
-  
+
     Due to the expense of array comparisons, collections will never be equal to
     each other even if each of their items are equal to each other.
-  
+
     ```javascript
     import { isEqual } from '@ember/utils';
-  
+
     isEqual([4, 2], [4, 2]);                     // false
     ```
-  
+
     @method isEqual
     @for @ember/utils
     @static
@@ -48619,7 +48619,7 @@ enifed('ember-runtime/lib/mixins/-proxy', ['exports', '@glimmer/reference', 'emb
   /**
     `Ember.ProxyMixin` forwards all properties not defined by the proxy itself
     to a proxied `content` object.  See ObjectProxy for more details.
-  
+
     @class ProxyMixin
     @namespace Ember
     @private
@@ -48694,7 +48694,7 @@ enifed('ember-runtime/lib/mixins/action_handler', ['exports', 'ember-metal', '@e
     (Internally the mixin is used by `Ember.CoreView`, `Ember.ControllerMixin`,
     and `Route` and available to the above classes through
     inheritance.)
-  
+
     @class ActionHandler
     @namespace Ember
     @private
@@ -48835,25 +48835,25 @@ enifed('ember-runtime/lib/mixins/array', ['exports', '@ember/deprecated-features
 
   /**
     Returns true if the passed object is an array or Array-like.
-  
+
     Objects are considered Array-like if any of the following are true:
-  
+
       - the object is a native Array
       - the object has an objectAt property
       - the object is an Object, and has a length property
-  
+
     Unlike `typeOf` this method returns true even if the passed object is
     not formally an array but appears to be array-like (i.e. implements `Array`)
-  
+
     ```javascript
     import { isArray } from '@ember/array';
     import ArrayProxy from '@ember/array/proxy';
-  
+
     isArray();                                      // false
     isArray([]);                                    // true
     isArray(ArrayProxy.create({ content: [] }));    // true
     ```
-  
+
     @method isArray
     @static
     @for @ember/array
@@ -48895,30 +48895,30 @@ enifed('ember-runtime/lib/mixins/array', ['exports', '@ember/deprecated-features
     This mixin implements Observer-friendly Array-like behavior. It is not a
     concrete implementation, but it can be used up by other classes that want
     to appear like arrays.
-  
+
     For example, ArrayProxy is a concrete classes that can
     be instantiated to implement array-like behavior. Both of these classes use
     the Array Mixin by way of the MutableArray mixin, which allows observable
     changes to be made to the underlying array.
-  
+
     This mixin defines methods specifically for collections that provide
     index-ordered access to their contents. When you are designing code that
     needs to accept any kind of Array-like object, you should use these methods
     instead of Array primitives because these will properly notify observers of
     changes to the array.
-  
+
     Although these methods are efficient, they do add a layer of indirection to
     your application so it is a good idea to use them only when you need the
     flexibility of using both true JavaScript arrays and "virtual" arrays such
     as controllers and collections.
-  
+
     You can use the methods defined in this module to access and modify array
     contents in a KVO-friendly way. You can also be notified whenever the
     membership of an array changes by using `.observes('myArray.[]')`.
-  
+
     To support `EmberArray` in your own class, you must override two
     primitives to use it: `length()` and `objectAt()`.
-  
+
     @class EmberArray
     @uses Enumerable
     @since Ember 0.9.0
@@ -49171,16 +49171,16 @@ enifed('ember-runtime/lib/mixins/array', ['exports', '@ember/deprecated-features
     can be applied only to a collection that keeps its items in an ordered set.
     It builds upon the Array mixin and adds methods to modify the array.
     One concrete implementations of this class include ArrayProxy.
-  
+
     It is important to use the methods in this class to modify arrays so that
     changes are observable. This allows the binding system in Ember to function
     correctly.
-  
-  
+
+
     Note that an Array can change even if it does not implement this mixin.
     For example, one might implement a SparseArray that cannot be directly
     modified, but if its underlying enumerable changes, it will change also.
-  
+
     @class MutableArray
     @uses EmberArray
     @uses MutableEnumerable
@@ -49309,20 +49309,20 @@ enifed('ember-runtime/lib/mixins/array', ['exports', '@ember/deprecated-features
     it is recommended that you use `A()` when creating addons for
     ember or when you can not guarantee that `EmberENV.EXTEND_PROTOTYPES`
     will be `true`.
-  
+
     Example
-  
+
     ```app/components/my-component.js
     import Component from '@ember/component';
     import { A } from '@ember/array';
-  
+
     export default Component.extend({
       tagName: 'ul',
       classNames: ['pagination'],
-  
+
       init() {
         this._super(...arguments);
-  
+
         if (!this.get('content')) {
           this.set('content', A());
           this.set('otherContent', A([1,2,3]));
@@ -49330,7 +49330,7 @@ enifed('ember-runtime/lib/mixins/array', ['exports', '@ember/deprecated-features
       }
     });
     ```
-  
+
     @method A
     @static
     @for @ember/array
@@ -49350,7 +49350,7 @@ enifed('ember-runtime/lib/mixins/array', ['exports', '@ember/deprecated-features
     have `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Array` set to
     false, this will be applied automatically. Otherwise you can apply the mixin
     at anytime by calling `Ember.NativeArray.apply(Array.prototype)`.
-  
+
     @class Ember.NativeArray
     @uses MutableArray
     @uses Observable
@@ -49444,7 +49444,7 @@ enifed('ember-runtime/lib/mixins/container_proxy', ['exports', '@ember/runloop',
   /**
     ContainerProxyMixin is used to provide public access to specific
     container functionality.
-  
+
     @class ContainerProxyMixin
     @private
   */
@@ -50009,64 +50009,64 @@ enifed('ember-runtime/lib/mixins/promise_proxy', ['exports', 'ember-metal', '@em
 
   /**
     A low level mixin making ObjectProxy promise-aware.
-  
+
     ```javascript
     import { resolve } from 'rsvp';
     import $ from 'jquery';
     import ObjectProxy from '@ember/object/proxy';
     import PromiseProxyMixin from '@ember/object/promise-proxy-mixin';
-  
+
     let ObjectPromiseProxy = ObjectProxy.extend(PromiseProxyMixin);
-  
+
     let proxy = ObjectPromiseProxy.create({
       promise: resolve($.getJSON('/some/remote/data.json'))
     });
-  
+
     proxy.then(function(json){
        // the json
     }, function(reason) {
        // the reason why you have no json
     });
     ```
-  
+
     the proxy has bindable attributes which
     track the promises life cycle
-  
+
     ```javascript
     proxy.get('isPending')   //=> true
     proxy.get('isSettled')  //=> false
     proxy.get('isRejected')  //=> false
     proxy.get('isFulfilled') //=> false
     ```
-  
+
     When the $.getJSON completes, and the promise is fulfilled
     with json, the life cycle attributes will update accordingly.
     Note that $.getJSON doesn't return an ECMA specified promise,
     it is useful to wrap this with an `RSVP.resolve` so that it behaves
     as a spec compliant promise.
-  
+
     ```javascript
     proxy.get('isPending')   //=> false
     proxy.get('isSettled')   //=> true
     proxy.get('isRejected')  //=> false
     proxy.get('isFulfilled') //=> true
     ```
-  
+
     As the proxy is an ObjectProxy, and the json now its content,
     all the json properties will be available directly from the proxy.
-  
+
     ```javascript
     // Assuming the following json:
     {
       firstName: 'Stefan',
       lastName: 'Penner'
     }
-  
+
     // both properties will accessible on the proxy
     proxy.get('firstName') //=> 'Stefan'
     proxy.get('lastName')  //=> 'Penner'
     ```
-  
+
     @class PromiseProxyMixin
     @public
   */
@@ -50565,29 +50565,29 @@ enifed('ember-runtime/lib/system/array_proxy', ['exports', 'ember-babel', 'ember
     `MutableArray,` forwarding all requests. This makes it very useful for
     a number of binding use cases or other cases where being able to swap
     out the underlying array is useful.
-  
+
     A simple example of usage:
-  
+
     ```javascript
     import { A } from '@ember/array';
     import ArrayProxy from '@ember/array/proxy';
-  
+
     let pets = ['dog', 'cat', 'fish'];
     let ap = ArrayProxy.create({ content: A(pets) });
-  
+
     ap.get('firstObject');                        // 'dog'
     ap.set('content', ['amoeba', 'paramecium']);
     ap.get('firstObject');                        // 'amoeba'
     ```
-  
+
     This class can also be useful as a layer to transform the contents of
     an array, as they are accessed. This can be done by overriding
     `objectAtContent`:
-  
+
     ```javascript
     import { A } from '@ember/array';
     import ArrayProxy from '@ember/array/proxy';
-  
+
     let pets = ['dog', 'cat', 'fish'];
     let ap = ArrayProxy.create({
         content: A(pets),
@@ -50595,18 +50595,18 @@ enifed('ember-runtime/lib/system/array_proxy', ['exports', 'ember-babel', 'ember
             return this.get('content').objectAt(idx).toUpperCase();
         }
     });
-  
+
     ap.get('firstObject'); // . 'DOG'
     ```
-  
+
     When overriding this class, it is important to place the call to
     `_super` *after* setting `content` so the internal observers have
     a chance to fire properly:
-  
+
     ```javascript
     import { A } from '@ember/array';
     import ArrayProxy from '@ember/array/proxy';
-  
+
     export default ArrayProxy.extend({
       init() {
         this.set('content', A(['dog', 'cat', 'fish']));
@@ -50614,7 +50614,7 @@ enifed('ember-runtime/lib/system/array_proxy', ['exports', 'ember-babel', 'ember
       }
     });
     ```
-  
+
     @class ArrayProxy
     @extends EmberObject
     @uses MutableArray
@@ -51318,7 +51318,7 @@ enifed('ember-runtime/lib/system/object', ['exports', 'ember-babel', 'container'
     `EmberObject` is the main base class for all Ember objects. It is a subclass
     of `CoreObject` with the `Observable` mixin applied. For details,
     see the documentation for each of these.
-  
+
     @class EmberObject
     @extends CoreObject
     @uses Observable
@@ -51444,11 +51444,11 @@ enifed('ember-runtime/lib/type-of', ['exports', 'ember-runtime/lib/system/object
   */
   /**
     Returns a consistent type for the passed object.
-  
+
     Use this instead of the built-in `typeof` to get the type of an item.
     It will return the same result across all browsers and includes a bit
     more detail. Here is what will be returned:
-  
+
         | Return Value  | Meaning                                              |
         |---------------|------------------------------------------------------|
         | 'string'      | String primitive or String object.                   |
@@ -51465,14 +51465,14 @@ enifed('ember-runtime/lib/type-of', ['exports', 'ember-runtime/lib/system/object
         | 'instance'    | An Ember object instance                             |
         | 'error'       | An instance of the Error object                      |
         | 'object'      | A JavaScript object not inheriting from EmberObject  |
-  
+
     Examples:
-  
+
     ```javascript
     import { A } from '@ember/array';
     import { typeOf } from '@ember/utils';
     import EmberObject from '@ember/object';
-  
+
     typeOf();                       // 'undefined'
     typeOf(null);                   // 'null'
     typeOf(undefined);              // 'undefined'
@@ -51490,11 +51490,11 @@ enifed('ember-runtime/lib/type-of', ['exports', 'ember-runtime/lib/system/object
     typeOf(EmberObject.extend());   // 'class'
     typeOf(EmberObject.create());   // 'instance'
     typeOf(new Error('teamocil'));  // 'error'
-  
+
     // 'normal' JavaScript object
     typeOf({ a: 'b' });             // 'object'
     ```
-  
+
     @method typeOf
     @for @ember/utils
     @param {Object} item the item to check
@@ -51571,7 +51571,7 @@ enifed('ember-testing/lib/adapters/adapter', ['exports', 'ember-runtime'], funct
   /**
     The primary purpose of this class is to create hooks that can be implemented
     by an adapter for various test frameworks.
-  
+
     @class TestAdapter
     @public
   */
@@ -51987,15 +51987,15 @@ enifed('ember-testing/lib/helpers/click', ['exports', 'ember-testing/lib/events'
   /**
     Clicks an element and triggers any actions triggered by the element's `click`
     event.
-  
+
     Example:
-  
+
     ```javascript
     click('.some-jQuery-selector').then(function() {
       // assert something
     });
     ```
-  
+
     @method click
     @param {String} selector jQuery selector for finding element on the DOM
     @param {Object} context A DOM Element, Document, or jQuery to use as context
@@ -52026,17 +52026,17 @@ enifed('ember-testing/lib/helpers/current_path', ['exports', 'ember-metal'], fun
 
   /**
     Returns the current path.
-  
+
   Example:
-  
+
   ```javascript
   function validateURL() {
     equal(currentPath(), 'some.path.index', "correct path was transitioned into.");
   }
-  
+
   click('#some-link-id').then(validateURL);
   ```
-  
+
   @method currentPath
   @return {Object} The currently active path.
   @since 1.5.0
@@ -52056,16 +52056,16 @@ enifed('ember-testing/lib/helpers/current_route_name', ['exports', 'ember-metal'
 
   /**
     Returns the currently active route name.
-  
+
   Example:
-  
+
   ```javascript
   function validateRouteName() {
     equal(currentRouteName(), 'some.path', "correct route was transitioned into.");
   }
   visit('/some/path').then(validateRouteName)
   ```
-  
+
   @method currentRouteName
   @return {Object} The name of the currently active route.
   @since 1.5.0
@@ -52086,17 +52086,17 @@ enifed('ember-testing/lib/helpers/current_url', ['exports', 'ember-metal'], func
 
   /**
     Returns the current URL.
-  
+
   Example:
-  
+
   ```javascript
   function validateURL() {
     equal(currentURL(), '/some/path', "correct URL was transitioned into.");
   }
-  
+
   click('#some-link-id').then(validateURL);
   ```
-  
+
   @method currentURL
   @return {Object} The currently active URL.
   @since 1.5.0
@@ -52117,15 +52117,15 @@ enifed('ember-testing/lib/helpers/fill_in', ['exports', 'ember-testing/lib/event
 
   /**
     Fills in an input element with some text.
-  
+
     Example:
-  
+
     ```javascript
     fillIn('#email', 'you@example.com').then(function() {
       // assert something
     });
     ```
-  
+
     @method fillIn
     @param {String} selector jQuery selector finding an input element on the DOM
     to fill text with
@@ -52170,19 +52170,19 @@ enifed('ember-testing/lib/helpers/find', ['exports', 'ember-metal', '@ember/debu
   /**
     Finds an element in the context of the app's container element. A simple alias
     for `app.$(selector)`.
-  
+
     Example:
-  
+
     ```javascript
     var $el = find('.my-selector');
     ```
-  
+
     With the `context` param:
-  
+
     ```javascript
     var $el = find('.my-selector', '.parent-element-class');
     ```
-  
+
     @method find
     @param {String} selector jQuery selector for element lookup
     @param {String} [context] (optional) jQuery selector that will limit the selector
@@ -52211,19 +52211,19 @@ enifed('ember-testing/lib/helpers/find_with_assert', ['exports'], function (expo
   */
   /**
     Like `find`, but throws an error if the element selector returns no results.
-  
+
     Example:
-  
+
     ```javascript
     var $el = findWithAssert('.doesnt-exist'); // throws error
     ```
-  
+
     With the `context` param:
-  
+
     ```javascript
     var $el = findWithAssert('.selector-id', '.parent-element-class'); // assert will pass
     ```
-  
+
     @method findWithAssert
     @param {String} selector jQuery selector string for finding an element within
     the DOM
@@ -52295,7 +52295,7 @@ enifed('ember-testing/lib/helpers/pause_test', ['exports', 'ember-runtime', '@em
 
   /**
    Resumes a test paused by `pauseTest`.
-  
+
    @method resumeTest
    @return {void}
    @public
@@ -52311,34 +52311,34 @@ enifed('ember-testing/lib/helpers/pause_test', ['exports', 'ember-runtime', '@em
    Pauses the current test - this is useful for debugging while testing or for test-driving.
    It allows you to inspect the state of your application at any point.
    Example (The test will pause before clicking the button):
-  
+
    ```javascript
    visit('/')
    return pauseTest();
    click('.btn');
    ```
-  
+
    You may want to turn off the timeout before pausing.
-  
+
    qunit (as of 2.4.0):
-  
+
    ```
    visit('/');
    assert.timeout(0);
    return pauseTest();
    click('.btn');
    ```
-  
+
    mocha:
-  
+
    ```
    visit('/');
    this.timeout(0);
    return pauseTest();
    click('.btn');
    ```
-  
-  
+
+
    @since 1.9.0
    @method pauseTest
    @return {Object} A promise that will never resolve
@@ -52430,15 +52430,15 @@ enifed('ember-testing/lib/helpers/visit', ['exports', '@ember/runloop'], functio
     Loads a route, sets up any controllers, and renders any templates associated
     with the route as though a real user had triggered the route change while
     using your app.
-  
+
     Example:
-  
+
     ```javascript
     visit('posts/index').then(function() {
       // assert something
     });
     ```
-  
+
     @method visit
     @param {String} url the name of the route
     @return {RSVP.Promise<undefined>}
@@ -52476,19 +52476,19 @@ enifed('ember-testing/lib/helpers/wait', ['exports', 'ember-testing/lib/test/wai
   /**
     Causes the run loop to process any pending events. This is used to ensure that
     any async operations from other helpers (or your assertions) have been processed.
-  
+
     This is most often used as the return value for the helper functions (see 'click',
     'fillIn','visit',etc). However, there is a method to register a test helper which
     utilizes this method without the need to actually call `wait()` in your helpers.
-  
+
     The `wait` helper is built into `registerAsyncHelper` by default. You will not need
     to `return app.testHelpers.wait();` - the wait behavior is provided for you.
-  
+
     Example:
-  
+
     ```javascript
     import { registerAsyncHelper } from '@ember/test';
-  
+
     registerAsyncHelper('loginUser', function(app, username, password) {
       visit('secured/path/here')
         .fillIn('#username', username)
@@ -52496,7 +52496,7 @@ enifed('ember-testing/lib/helpers/wait', ['exports', 'ember-testing/lib/test/wai
         .click('.submit');
     });
     ```
-  
+
     @method wait
     @param {Object} value The value to be returned.
     @return {RSVP.Promise<any>} Promise that resolves to the passed value.
@@ -52569,10 +52569,10 @@ enifed('ember-testing/lib/setup_for_testing', ['exports', '@ember/debug', 'ember
   /**
     Sets Ember up for testing. This is useful to perform
     basic setup steps in order to unit test.
-  
+
     Use `App.setupForTesting` to perform integration tests (full
     application testing).
-  
+
     @method setupForTesting
     @namespace Ember
     @since 1.5.0
@@ -52613,7 +52613,7 @@ enifed('ember-testing/lib/support', ['@ember/debug', 'ember-views', 'ember-brows
     This method creates a checkbox and triggers the click event to fire the
     passed in handler. It is used to correct for a bug in older versions
     of jQuery (e.g 1.8.3).
-  
+
     @private
     @method testCheckboxClick
   */
@@ -52658,12 +52658,12 @@ enifed('ember-testing/lib/test', ['exports', 'ember-testing/lib/test/helpers', '
 
   /**
     This is a container for an assortment of testing related functionality:
-  
+
     * Choose your default test adapter (for your framework of choice).
     * Register/Unregister additional test helpers.
     * Setup callbacks to be fired when the test helpers are injected into
       your application.
-  
+
     @class Test
     @namespace Ember
     @public
@@ -52692,17 +52692,17 @@ enifed('ember-testing/lib/test', ['exports', 'ember-testing/lib/test/helpers', '
   /**
    Used to allow ember-testing to communicate with a specific testing
    framework.
-  
+
    You can manually set it before calling `App.setupForTesting()`.
-  
+
    Example:
-  
+
    ```javascript
    Ember.Test.adapter = MyCustomAdapter.create()
    ```
-  
+
    If you do not set it, ember-testing will default to `Ember.Test.QUnitAdapter`.
-  
+
    @public
    @for Ember.Test
    @property adapter
@@ -52775,32 +52775,32 @@ enifed('ember-testing/lib/test/helpers', ['exports', 'ember-testing/lib/test/pro
   /**
     `registerHelper` is used to register a test helper that will be injected
     when `App.injectTestHelpers` is called.
-  
+
     The helper method will always be called with the current Application as
     the first parameter.
-  
+
     For example:
-  
+
     ```javascript
     import { registerHelper } from '@ember/test';
     import { run } from '@ember/runloop';
-  
+
     registerHelper('boot', function(app) {
       run(app, app.advanceReadiness);
     });
     ```
-  
+
     This helper can later be called without arguments because it will be
     called with `app` as the first parameter.
-  
+
     ```javascript
     import Application from '@ember/application';
-  
+
     App = Application.create();
     App.injectTestHelpers();
     boot();
     ```
-  
+
     @public
     @for @ember/test
     @static
@@ -52819,42 +52819,42 @@ enifed('ember-testing/lib/test/helpers', ['exports', 'ember-testing/lib/test/pro
   /**
     `registerAsyncHelper` is used to register an async test helper that will be injected
     when `App.injectTestHelpers` is called.
-  
+
     The helper method will always be called with the current Application as
     the first parameter.
-  
+
     For example:
-  
+
     ```javascript
     import { registerAsyncHelper } from '@ember/test';
     import { run } from '@ember/runloop';
-  
+
     registerAsyncHelper('boot', function(app) {
       run(app, app.advanceReadiness);
     });
     ```
-  
+
     The advantage of an async helper is that it will not run
     until the last async helper has completed.  All async helpers
     after it will wait for it complete before running.
-  
-  
+
+
     For example:
-  
+
     ```javascript
     import { registerAsyncHelper } from '@ember/test';
-  
+
     registerAsyncHelper('deletePost', function(app, postId) {
       click('.delete-' + postId);
     });
-  
+
     // ... in your test
     visit('/post/2');
     deletePost(2);
     visit('/post/3');
     deletePost(3);
     ```
-  
+
     @public
     @for @ember/test
     @method registerAsyncHelper
@@ -52871,15 +52871,15 @@ enifed('ember-testing/lib/test/helpers', ['exports', 'ember-testing/lib/test/pro
 
   /**
     Remove a previously added helper method.
-  
+
     Example:
-  
+
     ```javascript
     import { unregisterHelper } from '@ember/test';
-  
+
     unregisterHelper('wait');
     ```
-  
+
     @public
     @method unregisterHelper
     @static
@@ -52901,25 +52901,25 @@ enifed("ember-testing/lib/test/on_inject_helpers", ["exports"], function (export
   /**
     Used to register callbacks to be fired whenever `App.injectTestHelpers`
     is called.
-  
+
     The callback will receive the current application as an argument.
-  
+
     Example:
-  
+
     ```javascript
     import $ from 'jquery';
-  
+
     Ember.Test.onInjectHelpers(function() {
       $(document).ajaxSend(function() {
         Test.pendingRequests++;
       });
-  
+
       $(document).ajaxComplete(function() {
         Test.pendingRequests--;
       });
     });
     ```
-  
+
     @public
     @for Ember.Test
     @method onInjectHelpers
@@ -53013,9 +53013,9 @@ enifed('ember-testing/lib/test/promise', ['exports', 'ember-babel', 'ember-runti
     This returns a thenable tailored for testing.  It catches failed
     `onSuccess` callbacks and invokes the `Ember.Test.adapter.exception`
     callback in the last chained then.
-  
+
     This method should be returned by async helpers such as `wait`.
-  
+
     @public
     @for Ember.Test
     @method promise
@@ -53031,7 +53031,7 @@ enifed('ember-testing/lib/test/promise', ['exports', 'ember-babel', 'ember-runti
     Replacement for `Ember.RSVP.resolve`
     The only difference is this uses
     an instance of `Ember.Test.Promise`
-  
+
     @public
     @for Ember.Test
     @method resolve
@@ -53106,27 +53106,27 @@ enifed("ember-testing/lib/test/waiters", ["exports"], function (exports) {
      after each async helper (i.e. `click`, `andThen`, `visit`, etc) has executed,
      until the returning result is truthy. After the waiters finish, the next async helper
      is executed and the process repeats.
-  
+
      For example:
-  
+
      ```javascript
      import { registerWaiter } from '@ember/test';
-  
+
      registerWaiter(function() {
        return myPendingTransactions() === 0;
      });
      ```
      The `context` argument allows you to optionally specify the `this`
      with which your callback will be invoked.
-  
+
      For example:
-  
+
      ```javascript
      import { registerWaiter } from '@ember/test';
-  
+
      registerWaiter(MyDB, MyDB.hasPendingTransactions);
      ```
-  
+
      @public
      @for @ember/test
      @static
@@ -53150,7 +53150,7 @@ enifed("ember-testing/lib/test/waiters", ["exports"], function (exports) {
   /**
      `unregisterWaiter` is used to unregister a callback that was
      registered with `registerWaiter`.
-  
+
      @public
      @for @ember/test
      @static
@@ -53179,10 +53179,10 @@ enifed("ember-testing/lib/test/waiters", ["exports"], function (exports) {
     Iterates through each registered test waiter, and invokes
     its callback. If any waiter returns false, this method will return
     true indicating that the waiters have not settled yet.
-  
+
     This is generally used internally from the acceptance/integration test
     infrastructure.
-  
+
     @public
     @for @ember/test
     @static
@@ -53217,40 +53217,40 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
     exports.Cache = exports.setProxy = exports.isProxy = exports.WeakSet = exports.HAS_NATIVE_PROXY = exports.HAS_NATIVE_SYMBOL = exports.toString = exports.setName = exports.getName = exports.makeArray = exports.tryInvoke = exports.canInvoke = exports.lookupDescriptor = exports.inspect = exports.setListeners = exports.setObservers = exports.getListeners = exports.getObservers = exports.wrap = exports.ROOT = exports.checkHasSuper = exports.intern = exports.guidFor = exports.generateGuid = exports.GUID_KEY = exports.uuid = exports.dictionary = exports.isInternalSymbol = exports.symbol = exports.NAME_KEY = undefined;
     /**
       Strongly hint runtimes to intern the provided string.
-    
+
       When do I need to use this function?
-    
+
       For the most part, never. Pre-mature optimization is bad, and often the
       runtime does exactly what you need it to, and more often the trade-off isn't
       worth it.
-    
+
       Why?
-    
+
       Runtimes store strings in at least 2 different representations:
       Ropes and Symbols (interned strings). The Rope provides a memory efficient
       data-structure for strings created from concatenation or some other string
       manipulation like splitting.
-    
+
       Unfortunately checking equality of different ropes can be quite costly as
       runtimes must resort to clever string comparison algorithms. These
       algorithms typically cost in proportion to the length of the string.
       Luckily, this is where the Symbols (interned strings) shine. As Symbols are
       unique by their string content, equality checks can be done by pointer
       comparison.
-    
+
       How do I know if my string is a rope or symbol?
-    
+
       Typically (warning general sweeping statement, but truthy in runtimes at
       present) static strings created as part of the JS source are interned.
       Strings often used for comparisons can be interned at runtime if some
       criteria are met.  One of these criteria can be the size of the entire rope.
       For example, in chrome 38 a rope longer then 12 characters will not
       intern, nor will segments of that rope.
-    
+
       Some numbers: http://jsperf.com/eval-vs-keys/8
-    
+
       Known Trick™
-    
+
       @private
       @return {String} interned version of the provided string
     */
@@ -53267,12 +53267,12 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
 
     /**
       Returns whether Type(value) is Object.
-    
+
       Useful for checking whether a value is a valid WeakMap key.
-    
+
       Refs: https://tc39.github.io/ecma262/#sec-typeof-operator-runtime-semantics-evaluation
             https://tc39.github.io/ecma262/#sec-weakmap.prototype.set
-    
+
       @private
       @function isObject
     */
@@ -53286,7 +53286,7 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
     /**
      Previously we used `Ember.$.uuid`, however `$.uuid` has been removed from
      jQuery master. We'll just bootstrap our own uuid now.
-    
+
      @private
      @return {Number} the uuid
      */
@@ -53295,7 +53295,7 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
      Generates a universally unique identifier. This method
      is used internally by Ember for assisting with
      the generation of GUID's and other unique identifiers.
-    
+
      @public
      @return {Number} [description]
      */
@@ -53318,10 +53318,10 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
       A unique key used to assign guids and other private metadata to objects.
       If you inspect an object in your browser debugger you will often see these.
       They can be safely ignored.
-    
+
       On browsers that support it, these properties are added with enumeration
       disabled so they won't show up when you iterate over your properties.
-    
+
       @private
       @property GUID_KEY
       @for Ember
@@ -53333,7 +53333,7 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
       Generates a new guid, optionally saving the guid to the object that you
       pass in. You will rarely need to use this method. Instead you should
       call `guidFor(obj)`, which return an existing guid if available.
-    
+
       @private
       @method generateGuid
       @static
@@ -53341,7 +53341,7 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
       @param {Object} [obj] Object the guid will be used for. If passed in, the guid will
         be saved on the object and reused whenever you pass the same object
         again.
-    
+
         If no object is passed, just generate a new guid.
       @param {String} [prefix] Prefix to place in front of the guid. Useful when you want to
         separate the guid into separate namespaces.
@@ -53360,9 +53360,9 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
       Returns a unique id for the object. If the object does not yet have a guid,
       one will be assigned to it. You can call this on any object,
       `EmberObject`-based or not.
-    
+
       You can also use this method on DOM Element objects.
-    
+
       @public
       @static
       @method guidFor
@@ -53496,7 +53496,7 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
       Wraps the passed function so that `this._super` will point to the superFunc
       when the function is invoked. This is the primitive we use to implement
       calls to super.
-    
+
       @private
       @method wrap
       @for Ember
@@ -53543,10 +53543,10 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
     /**
       Convenience method to inspect an object. This method will attempt to
       convert the object into a useful string description.
-    
+
       It is a pretty simple implementation. If you want something more robust,
       use something like JSDump: https://github.com/NV/jsDump
-    
+
       @method inspect
       @static
       @param {Object} obj The object you want to inspect.
@@ -53648,15 +53648,15 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
 
     /**
       Checks to see if the `methodName` exists on the `obj`.
-    
+
       ```javascript
       let foo = { bar: function() { return 'bar'; }, baz: null };
-    
+
       Ember.canInvoke(foo, 'bar'); // true
       Ember.canInvoke(foo, 'baz'); // false
       Ember.canInvoke(foo, 'bat'); // false
       ```
-    
+
       @method canInvoke
       @for Ember
       @param {Object} obj The object to check for the method
@@ -53673,17 +53673,17 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
     /**
       Checks to see if the `methodName` exists on the `obj`,
       and if it does, invokes it with the arguments passed.
-    
+
       ```javascript
       import { tryInvoke } from '@ember/utils';
-    
+
       let d = new Date('03/15/2013');
-    
+
       tryInvoke(d, 'getTime');              // 1363320000000
       tryInvoke(d, 'setFullYear', [2014]);  // 1394856000000
       tryInvoke(d, 'noSuchMethod', [2014]); // undefined
       ```
-    
+
       @method tryInvoke
       @for @ember/utils
       @static
@@ -53821,10 +53821,10 @@ enifed('ember-utils', ['exports', 'ember-babel'], function (exports, _emberBabel
     /*
      This package will be eagerly parsed and should have no dependencies on external
      packages.
-    
+
      It is intended to be used to share utility methods that will be needed
      by every Ember application (and is **not** a dumping ground of useful utilities).
-    
+
      Utility methods that are needed in < 80% of cases should be placed
      elsewhere (so they can be lazily evaluated / parsed).
     */
@@ -54357,22 +54357,22 @@ enifed('ember-views/lib/mixins/text_support', ['exports', 'ember-metal', 'ember-
     value of the field passed in as the only argument unless the value of
     the field is empty. In that case, the instance of the field itself is passed
     in as the only argument.
-  
+
     Let's use the pressing of the escape key as an example. If you wanted to
     invoke a controller action when a user presses the escape key while on your
     field, you would use the `escape-press` attribute on your field like so:
-  
+
     ```handlebars
       {{! application.hbs}}
-  
+
       {{input escape-press='alertUser'}}
     ```
-  
+
     ```javascript
         import Application from '@ember/application';
         import Controller from '@ember/controller';
         App = Application.create();
-  
+
         App.ApplicationController = Controller.extend({
           actions: {
             alertUser: function ( currentValue ) {
@@ -54381,10 +54381,10 @@ enifed('ember-views/lib/mixins/text_support', ['exports', 'ember-metal', 'ember-
           }
         });
     ```
-  
+
     The following chart is a visual representation of what takes place when the
     escape key is pressed in this scenario:
-  
+
     ```
     The Template
     +---------------------------+
@@ -54411,15 +54411,15 @@ enifed('ember-views/lib/mixins/text_support', ['exports', 'ember-metal', 'ember-
     |                                           |
     +-------------------------------------------+
     ```
-  
+
     Here are the events that we currently support along with the name of the
     attribute you would need to use on your field. To reiterate, you would use the
     attribute name like so:
-  
+
     ```handlebars
       {{input attribute-name='controllerAction'}}
     ```
-  
+
     ```
     +--------------------+----------------+
     |                    |                |
@@ -54442,7 +54442,7 @@ enifed('ember-views/lib/mixins/text_support', ['exports', 'ember-metal', 'ember-
     | keydown            | key-down       |
     +--------------------+----------------+
     ```
-  
+
     @class TextSupport
     @namespace Ember
     @uses Ember.TargetActionSupport
@@ -55076,7 +55076,7 @@ enifed("ember-views/lib/system/action_manager", ["exports"], function (exports) 
 
   /**
     Global action id hash.
-  
+
     @private
     @property registeredActions
     @type Object
@@ -55103,7 +55103,7 @@ enifed('ember-views/lib/system/event_dispatcher', ['exports', 'ember-owner', '@e
     corresponding `Ember.Views.` For example, when you click on a view,
     `Ember.EventDispatcher` ensures that that view's `mouseDown` method gets
     called.
-  
+
     @class EventDispatcher
     @namespace Ember
     @private
@@ -55780,10 +55780,10 @@ enifed('ember-views/lib/system/utils', ['exports', 'ember-owner', 'ember-utils']
   /**
     `getViewClientRects` provides information about the position of the border
     box edges of a view relative to the viewport.
-  
+
     It is only intended to be used by development tools like the Ember Inspector
     and may not work on older browsers.
-  
+
     @private
     @method getViewClientRects
     @param {Ember.View} view
@@ -55796,10 +55796,10 @@ enifed('ember-views/lib/system/utils', ['exports', 'ember-owner', 'ember-utils']
   /**
     `getViewBoundingClientRect` provides information about the position of the
     bounding border box edges of a view relative to the viewport.
-  
+
     It is only intended to be used by development tools like the Ember Inspector
     and may not work on older browsers.
-  
+
     @private
     @method getViewBoundingClientRect
     @param {Ember.View} view
@@ -55811,7 +55811,7 @@ enifed('ember-views/lib/system/utils', ['exports', 'ember-owner', 'ember-utils']
 
   /**
     Determines if the element matches the specified selector.
-  
+
     @private
     @method matches
     @param {DOMElement} el
@@ -55885,10 +55885,10 @@ enifed('ember-views/lib/views/core_view', ['exports', 'ember-runtime', 'ember-vi
     `Ember.CoreView` is an abstract class that exists to give view-like behavior
     to both Ember's main view class `Component` and other classes that don't need
     the full functionality of `Component`.
-  
+
     Unless you have specific needs for `CoreView`, you will use `Component`
     in your applications.
-  
+
     @class CoreView
     @namespace Ember
     @extends EmberObject
@@ -55980,7 +55980,7 @@ enifed('ember-views/lib/views/states', ['exports', '@ember/polyfills', 'ember-vi
   /*
     Describe how the specified actions should behave in the various
     states that a view can exist in. Possible states:
-  
+
     * preRender: when a view is first instantiated, and after its
       element was destroyed, it is in the preRender state
     * hasElement: the DOM representation of the view is created,
@@ -56290,10 +56290,10 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
     A function may be assigned to `Ember.onerror` to be called when Ember
     internals encounter an error. This is useful for specialized error handling
     and reporting code.
-  
+
     ```javascript
     import $ from 'jquery';
-  
+
     Ember.onerror = function(error) {
       $.ajax('/report-error', 'POST', {
         stack: error.stack,
@@ -56301,9 +56301,9 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
       });
     };
     ```
-  
+
     Internally, `Ember.onerror` is used as Backburner's error handler.
-  
+
     @event onerror
     @for Ember
     @param {Exception} error the error object
@@ -56353,7 +56353,7 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
 
   /**
     Namespace for injection helper methods.
-  
+
     @class inject
     @namespace Ember
     @static
@@ -56432,7 +56432,7 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
     Defines the hash of localized strings for the current language. Used by
     the `String.loc` helper. To localize, add string values to this
     hash.
-  
+
     @property STRINGS
     @for Ember
     @type Object
@@ -56446,13 +56446,13 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
 
   /**
     Whether searching on the global for new Namespace instances is enabled.
-  
+
     This is only exported here as to not break any addons.  Given the new
     visit API, you will have issues if you treat this as a indicator of
     booted.
-  
+
     Internally this is only exposing a flag in Namespace.
-  
+
     @property BOOTED
     @for Ember
     @type Boolean
@@ -56497,7 +56497,7 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
     Global hash of shared templates. This will automatically be populated
     by the build tools so that you can store your Handlebars templates in
     separate files that get loaded into JavaScript at buildtime.
-  
+
     @property TEMPLATES
     @for Ember
     @type Object
@@ -56512,7 +56512,7 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
 
   /**
     The semantic version
-  
+
     @property VERSION
     @type String
     @public
@@ -56594,7 +56594,7 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
 
   /**
     Alias for jQuery
-  
+
     @for jquery
     @method $
     @static
@@ -57322,7 +57322,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Extracts query params from the end of an array
   **/
   function extractQueryParams(array) {
@@ -57341,7 +57341,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Coerces query param properties and array elements into strings.
   **/
   function coerceQueryParamsToString(queryParams) {
@@ -57644,7 +57644,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
     explicitly via `abort` or by attempting another transition while a
     previous one is still underway. An aborted transition can also
     be `retry()`d later.
-  
+
     @class Transition
     @constructor
     @param {Object} router
@@ -57831,7 +57831,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Logs and returns an instance of TransitionAborted.
    */
   function logAbort(transition) {
@@ -58823,7 +58823,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Fires queryParamsDidChange event
   */
   function fireQueryParamDidChange(router, newState, queryParamChangelist) {
@@ -58840,14 +58840,14 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Takes an Array of `HandlerInfo`s, figures out which ones are
     exiting, entering, or changing contexts, and calls the
     proper handler hooks.
-  
+
     For example, consider the following tree of handlers. Each handler is
     followed by the URL segment it handles.
-  
+
     ```
     |~index ("/")
     | |~posts ("/posts")
@@ -58856,9 +58856,9 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
     | | |-editPost ("/edit")
     | |~about ("/about/:id")
     ```
-  
+
     Consider the following transitions:
-  
+
     1. A URL transition to `/posts/1`.
        1. Triggers the `*model` callbacks on the
           `index`, `posts`, and `showPost` handlers
@@ -58875,7 +58875,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
        2. Triggers the `serialize` callback on `about`
        3. Triggers the `enter` callback on `about`
        4. Triggers the `setup` callback on `about`
-  
+
     @param {Router} transition
     @param {TransitionState} newState
   */
@@ -58919,7 +58919,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Helper method used by setupContexts. Handles errors or redirects
     that may happen in enter/setup.
   */
@@ -58959,15 +58959,15 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     This function is called when transitioning from one URL to
     another to determine which handlers are no longer active,
     which handlers are newly active, and which handlers remain
     active but have their context changed.
-  
+
     Take a list of old handlers and new handlers and partition
     them into four buckets:
-  
+
     * unchanged: the handler was active in both the old and
       new URL, and its context remains the same
     * updated context: the handler was active in both the
@@ -58978,9 +58978,9 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
       no longer active.
     * entered: the handler was not active in the old URL, but
       is now active.
-  
+
     The PartitionedHandlers structure has four fields:
-  
+
     * `updatedContext`: a list of `HandlerInfo` objects that
       represent handlers that remain active but have a changed
       context
@@ -58989,13 +58989,13 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
     * `exited`: a list of `HandlerInfo` objects that are no
       longer active.
     * `unchanged`: a list of `HanderInfo` objects that remain active.
-  
+
     @param {Array[HandlerInfo]} oldHandlers a list of the handler
       information for the previous URL (or `[]` if this is the
       first handled transition)
     @param {Array[HandlerInfo]} newHandlers a list of the handler
       information for the new URL
-  
+
     @return {Partition}
   */
   function partitionHandlers(oldState, newState) {
@@ -59110,7 +59110,7 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Updates the URL (if necessary) and calls `setupContexts`
     to update the router's array of `currentHandlerInfos`.
    */
@@ -59160,11 +59160,11 @@ enifed('router', ['exports', 'ember-babel', 'rsvp', 'route-recognizer'], functio
 
   /**
     @private
-  
+
     Begins and returns a Transition based on the provided
     arguments. Accepts arguments in the form of both URL
     transitions and named transitions.
-  
+
     @param {Router} router
     @param {Array[Object]} args arguments passed to transitionTo,
       replaceWith, or handleURL
@@ -59449,27 +59449,27 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
   /**
     `RSVP.Promise.resolve` returns a promise that will become resolved with the
     passed `value`. It is shorthand for the following:
-  
+
     ```javascript
     let promise = new RSVP.Promise(function(resolve, reject){
       resolve(1);
     });
-  
+
     promise.then(function(value){
       // value === 1
     });
     ```
-  
+
     Instead of writing the above, your code now simply becomes the following:
-  
+
     ```javascript
     let promise = RSVP.Promise.resolve(1);
-  
+
     promise.then(function(value){
       // value === 1
     });
     ```
-  
+
     @method resolve
     @static
     @param {*} object value that the returned promise will be resolved with
@@ -59889,39 +59889,39 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     is fulfilled with an array of fulfillment values for the passed promises, or
     rejected with the reason of the first passed promise to be rejected. It casts all
     elements of the passed iterable to promises as it runs this algorithm.
-  
+
     Example:
-  
+
     ```javascript
     let promise1 = RSVP.resolve(1);
     let promise2 = RSVP.resolve(2);
     let promise3 = RSVP.resolve(3);
     let promises = [ promise1, promise2, promise3 ];
-  
+
     RSVP.Promise.all(promises).then(function(array){
       // The array here would be [ 1, 2, 3 ];
     });
     ```
-  
+
     If any of the `promises` given to `RSVP.all` are rejected, the first promise
     that is rejected will be given as an argument to the returned promises's
     rejection handler. For example:
-  
+
     Example:
-  
+
     ```javascript
     let promise1 = RSVP.resolve(1);
     let promise2 = RSVP.reject(new Error("2"));
     let promise3 = RSVP.reject(new Error("3"));
     let promises = [ promise1, promise2, promise3 ];
-  
+
     RSVP.Promise.all(promises).then(function(array){
       // Code here never runs because there are rejected promises!
     }, function(error) {
       // error.message === "2"
     });
     ```
-  
+
     @method all
     @static
     @param {Array} entries array of promises
@@ -59941,47 +59941,47 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
   /**
     `RSVP.Promise.race` returns a new promise which is settled in the same way as the
     first passed promise to settle.
-  
+
     Example:
-  
+
     ```javascript
     let promise1 = new RSVP.Promise(function(resolve, reject){
       setTimeout(function(){
         resolve('promise 1');
       }, 200);
     });
-  
+
     let promise2 = new RSVP.Promise(function(resolve, reject){
       setTimeout(function(){
         resolve('promise 2');
       }, 100);
     });
-  
+
     RSVP.Promise.race([promise1, promise2]).then(function(result){
       // result === 'promise 2' because it was resolved before promise1
       // was resolved.
     });
     ```
-  
+
     `RSVP.Promise.race` is deterministic in that only the state of the first
     settled promise matters. For example, even if other promises given to the
     `promises` array argument are resolved, but the first settled promise has
     become rejected before the other promises became fulfilled, the returned
     promise will become rejected:
-  
+
     ```javascript
     let promise1 = new RSVP.Promise(function(resolve, reject){
       setTimeout(function(){
         resolve('promise 1');
       }, 200);
     });
-  
+
     let promise2 = new RSVP.Promise(function(resolve, reject){
       setTimeout(function(){
         reject(new Error('promise 2'));
       }, 100);
     });
-  
+
     RSVP.Promise.race([promise1, promise2]).then(function(result){
       // Code here never runs
     }, function(reason){
@@ -59989,13 +59989,13 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // promise 1 became fulfilled
     });
     ```
-  
+
     An example real-world use case is implementing timeouts:
-  
+
     ```javascript
     RSVP.Promise.race([ajax('foo.json'), timeout(5000)])
     ```
-  
+
     @method race
     @static
     @param {Array} entries array of promises to observe
@@ -60029,31 +60029,31 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
   /**
     `RSVP.Promise.reject` returns a promise rejected with the passed `reason`.
     It is shorthand for the following:
-  
+
     ```javascript
     let promise = new RSVP.Promise(function(resolve, reject){
       reject(new Error('WHOOPS'));
     });
-  
+
     promise.then(function(value){
       // Code here doesn't run because the promise is rejected!
     }, function(reason){
       // reason.message === 'WHOOPS'
     });
     ```
-  
+
     Instead of writing the above, your code now simply becomes the following:
-  
+
     ```javascript
     let promise = RSVP.Promise.reject(new Error('WHOOPS'));
-  
+
     promise.then(function(value){
       // Code here doesn't run because the promise is rejected!
     }, function(reason){
       // reason.message === 'WHOOPS'
     });
     ```
-  
+
     @method reject
     @static
     @param {*} reason value that the returned promise will be rejected with.
@@ -60085,66 +60085,66 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     primary way of interacting with a promise is through its `then` method, which
     registers callbacks to receive either a promise’s eventual value or the reason
     why the promise cannot be fulfilled.
-  
+
     Terminology
     -----------
-  
+
     - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
     - `thenable` is an object or function that defines a `then` method.
     - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
     - `exception` is a value that is thrown using the throw statement.
     - `reason` is a value that indicates why a promise was rejected.
     - `settled` the final resting state of a promise, fulfilled or rejected.
-  
+
     A promise can be in one of three states: pending, fulfilled, or rejected.
-  
+
     Promises that are fulfilled have a fulfillment value and are in the fulfilled
     state.  Promises that are rejected have a rejection reason and are in the
     rejected state.  A fulfillment value is never a thenable.
-  
+
     Promises can also be said to *resolve* a value.  If this value is also a
     promise, then the original promise's settled state will match the value's
     settled state.  So a promise that *resolves* a promise that rejects will
     itself reject, and a promise that *resolves* a promise that fulfills will
     itself fulfill.
-  
-  
+
+
     Basic Usage:
     ------------
-  
+
     ```js
     let promise = new Promise(function(resolve, reject) {
       // on success
       resolve(value);
-  
+
       // on failure
       reject(reason);
     });
-  
+
     promise.then(function(value) {
       // on fulfillment
     }, function(reason) {
       // on rejection
     });
     ```
-  
+
     Advanced Usage:
     ---------------
-  
+
     Promises shine when abstracting away asynchronous interactions such as
     `XMLHttpRequest`s.
-  
+
     ```js
     function getJSON(url) {
       return new Promise(function(resolve, reject){
         let xhr = new XMLHttpRequest();
-  
+
         xhr.open('GET', url);
         xhr.onreadystatechange = handler;
         xhr.responseType = 'json';
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.send();
-  
+
         function handler() {
           if (this.readyState === this.DONE) {
             if (this.status === 200) {
@@ -60156,16 +60156,16 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
         };
       });
     }
-  
+
     getJSON('/posts.json').then(function(json) {
       // on fulfillment
     }, function(reason) {
       // on rejection
     });
     ```
-  
+
     Unlike callbacks, promises are great composable primitives.
-  
+
     ```js
     Promise.all([
       getJSON('/posts'),
@@ -60173,11 +60173,11 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     ]).then(function(values){
       values[0] // => postsJSON
       values[1] // => commentsJSON
-  
+
       return values;
     });
     ```
-  
+
     @class RSVP.Promise
     @param {function} resolver
     @param {String} label optional string for labeling the promise.
@@ -60247,7 +60247,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     The primary way of interacting with a promise is through its `then` method,
     which registers callbacks to receive either a promise's eventual value or the
     reason why the promise cannot be fulfilled.
-  
+
     ```js
     findUser().then(function(user){
       // user is available
@@ -60255,14 +60255,14 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // user is unavailable, and you are given the reason why
     });
     ```
-  
+
     Chaining
     --------
-  
+
     The return value of `then` is itself a promise.  This second, 'downstream'
     promise is resolved with the return value of the first promise's fulfillment
     or rejection handler, or rejected if the handler throws an exception.
-  
+
     ```js
     findUser().then(function (user) {
       return user.name;
@@ -60272,7 +60272,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
       // will be `'default name'`
     });
-  
+
     findUser().then(function (user) {
       throw new Error('Found user, but still unhappy');
     }, function (reason) {
@@ -60285,7 +60285,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     });
     ```
     If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-  
+
     ```js
     findUser().then(function (user) {
       throw new PedagogicalException('Upstream error');
@@ -60297,15 +60297,15 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // The `PedgagocialException` is propagated all the way down to here
     });
     ```
-  
+
     Assimilation
     ------------
-  
+
     Sometimes the value you want to propagate to a downstream promise can only be
     retrieved asynchronously. This can be achieved by returning a promise in the
     fulfillment or rejection handler. The downstream promise will then be pending
     until the returned promise is settled. This is called *assimilation*.
-  
+
     ```js
     findUser().then(function (user) {
       return findCommentsByAuthor(user);
@@ -60313,9 +60313,9 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // The user's comments are now available
     });
     ```
-  
+
     If the assimliated promise rejects, then the downstream promise will also reject.
-  
+
     ```js
     findUser().then(function (user) {
       return findCommentsByAuthor(user);
@@ -60325,15 +60325,15 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // If `findCommentsByAuthor` rejects, we'll have the reason here
     });
     ```
-  
+
     Simple Example
     --------------
-  
+
     Synchronous Example
-  
+
     ```javascript
     let result;
-  
+
     try {
       result = findResult();
       // success
@@ -60341,9 +60341,9 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // failure
     }
     ```
-  
+
     Errback Example
-  
+
     ```js
     findResult(function(result, err){
       if (err) {
@@ -60353,9 +60353,9 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       }
     });
     ```
-  
+
     Promise Example;
-  
+
     ```javascript
     findResult().then(function(result){
       // success
@@ -60363,15 +60363,15 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // failure
     });
     ```
-  
+
     Advanced Example
     --------------
-  
+
     Synchronous Example
-  
+
     ```javascript
     let author, books;
-  
+
     try {
       author = findAuthor();
       books  = findBooksByAuthor(author);
@@ -60380,19 +60380,19 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // failure
     }
     ```
-  
+
     Errback Example
-  
+
     ```js
-  
+
     function foundBooks(books) {
-  
+
     }
-  
+
     function failure(reason) {
-  
+
     }
-  
+
     findAuthor(function(author, err){
       if (err) {
         failure(err);
@@ -60417,9 +60417,9 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       }
     });
     ```
-  
+
     Promise Example;
-  
+
     ```javascript
     findAuthor().
       then(findBooksByAuthor).
@@ -60429,7 +60429,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // something went wrong
     });
     ```
-  
+
     @method then
     @param {Function} onFulfillment
     @param {Function} onRejection
@@ -60480,87 +60480,87 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     will return an `RSVP.Promise`. You can use `denodeify` in Node.js or the
     browser when you'd prefer to use promises over using callbacks. For example,
     `denodeify` transforms the following:
-  
+
     ```javascript
     let fs = require('fs');
-  
+
     fs.readFile('myfile.txt', function(err, data){
       if (err) return handleError(err);
       handleData(data);
     });
     ```
-  
+
     into:
-  
+
     ```javascript
     let fs = require('fs');
     let readFile = RSVP.denodeify(fs.readFile);
-  
+
     readFile('myfile.txt').then(handleData, handleError);
     ```
-  
+
     If the node function has multiple success parameters, then `denodeify`
     just returns the first one:
-  
+
     ```javascript
     let request = RSVP.denodeify(require('request'));
-  
+
     request('http://example.com').then(function(res) {
       // ...
     });
     ```
-  
+
     However, if you need all success parameters, setting `denodeify`'s
     second parameter to `true` causes it to return all success parameters
     as an array:
-  
+
     ```javascript
     let request = RSVP.denodeify(require('request'), true);
-  
+
     request('http://example.com').then(function(result) {
       // result[0] -> res
       // result[1] -> body
     });
     ```
-  
+
     Or if you pass it an array with names it returns the parameters as a hash:
-  
+
     ```javascript
     let request = RSVP.denodeify(require('request'), ['res', 'body']);
-  
+
     request('http://example.com').then(function(result) {
       // result.res
       // result.body
     });
     ```
-  
+
     Sometimes you need to retain the `this`:
-  
+
     ```javascript
     let app = require('express')();
     let render = RSVP.denodeify(app.render.bind(app));
     ```
-  
+
     The denodified function inherits from the original function. It works in all
     environments, except IE 10 and below. Consequently all properties of the original
     function are available to you. However, any properties you change on the
     denodeified function won't be changed on the original function. Example:
-  
+
     ```javascript
     let request = RSVP.denodeify(require('request')),
         cookieJar = request.jar(); // <- Inheritance is used here
-  
+
     request('http://example.com', {jar: cookieJar}).then(function(res) {
       // cookieJar.cookies holds now the cookies returned by example.com
     });
     ```
-  
+
     Using `denodeify` makes it easier to compose asynchronous operations instead
     of using callbacks. For example, instead of:
-  
+
     ```javascript
     let fs = require('fs');
-  
+
     fs.readFile('myfile.txt', function(err, data){
       if (err) { ... } // Handle error
       fs.writeFile('myfile2.txt', data, function(err){
@@ -60569,14 +60569,14 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       });
     });
     ```
-  
+
     you can chain the operations together using `then` from the returned promise:
-  
+
     ```javascript
     let fs = require('fs');
     let readFile = RSVP.denodeify(fs.readFile);
     let writeFile = RSVP.denodeify(fs.writeFile);
-  
+
     readFile('myfile.txt').then(function(data){
       return writeFile('myfile2.txt', data);
     }).then(function(){
@@ -60585,7 +60585,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // Handle error
     });
     ```
-  
+
     @method denodeify
     @static
     @for RSVP
@@ -60686,7 +60686,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
 
   /**
     This is a convenient alias for `RSVP.Promise.all`.
-  
+
     @method all
     @static
     @for RSVP
@@ -60766,7 +60766,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
 
   /**
     This is a convenient alias for `RSVP.Promise.race`.
-  
+
     @method race
     @static
     @for RSVP
@@ -60817,15 +60817,15 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
   /**
     `RSVP.hash` is similar to `RSVP.all`, but takes an object instead of an array
     for its `promises` argument.
-  
+
     Returns a promise that is fulfilled when all the given promises have been
     fulfilled, or rejected if any of them become rejected. The returned promise
     is fulfilled with a hash that has the same key names as the `promises` object
     argument. If any of the values in the object are not promises, they will
     simply be copied over to the fulfilled object.
-  
+
     Example:
-  
+
     ```javascript
     let promises = {
       myPromise: RSVP.resolve(1),
@@ -60833,7 +60833,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       theirPromise: RSVP.resolve(3),
       notAPromise: 4
     };
-  
+
     RSVP.hash(promises).then(function(hash){
       // hash here is an object that looks like:
       // {
@@ -60844,43 +60844,43 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // }
     });
     ````
-  
+
     If any of the `promises` given to `RSVP.hash` are rejected, the first promise
     that is rejected will be given as the reason to the rejection handler.
-  
+
     Example:
-  
+
     ```javascript
     let promises = {
       myPromise: RSVP.resolve(1),
       rejectedPromise: RSVP.reject(new Error('rejectedPromise')),
       anotherRejectedPromise: RSVP.reject(new Error('anotherRejectedPromise')),
     };
-  
+
     RSVP.hash(promises).then(function(hash){
       // Code here never runs because there are rejected promises!
     }, function(reason) {
       // reason.message === 'rejectedPromise'
     });
     ```
-  
+
     An important note: `RSVP.hash` is intended for plain JavaScript objects that
     are just a set of keys and values. `RSVP.hash` will NOT preserve prototype
     chains.
-  
+
     Example:
-  
+
     ```javascript
     function MyConstructor(){
       this.example = RSVP.resolve('Example');
     }
-  
+
     MyConstructor.prototype = {
       protoProperty: RSVP.resolve('Proto Property')
     };
-  
+
     let myObject = new MyConstructor();
-  
+
     RSVP.hash(myObject).then(function(hash){
       // protoProperty will not be present, instead you will just have an
       // object that looks like:
@@ -60892,7 +60892,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // 'undefined' === typeof hash.protoProperty
     });
     ```
-  
+
     @method hash
     @static
     @for RSVP
@@ -60926,23 +60926,23 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
   /**
     `RSVP.hashSettled` is similar to `RSVP.allSettled`, but takes an object
     instead of an array for its `promises` argument.
-  
+
     Unlike `RSVP.all` or `RSVP.hash`, which implement a fail-fast method,
     but like `RSVP.allSettled`, `hashSettled` waits until all the
     constituent promises have returned and then shows you all the results
     with their states and values/reasons. This is useful if you want to
     handle multiple promises' failure states together as a set.
-  
+
     Returns a promise that is fulfilled when all the given promises have been
     settled, or rejected if the passed parameters are invalid.
-  
+
     The returned promise is fulfilled with a hash that has the same key names as
     the `promises` object argument. If any of the values in the object are not
     promises, they will be copied over to the fulfilled object and marked with state
     'fulfilled'.
-  
+
     Example:
-  
+
     ```javascript
     let promises = {
       myPromise: RSVP.Promise.resolve(1),
@@ -60950,7 +60950,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       theirPromise: RSVP.Promise.resolve(3),
       notAPromise: 4
     };
-  
+
     RSVP.hashSettled(promises).then(function(hash){
       // hash here is an object that looks like:
       // {
@@ -60961,19 +60961,19 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // }
     });
     ```
-  
+
     If any of the `promises` given to `RSVP.hash` are rejected, the state will
     be set to 'rejected' and the reason for rejection provided.
-  
+
     Example:
-  
+
     ```javascript
     let promises = {
       myPromise: RSVP.Promise.resolve(1),
       rejectedPromise: RSVP.Promise.reject(new Error('rejection')),
       anotherRejectedPromise: RSVP.Promise.reject(new Error('more rejection')),
     };
-  
+
     RSVP.hashSettled(promises).then(function(hash){
       // hash here is an object that looks like:
       // {
@@ -60985,24 +60985,24 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // and for anotherRejectedPromise, reason.message == 'more rejection'.
     });
     ```
-  
+
     An important note: `RSVP.hashSettled` is intended for plain JavaScript objects that
     are just a set of keys and values. `RSVP.hashSettled` will NOT preserve prototype
     chains.
-  
+
     Example:
-  
+
     ```javascript
     function MyConstructor(){
       this.example = RSVP.Promise.resolve('Example');
     }
-  
+
     MyConstructor.prototype = {
       protoProperty: RSVP.Promise.resolve('Proto Property')
     };
-  
+
     let myObject = new MyConstructor();
-  
+
     RSVP.hashSettled(myObject).then(function(hash){
       // protoProperty will not be present, instead you will just have an
       // object that looks like:
@@ -61014,7 +61014,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // 'undefined' === typeof hash.protoProperty
     });
     ```
-  
+
     @method hashSettled
     @for RSVP
     @param {Object} object
@@ -61036,7 +61036,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
   /**
     `RSVP.rethrow` will rethrow an error on the next turn of the JavaScript event
     loop in order to aid debugging.
-  
+
     Promises A+ specifies that any exceptions that occur with a promise must be
     caught by the promises implementation and bubbled to the last handler. For
     this reason, it is recommended that you always specify a second rejection
@@ -61044,16 +61044,16 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     outside of the promise, so it bubbles up to your console if in the browser,
     or domain/cause uncaught exception in Node. `rethrow` will also throw the
     error again so the error can be handled by the promise per the spec.
-  
+
     ```javascript
     function throws(){
       throw new Error('Whoops!');
     }
-  
+
     let promise = new RSVP.Promise(function(resolve, reject){
       throws();
     });
-  
+
     promise.catch(RSVP.rethrow).then(function(){
       // Code here doesn't run because the promise became rejected due to an
       // error!
@@ -61061,11 +61061,11 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // handle the error here
     });
     ```
-  
+
     The 'Whoops' error will be thrown on the next turn of the event loop
     and you can watch for it in your console. You can also handle it using a
     rejection handler given to `.then` or `.catch` on the returned promise.
-  
+
     @method rethrow
     @static
     @for RSVP
@@ -61084,27 +61084,27 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     `RSVP.defer` returns an object similar to jQuery's `$.Deferred`.
     `RSVP.defer` should be used when porting over code reliant on `$.Deferred`'s
     interface. New code should use the `RSVP.Promise` constructor instead.
-  
+
     The object returned from `RSVP.defer` is a plain object with three properties:
-  
+
     * promise - an `RSVP.Promise`.
     * reject - a function that causes the `promise` property on this object to
       become rejected
     * resolve - a function that causes the `promise` property on this object to
       become fulfilled.
-  
+
     Example:
-  
+
      ```javascript
      let deferred = RSVP.defer();
-  
+
      deferred.resolve("Success!");
-  
+
      deferred.promise.then(function(value){
        // value here is "Success!"
      });
      ```
-  
+
     @method defer
     @static
     @for RSVP
@@ -61164,58 +61164,58 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     meaning that as soon as any promise resolves its value will be passed to `mapFn`.
     `RSVP.map` returns a promise that will become fulfilled with the result of running
     `mapFn` on the values the promises become fulfilled with.
-  
+
     For example:
-  
+
     ```javascript
-  
+
     let promise1 = RSVP.resolve(1);
     let promise2 = RSVP.resolve(2);
     let promise3 = RSVP.resolve(3);
     let promises = [ promise1, promise2, promise3 ];
-  
+
     let mapFn = function(item){
       return item + 1;
     };
-  
+
     RSVP.map(promises, mapFn).then(function(result){
       // result is [ 2, 3, 4 ]
     });
     ```
-  
+
     If any of the `promises` given to `RSVP.map` are rejected, the first promise
     that is rejected will be given as an argument to the returned promise's
     rejection handler. For example:
-  
+
     ```javascript
     let promise1 = RSVP.resolve(1);
     let promise2 = RSVP.reject(new Error('2'));
     let promise3 = RSVP.reject(new Error('3'));
     let promises = [ promise1, promise2, promise3 ];
-  
+
     let mapFn = function(item){
       return item + 1;
     };
-  
+
     RSVP.map(promises, mapFn).then(function(array){
       // Code here never runs because there are rejected promises!
     }, function(reason) {
       // reason.message === '2'
     });
     ```
-  
+
     `RSVP.map` will also wait if a promise is returned from `mapFn`. For example,
     say you want to get all comments from a set of blog posts, but you need
     the blog posts first because they contain a url to those comments.
-  
+
     ```javscript
-  
+
     let mapFn = function(blogPost){
       // getComments does some ajax and returns an RSVP.Promise that is fulfilled
       // with some comments data
       return getComments(blogPost.comments_url);
     };
-  
+
     // getBlogPosts does some ajax and returns an RSVP.Promise that is fulfilled
     // with some blog post data
     RSVP.map(getBlogPosts(), mapFn).then(function(comments){
@@ -61223,7 +61223,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       // of all blog posts returned from getBlogPosts()
     });
     ```
-  
+
     @method map
     @static
     @for RSVP
@@ -61250,7 +61250,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
 
   /**
     This is a convenient alias for `RSVP.Promise.resolve`.
-  
+
     @method resolve
     @static
     @for RSVP
@@ -61266,7 +61266,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
 
   /**
     This is a convenient alias for `RSVP.Promise.reject`.
-  
+
     @method reject
     @static
     @for RSVP
@@ -61325,61 +61325,61 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
     resolves its value will be passed to `filterFn`. `RSVP.filter` returns
     a promise that will become fulfilled with the result of running
     `filterFn` on the values the promises become fulfilled with.
-  
+
     For example:
-  
+
     ```javascript
-  
+
     let promise1 = RSVP.resolve(1);
     let promise2 = RSVP.resolve(2);
     let promise3 = RSVP.resolve(3);
-  
+
     let promises = [promise1, promise2, promise3];
-  
+
     let filterFn = function(item){
       return item > 1;
     };
-  
+
     RSVP.filter(promises, filterFn).then(function(result){
       // result is [ 2, 3 ]
     });
     ```
-  
+
     If any of the `promises` given to `RSVP.filter` are rejected, the first promise
     that is rejected will be given as an argument to the returned promise's
     rejection handler. For example:
-  
+
     ```javascript
     let promise1 = RSVP.resolve(1);
     let promise2 = RSVP.reject(new Error('2'));
     let promise3 = RSVP.reject(new Error('3'));
     let promises = [ promise1, promise2, promise3 ];
-  
+
     let filterFn = function(item){
       return item > 1;
     };
-  
+
     RSVP.filter(promises, filterFn).then(function(array){
       // Code here never runs because there are rejected promises!
     }, function(reason) {
       // reason.message === '2'
     });
     ```
-  
+
     `RSVP.filter` will also wait for any promises returned from `filterFn`.
     For instance, you may want to fetch a list of users then return a subset
     of those users based on some asynchronous operation:
-  
+
     ```javascript
-  
+
     let alice = { name: 'alice' };
     let bob   = { name: 'bob' };
     let users = [ alice, bob ];
-  
+
     let promises = users.map(function(user){
       return RSVP.resolve(user);
     });
-  
+
     let filterFn = function(user){
       // Here, Alice has permissions to create a blog post, but Bob does not.
       return getPrivilegesForUser(user).then(function(privs){
@@ -61393,7 +61393,7 @@ enifed('rsvp', ['exports', 'ember-babel', 'node-module'], function (exports, _em
       users[0] === bob;
     });
     ```
-  
+
     @method filter
     @static
     @for RSVP
@@ -63598,15 +63598,15 @@ createDeprecatedModule('resolver');
   /*
     Assert that `addedRecord` has a valid type so it can be added to the
     relationship of the `record`.
-  
+
     The assert basically checks if the `addedRecord` can be added to the
     relationship (specified via `relationshipMeta`) of the `record`.
-  
+
     This utility should only be used internally, as both record parameters must
     be an InternalModel and the `relationshipMeta` needs to be the meta
     information about the relationship, retrieved via
     `record.relationshipFor(key)`.
-  
+
     @method assertPolymorphicType
     @param {InternalModel} internalModel
     @param {RelationshipMeta} relationshipMeta retrieved via
@@ -73501,7 +73501,7 @@ createDeprecatedModule('resolver');
       `_attributes` then the user has a local changed to the attribute
       that has not been synced with the server and the key is not
       included in the list of changed keys.
-    
+
       If the value, for a key differs from the value in what Ember Data
       believes to be the truth about the backend state (A merger of the
       `_data` and `_inFlightAttributes` objects where
@@ -78240,14 +78240,14 @@ createDeprecatedModule('resolver');
     is responsible for transforming the store's requests into HTTP
     requests that follow the [JSON API](http://jsonapi.org/format/)
     format.
-  
+
     ## JSON API Conventions
-  
+
     The JSONAPIAdapter uses JSON API conventions for building the URL
     for a record and selecting the HTTP verb to use with a request. The
     actions you can take on a record map onto the following URLs in the
     JSON API adapter:
-  
+
   <table>
     <tr>
       <th>
@@ -78316,55 +78316,55 @@ createDeprecatedModule('resolver');
       </td>
     </tr>
   </table>
-  
+
     ## Success and failure
-  
+
     The JSONAPIAdapter will consider a success any response with a
     status code of the 2xx family ("Success"), as well as 304 ("Not
     Modified"). Any other status code will be considered a failure.
-  
+
     On success, the request promise will be resolved with the full
     response payload.
-  
+
     Failed responses with status code 422 ("Unprocessable Entity") will
     be considered "invalid". The response will be discarded, except for
     the `errors` key. The request promise will be rejected with a
     `DS.InvalidError`. This error object will encapsulate the saved
     `errors` value.
-  
+
     Any other status codes will be treated as an adapter error. The
     request promise will be rejected, similarly to the invalid case,
     but with an instance of `DS.AdapterError` instead.
-  
+
     ### Endpoint path customization
-  
+
     Endpoint paths can be prefixed with a `namespace` by setting the
     namespace property on the adapter:
-  
+
     ```app/adapters/application.js
     import DS from 'ember-data';
-  
+
     export default DS.JSONAPIAdapter.extend({
       namespace: 'api/1'
     });
     ```
     Requests for the `person` model would now target `/api/1/people/1`.
-  
+
     ### Host customization
-  
+
     An adapter can target other hosts by setting the `host` property.
-  
+
     ```app/adapters/application.js
     import DS from 'ember-data';
-  
+
     export default DS.JSONAPIAdapter.extend({
       host: 'https://api.example.com'
     });
     ```
-  
+
     Requests for the `person` model would now target
     `https://api.example.com/people/1`.
-  
+
     @since 1.13.0
     @class JSONAPIAdapter
     @constructor
@@ -78487,39 +78487,39 @@ createDeprecatedModule('resolver');
     The REST adapter allows your store to communicate with an HTTP server by
     transmitting JSON via XHR. Most Ember.js apps that consume a JSON API
     should use the REST adapter.
-  
+
     This adapter is designed around the idea that the JSON exchanged with
     the server should be conventional.
-  
+
     ## Success and failure
-  
+
     The REST adapter will consider a success any response with a status code
     of the 2xx family ("Success"), as well as 304 ("Not Modified"). Any other
     status code will be considered a failure.
-  
+
     On success, the request promise will be resolved with the full response
     payload.
-  
+
     Failed responses with status code 422 ("Unprocessable Entity") will be
     considered "invalid". The response will be discarded, except for the
     `errors` key. The request promise will be rejected with a `DS.InvalidError`.
     This error object will encapsulate the saved `errors` value.
-  
+
     Any other status codes will be treated as an "adapter error". The request
     promise will be rejected, similarly to the "invalid" case, but with
     an instance of `DS.AdapterError` instead.
-  
+
     ## JSON Structure
-  
+
     The REST adapter expects the JSON returned from your server to follow
     these conventions.
-  
+
     ### Object Root
-  
+
     The JSON payload should be an object that contains the record inside a
     root property. For example, in response to a `GET` request for
     `/posts/1`, the JSON should look like this:
-  
+
     ```js
     {
       "posts": {
@@ -78529,10 +78529,10 @@ createDeprecatedModule('resolver');
       }
     }
     ```
-  
+
     Similarly, in response to a `GET` request for `/posts`, the JSON should
     look like this:
-  
+
     ```js
     {
       "posts": [
@@ -78549,32 +78549,32 @@ createDeprecatedModule('resolver');
       ]
     }
     ```
-  
+
     Note that the object root can be pluralized for both a single-object response
     and an array response: the REST adapter is not strict on this. Further, if the
     HTTP server responds to a `GET` request to `/posts/1` (e.g. the response to a
     `findRecord` query) with more than one object in the array, Ember Data will
     only display the object with the matching ID.
-  
+
     ### Conventional Names
-  
+
     Attribute names in your JSON payload should be the camelCased versions of
     the attributes in your Ember.js models.
-  
+
     For example, if you have a `Person` model:
-  
+
     ```app/models/person.js
     import DS from 'ember-data';
-  
+
     export default DS.Model.extend({
       firstName: DS.attr('string'),
       lastName: DS.attr('string'),
       occupation: DS.attr('string')
     });
     ```
-  
+
     The JSON returned should look like this:
-  
+
     ```js
     {
       "people": {
@@ -78585,13 +78585,13 @@ createDeprecatedModule('resolver');
       }
     }
     ```
-  
+
     #### Relationships
-  
+
     Relationships are usually represented by ids to the record in the
     relationship. The related records can then be sideloaded in the
     response under a key for the type.
-  
+
     ```js
     {
       "posts": {
@@ -78611,13 +78611,13 @@ createDeprecatedModule('resolver');
       }]
     }
     ```
-  
+
     If the records in the relationship are not known when the response
     is serialized it's also possible to represent the relationship as a
     URL using the `links` key in the response. Ember Data will fetch
     this URL to resolve the relationship when it is accessed for the
     first time.
-  
+
     ```js
     {
       "posts": {
@@ -78630,12 +78630,12 @@ createDeprecatedModule('resolver');
       }
     }
     ```
-  
+
     ### Errors
-  
+
     If a response is considered a failure, the JSON payload is expected to include
     a top-level key `errors`, detailing any specific issues. For example:
-  
+
     ```js
     {
       "errors": {
@@ -78643,51 +78643,51 @@ createDeprecatedModule('resolver');
       }
     }
     ```
-  
+
     This adapter does not make any assumptions as to the format of the `errors`
     object. It will simply be passed along as is, wrapped in an instance
     of `DS.InvalidError` or `DS.AdapterError`. The serializer can interpret it
     afterwards.
-  
+
     ## Customization
-  
+
     ### Endpoint path customization
-  
+
     Endpoint paths can be prefixed with a `namespace` by setting the namespace
     property on the adapter:
-  
+
     ```app/adapters/application.js
     import DS from 'ember-data';
-  
+
     export default DS.RESTAdapter.extend({
       namespace: 'api/1'
     });
     ```
     Requests for the `Person` model would now target `/api/1/people/1`.
-  
+
     ### Host customization
-  
+
     An adapter can target other hosts by setting the `host` property.
-  
+
     ```app/adapters/application.js
     import DS from 'ember-data';
-  
+
     export default DS.RESTAdapter.extend({
       host: 'https://api.example.com'
     });
     ```
-  
+
     ### Headers customization
-  
+
     Some APIs require HTTP headers, e.g. to provide an API key. Arbitrary
     headers can be set as key/value pairs on the `RESTAdapter`'s `headers`
     object and Ember Data will send them along with each ajax request.
-  
-  
+
+
     ```app/adapters/application.js
     import DS from 'ember-data';
     import { computed } from '@ember/object';
-  
+
     export default DS.RESTAdapter.extend({
       headers: computed(function() {
         return {
@@ -78697,15 +78697,15 @@ createDeprecatedModule('resolver');
       }
     });
     ```
-  
+
     `headers` can also be used as a computed property to support dynamic
     headers. In the example below, the `session` object has been
     injected into an adapter by Ember's container.
-  
+
     ```app/adapters/application.js
     import DS from 'ember-data';
     import { computed } from '@ember/object';
-  
+
     export default DS.RESTAdapter.extend({
       headers: computed('session.authToken', function() {
         return {
@@ -78715,19 +78715,19 @@ createDeprecatedModule('resolver');
       })
     });
     ```
-  
+
     In some cases, your dynamic headers may require data from some
     object outside of Ember's observer system (for example
     `document.cookie`). You can use the
     [volatile](/api/classes/Ember.ComputedProperty.html#method_volatile)
     function to set the property into a non-cached mode causing the headers to
     be recomputed with every request.
-  
+
     ```app/adapters/application.js
     import DS from 'ember-data';
     import { get } from '@ember/object';
     import { computed } from '@ember/object';
-  
+
     export default DS.RESTAdapter.extend({
       headers: computed(function() {
         return {
@@ -78737,7 +78737,7 @@ createDeprecatedModule('resolver');
       }).volatile()
     });
     ```
-  
+
     @class RESTAdapter
     @constructor
     @namespace DS
@@ -79433,7 +79433,7 @@ createDeprecatedModule('resolver');
           try {
             return `${protocol}//${host}${url}`;
           } catch (fbError) {
-            throw new Error('You are using Ember Data with no host defined in your adapter. This will attempt to use the host of the FastBoot request, which is not configured for the current host of this request. Please set the hostWhitelist property for in your environment.js. FastBoot Error: ' + fbError.message);
+            throw new Error('You are using Ember Data with no host defined in your adapter. This will attempt to use the host of the FastBoot request, which is not configured for the current host of this request. Please set the hostAllowList property for in your environment.js. FastBoot Error: ' + fbError.message);
           }
         }
       }
@@ -79720,7 +79720,7 @@ createDeprecatedModule('resolver');
   /*
     Configures a registry for use with an Ember-Data
     store.
-  
+
     @method initializeStoreService
     @param {Ember.ApplicationInstance | Ember.EngineInstance} instance
   */
@@ -80374,20 +80374,20 @@ createDeprecatedModule('resolver');
 
   /**
     Ember Data 2.0 Serializer:
-  
+
     In Ember Data a Serializer is used to serialize and deserialize
     records when they are transferred in and out of an external source.
     This process involves normalizing property names, transforming
     attribute values and serializing relationships.
-  
+
     `JSONAPISerializer` supports the http://jsonapi.org/ spec and is the
     serializer recommended by Ember Data.
-  
+
     This serializer normalizes a JSON API payload that looks like:
-  
+
     ```app/models/player.js
     import DS from 'ember-data';
-  
+
     export default DS.Model.extend({
       name: DS.attr('string'),
       skill: DS.attr('string'),
@@ -80395,17 +80395,17 @@ createDeprecatedModule('resolver');
       club: DS.belongsTo('club')
     });
     ```
-  
+
     ```app/models/club.js
     import DS from 'ember-data';
-  
+
     export default DS.Model.extend({
       name: DS.attr('string'),
       location: DS.attr('string'),
       players: DS.hasMany('player')
     });
     ```
-  
+
     ```js
       {
         "data": [
@@ -80449,40 +80449,40 @@ createDeprecatedModule('resolver');
         ]
       }
     ```
-  
+
     to the format that the Ember Data store expects.
-  
+
     ### Customizing meta
-  
+
     Since a JSON API Document can have meta defined in multiple locations you can
     use the specific serializer hooks if you need to customize the meta.
-  
+
     One scenario would be to camelCase the meta keys of your payload. The example
     below shows how this could be done using `normalizeArrayResponse` and
     `extractRelationship`.
-  
+
     ```app/serializers/application.js
     export default JSONAPISerializer.extend({
       normalizeArrayResponse(store, primaryModelClass, payload, id, requestType) {
         let normalizedDocument = this._super(...arguments);
-  
+
         // Customize document meta
         normalizedDocument.meta = camelCaseKeys(normalizedDocument.meta);
-  
+
         return normalizedDocument;
       },
-  
+
       extractRelationship(relationshipHash) {
         let normalizedRelationship = this._super(...arguments);
-  
+
         // Customize relationship meta
         normalizedRelationship.meta = camelCaseKeys(normalizedRelationship.meta);
-  
+
         return normalizedRelationship;
       }
     });
     ```
-  
+
     @since 1.13.0
     @class JSONAPISerializer
     @namespace DS
@@ -80922,30 +80922,30 @@ createDeprecatedModule('resolver');
 
   /**
     Ember Data 2.0 Serializer:
-  
+
     In Ember Data a Serializer is used to serialize and deserialize
     records when they are transferred in and out of an external source.
     This process involves normalizing property names, transforming
     attribute values and serializing relationships.
-  
+
     By default, Ember Data uses and recommends the `JSONAPISerializer`.
-  
+
     `JSONSerializer` is useful for simpler or legacy backends that may
     not support the http://jsonapi.org/ spec.
-  
+
     For example, given the following `User` model and JSON payload:
-  
+
     ```app/models/user.js
     import DS from 'ember-data';
-  
+
     export default DS.Model.extend({
       friends: DS.hasMany('user'),
       house: DS.belongsTo('location'),
-  
+
       name: DS.attr('string')
     });
     ```
-  
+
     ```js
     {
       id: 1,
@@ -80956,13 +80956,13 @@ createDeprecatedModule('resolver');
       }
     }
     ```
-  
+
     `JSONSerializer` will normalize the JSON payload to the JSON API format that the
     Ember Data store expects.
-  
+
     You can customize how JSONSerializer processes its payload by passing options in
     the `attrs` hash or by subclassing the `JSONSerializer` and overriding hooks:
-  
+
       - To customize how a single record is normalized, use the `normalize` hook.
       - To customize how `JSONSerializer` normalizes the whole server response, use the
         `normalizeResponse` hook.
@@ -80970,9 +80970,9 @@ createDeprecatedModule('resolver');
         use one of the many specific `normalizeResponse` hooks.
       - To customize how `JSONSerializer` normalizes your id, attributes or relationships,
         use the `extractId`, `extractAttributes` and `extractRelationships` hooks.
-  
+
     The `JSONSerializer` normalization process follows these steps:
-  
+
       - `normalizeResponse` - entry method to the serializer.
       - `normalizeCreateRecordResponse` - a `normalizeResponse` for a specific operation is called.
       - `normalizeSingleResponse`|`normalizeArrayResponse` - for methods like `createRecord` we expect
@@ -80981,7 +80981,7 @@ createDeprecatedModule('resolver');
         calls it once. This is the method you most likely want to subclass.
       - `extractId` | `extractAttributes` | `extractRelationships` - `normalize` delegates to these methods to
         turn the record payload into the JSON API format.
-  
+
     @class JSONSerializer
     @namespace DS
     @extends DS.Serializer
@@ -82271,42 +82271,42 @@ createDeprecatedModule('resolver');
   /**
     Normally, applications will use the `RESTSerializer` by implementing
     the `normalize` method.
-  
+
     This allows you to do whatever kind of munging you need and is
     especially useful if your server is inconsistent and you need to
     do munging differently for many different kinds of responses.
-  
+
     See the `normalize` documentation for more information.
-  
+
     ## Across the Board Normalization
-  
+
     There are also a number of hooks that you might find useful to define
     across-the-board rules for your payload. These rules will be useful
     if your server is consistent, or if you're building an adapter for
     an infrastructure service, like Firebase, and want to encode service
     conventions.
-  
+
     For example, if all of your keys are underscored and all-caps, but
     otherwise consistent with the names you use in your models, you
     can implement across-the-board rules for how to convert an attribute
     name in your model to a key in your JSON.
-  
+
     ```app/serializers/application.js
     import DS from 'ember-data';
     import { underscore } from '@ember/string';
-  
+
     export default DS.RESTSerializer.extend({
       keyForAttribute(attr, method) {
         return underscore(attr).toUpperCase();
       }
     });
     ```
-  
+
     You can also implement `keyForRelationship`, which takes the name
     of the relationship as the first parameter, the kind of
     relationship (`hasMany` or `belongsTo`) as the second parameter, and
     the method (`serialize` or `deserialize`) as the third parameter.
-  
+
     @class RESTSerializer
     @namespace DS
     @extends DS.JSONSerializer
@@ -82981,7 +82981,7 @@ createDeprecatedModule('resolver');
   /*
    Configures a registry for use with an Ember-Data
    store. Accepts an optional namespace argument.
-  
+
    @method initializeStore
    @param {Ember.Registry} registry
    */
@@ -83004,7 +83004,7 @@ createDeprecatedModule('resolver');
   /*
    Configures a registry with injections on Ember applications
    for the Ember-Data store. Accepts an optional namespace argument.
-  
+
    @method initializeDebugAdapter
    @param {Ember.Registry} registry
    */
@@ -83015,7 +83015,7 @@ createDeprecatedModule('resolver');
   /*
    Configures a registry with injections on Ember applications
    for the Ember-Data store. Accepts an optional namespace argument.
-  
+
    @method initializeStoreInjections
    @param {Ember.Registry} registry
    */
@@ -83031,7 +83031,7 @@ createDeprecatedModule('resolver');
   /*
    Configures a registry for use with Ember-Data
    transforms.
-  
+
    @method initializeTransforms
    @param {Ember.Registry} registry
    */
@@ -83164,19 +83164,19 @@ createDeprecatedModule('resolver');
     numeric attributes on Ember Data record objects. This transform is
     used when `number` is passed as the type parameter to the
     [DS.attr](../../data#method_attr) function.
-  
+
     Usage
-  
+
     ```app/models/score.js
     import DS from 'ember-data';
-  
+
     export default DS.Model.extend({
       value: DS.attr('number'),
       player: DS.belongsTo('player'),
       date: DS.attr('date')
     });
     ```
-  
+
     @class NumberTransform
     @extends DS.Transform
     @namespace DS
@@ -83458,44 +83458,44 @@ createDeprecatedModule('resolver');
     Inflector.Ember provides a mechanism for supplying inflection rules for your
     application. Ember includes a default set of inflection rules, and provides an
     API for providing additional rules.
-  
+
     Examples:
-  
+
     Creating an inflector with no rules.
-  
+
     ```js
     var inflector = new Ember.Inflector();
     ```
-  
+
     Creating an inflector with the default ember ruleset.
-  
+
     ```js
     var inflector = new Ember.Inflector(Ember.Inflector.defaultRules);
-  
+
     inflector.pluralize('cow'); //=> 'kine'
     inflector.singularize('kine'); //=> 'cow'
     ```
-  
+
     Creating an inflector and adding rules later.
-  
+
     ```javascript
     var inflector = Ember.Inflector.inflector;
-  
+
     inflector.pluralize('advice'); // => 'advices'
     inflector.uncountable('advice');
     inflector.pluralize('advice'); // => 'advice'
-  
+
     inflector.pluralize('formula'); // => 'formulas'
     inflector.irregular('formula', 'formulae');
     inflector.pluralize('formula'); // => 'formulae'
-  
+
     // you would not need to add these as they are the default rules
     inflector.plural(/$/, 's');
     inflector.singular(/s$/i, '');
     ```
-  
+
     Creating an inflector with a nondefault ruleset.
-  
+
     ```javascript
     var rules = {
       plurals:  [
@@ -83509,10 +83509,10 @@ createDeprecatedModule('resolver');
       ],
       uncountable: [ 'fish' ]
     };
-  
+
     var inflector = new Ember.Inflector(rules);
     ```
-  
+
     @class Inflector
     @namespace Ember
   */

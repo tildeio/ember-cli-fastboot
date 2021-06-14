@@ -35,7 +35,7 @@ class EmberApp {
     let distPath = (this.distPath = path.resolve(options.distPath));
     let config = loadConfig(distPath);
 
-    this.hostWhitelist = config.hostWhitelist;
+    this.hostAllowList = config.hostAllowList;
     this.config = config.config;
     this.appName = config.appName;
     this.html = config.html;
@@ -300,7 +300,7 @@ class EmberApp {
     let shouldRender = options.shouldRender !== undefined ? options.shouldRender : true;
     let bootOptions = buildBootOptions(shouldRender);
     let fastbootInfo = new FastBootInfo(req, res, {
-      hostWhitelist: this.hostWhitelist,
+      hostAllowList: this.hostAllowList,
       metadata: options.metadata,
     });
 

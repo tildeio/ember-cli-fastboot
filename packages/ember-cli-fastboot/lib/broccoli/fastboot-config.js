@@ -1,14 +1,13 @@
 /* eslint-env node */
 'use strict';
 
-const fs     = require('fs');
-const fmt    = require('util').format;
-const uniq   = require('ember-cli-lodash-subset').uniq;
-const merge  = require('ember-cli-lodash-subset').merge;
-const md5Hex = require('md5-hex');
-const path   = require('path');
-const Plugin = require('broccoli-plugin');
-
+const fs        = require('fs');
+const fmt       = require('util').format;
+const uniq      = require('ember-cli-lodash-subset').uniq;
+const merge     = require('ember-cli-lodash-subset').merge;
+const md5Hex    = require('md5-hex');
+const path      = require('path');
+const Plugin    = require('broccoli-plugin');
 const stringify = require('json-stable-stringify');
 
 const LATEST_SCHEMA_VERSION = 3;
@@ -50,7 +49,7 @@ module.exports = class FastBootConfig extends Plugin {
     this.buildConfig();
     this.buildDependencies();
     this.buildManifest();
-    this.buildHostWhitelist();
+    this.buildHostAllowList();
 
     let outputPath = path.join(this.outputPath, 'package.json');
     this.writeFileIfContentChanged(outputPath, this.toJSONString());
@@ -85,7 +84,7 @@ module.exports = class FastBootConfig extends Plugin {
 
   buildDependencies() {
     let dependencies = {};
-    let moduleWhitelist = [];
+    let moduleAllowlist = [];
     let ui = this.ui;
 
     eachAddonPackage(this.project, pkg => {
@@ -101,7 +100,7 @@ module.exports = class FastBootConfig extends Plugin {
             return;
           }
 
-          moduleWhitelist.push(dep);
+          moduleAllowlist.push(dep);
 
           if (version) {
             dependencies[dep] = version;
@@ -115,7 +114,7 @@ module.exports = class FastBootConfig extends Plugin {
 
     if (projectDeps) {
       projectDeps.forEach(dep => {
-        moduleWhitelist.push(dep);
+        moduleAllowlist.push(dep);
 
         let version = pkg.dependencies && pkg.dependencies[dep];
         if (version) {
@@ -125,7 +124,7 @@ module.exports = class FastBootConfig extends Plugin {
     }
 
     this.dependencies = dependencies;
-    this.moduleWhitelist = uniq(moduleWhitelist);
+    this.moduleAllowlist = uniq(moduleAllowlist);
   }
 
   updateFastBootManifest(manifest) {
@@ -160,9 +159,12 @@ module.exports = class FastBootConfig extends Plugin {
     this.manifest = this.updateFastBootManifest(manifest);
   }
 
-  buildHostWhitelist() {
+  buildHostAllowList() {
     if (this.fastbootAppConfig) {
-      this.hostWhitelist = this.fastbootAppConfig.hostWhitelist;
+      if ('hostWhitelist' in this.fastbootAppConfig) {
+        this.ui.writeLine('Please update your fastboot config to use `hostAllowList` instead of the deprecated `hostWhitelist`');
+      }
+      this.hostAllowList = this.fastbootAppConfig.hostAllowList || this.fastbootAppConfig.hostWhitelist
     }
   }
 
@@ -170,22 +172,22 @@ module.exports = class FastBootConfig extends Plugin {
     return stringify({
       dependencies: this.dependencies,
       fastboot: {
-        moduleWhitelist: this.moduleWhitelist,
+        moduleAllowlist: this.moduleAllowlist,
         schemaVersion: LATEST_SCHEMA_VERSION,
         manifest: this.manifest,
-        hostWhitelist: this.normalizeHostWhitelist(),
+        hostAllowList: this.normalizeHostAllowList(),
         config: this.fastbootConfig,
         appName: this.appName,
       }
     }, null, 2);
   }
 
-  normalizeHostWhitelist() {
-    if (!this.hostWhitelist) {
+  normalizeHostAllowList() {
+    if (!this.hostAllowList) {
       return;
     }
 
-    return this.hostWhitelist.map(function(entry) {
+    return this.hostAllowList.map(function(entry) {
       // Is a regex
       if (entry.source) {
         return '/' + entry.source + '/';

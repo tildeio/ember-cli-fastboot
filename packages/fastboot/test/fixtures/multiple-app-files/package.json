@@ -1,7 +1,7 @@
 {
   "dependencies": {},
   "fastboot": {
-    "moduleWhitelist": [],
+    "moduleAllowlist": [],
     "schemaVersion": 2,
     "manifest": {
       "appFiles": ["assets/fastboot-test.js"],

@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var FastBootRequest = require('./../src/fastboot-request.js');
 
 describe('FastBootRequest', function() {
-  it('throws an exception if no hostWhitelist is provided', function() {
+  it('throws an exception if no hostAllowList is provided', function() {
     var request = {
       protocol: 'http',
       headers: {
@@ -14,10 +14,10 @@ describe('FastBootRequest', function() {
     var fn = function() {
       fastbootRequest.host();
     };
-    expect(fn).to.throw(/You must provide a hostWhitelist to retrieve the host/);
+    expect(fn).to.throw(/You must provide a hostAllowList to retrieve the host/);
   });
 
-  it('throws an exception if the host header does not match an entry in the hostWhitelist', function() {
+  it('throws an exception if the host header does not match an entry in the hostAllowList', function() {
     var request = {
       protocol: 'http',
       headers: {
@@ -25,18 +25,18 @@ describe('FastBootRequest', function() {
         cookie: '',
       },
     };
-    var hostWhitelist = ['example.com', 'localhost:4200'];
-    var fastbootRequest = new FastBootRequest(request, hostWhitelist);
+    var hostAllowList = ['example.com', 'localhost:4200'];
+    var fastbootRequest = new FastBootRequest(request, hostAllowList);
 
     var fn = function() {
       fastbootRequest.host();
     };
     expect(fn).to.throw(
-      /The host header did not match a hostWhitelist entry. Host header: evil.com/
+      /The host header did not match a hostAllowList entry. Host header: evil.com/
     );
   });
 
-  it('returns the host if it is in the hostWhitelist', function() {
+  it('returns the host if it is in the hostAllowList', function() {
     var request = {
       protocol: 'http',
       headers: {
@@ -44,14 +44,14 @@ describe('FastBootRequest', function() {
         cookie: '',
       },
     };
-    var hostWhitelist = ['example.com', 'localhost:4200'];
-    var fastbootRequest = new FastBootRequest(request, hostWhitelist);
+    var hostAllowList = ['example.com', 'localhost:4200'];
+    var fastbootRequest = new FastBootRequest(request, hostAllowList);
 
     var host = fastbootRequest.host();
     expect(host).to.equal('localhost:4200');
   });
 
-  it('returns the host if it matches a regex in the hostWhitelist', function() {
+  it('returns the host if it matches a regex in the hostAllowList', function() {
     var request = {
       protocol: 'http',
       headers: {
@@ -59,8 +59,8 @@ describe('FastBootRequest', function() {
         cookie: '',
       },
     };
-    var hostWhitelist = ['example.com', '/localhost:\\d+/'];
-    var fastbootRequest = new FastBootRequest(request, hostWhitelist);
+    var hostAllowList = ['example.com', '/localhost:\\d+/'];
+    var fastbootRequest = new FastBootRequest(request, hostAllowList);
 
     var host = fastbootRequest.host();
     expect(host).to.equal('localhost:4200');
