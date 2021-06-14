@@ -705,6 +705,27 @@ are using any versions between v8.0 and v8.4 we would recommend upgrading to at 
 For any versions prior to 6.4 the previous version of this documentation is still valid.
 Please follow those instructions [here](https://github.com/ember-fastboot/ember-cli-fastboot/tree/v1.0.4#developer-tools)
 
+#### Debugging via VS Code
+
+Make sure you have `.vscode/launch.json` with minimal configuration that looks like below:
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Debug Ember App",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "./node_modules/ember-cli/bin/ember",
+            "args": "s"
+        }
+    ]
+}
+```
+
 ## Tests
 
 Run the automated tests by running `npm test`.
