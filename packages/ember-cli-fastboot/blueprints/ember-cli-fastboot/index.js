@@ -1,6 +1,9 @@
+'use strict';
+
 /* eslint-env node */
+const path = require('path');
 const recast = require('recast');
-const { readFileSync, writeFileSync } = require('fs');
+const { readFileSync, writeFileSync, existsSync } = require('fs');
 
 module.exports = {
   description: '',
@@ -9,6 +12,11 @@ module.exports = {
   },
 
   afterInstall() {
+    this.updateBabelTargets();
+    this.removeTitleFromIndexHtml();
+  },
+
+  updateBabelTargets() {
     let targetsFile = './config/targets.js'
 
     if(this.project.isEmberCLIAddon()) {
@@ -40,5 +48,37 @@ module.exports = {
     });
 
     writeFileSync(targetsFile, recast.print(targetsAst, { tabWidth: 2, quote: 'single' }).code);
+  },
+
+  removeTitleFromIndexHtml() {
+    let isEmberPageTitlePresent = 'ember-page-title' in this.project.dependencies();
+
+    if (isEmberPageTitlePresent) {
+      let indexHtmlPath = this.project.isEmberCLIAddon() ?
+        path.join(this.project.root, 'tests', 'dummy', 'app', 'index.html') :
+        path.join(this.project.root, 'app', 'index.html');
+
+      if (existsSync(indexHtmlPath)) {
+        const contents = readFileSync(
+          indexHtmlPath,
+          {
+            encoding: 'utf8'
+          }
+        );
+
+        const titleMatches = contents.match(/<title>\s*(.*)\s*<\/title>/i);
+        const title = titleMatches && titleMatches[1] || "Example Title";
+        if (titleMatches) {
+          writeFileSync(
+            indexHtmlPath,
+            contents.replace(/\s*<title>\s*.*\s*<\/title>/gi, ''),
+            {
+              encoding: 'utf8'
+            }
+          );
+        }
+        this.ui.writeWarnLine(`<title> has been removed from index.html due to ember-page-title being present, please add {{page-title "${title}"}} to application.hbs`);
+      }
+    }
   }
 };
