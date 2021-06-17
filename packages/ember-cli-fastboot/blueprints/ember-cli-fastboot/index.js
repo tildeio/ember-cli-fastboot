@@ -1,6 +1,9 @@
 /* eslint-env node */
 const recast = require('recast');
 const { readFileSync, writeFileSync } = require('fs');
+const { join, dirname } = require('path')
+const tmp = require('tmp');
+const mkdirp = require('mkdirp');
 
 module.exports = {
   description: '',
@@ -8,12 +11,24 @@ module.exports = {
     // no-op
   },
 
-  afterInstall() {
-    let targetsFile = './config/targets.js'
+  filesPath() {
+    return this._filesPath;
+  },
 
-    if(this.project.isEmberCLIAddon()) {
-      targetsFile = './tests/dummy/config/targets.js';
+  _targetsFile(project) {
+    let configPath = 'config';
+
+    if (project.pkg['ember-addon'] && project.pkg['ember-addon']['configPath']) {
+      configPath = project.pkg['ember-addon']['configPath'];
     }
+
+    return join(configPath, 'targets.js');
+  },
+
+  install(options) {
+    this._filesPath = tmp.dirSync().name;
+
+    const targetsFile = this._targetsFile(options.project);
 
     const targetsAst = recast.parse(readFileSync(targetsFile));
 
@@ -39,6 +54,10 @@ module.exports = {
       }
     });
 
-    writeFileSync(targetsFile, recast.print(targetsAst, { tabWidth: 2, quote: 'single' }).code);
+    let newFile = join(this._filesPath, targetsFile);
+    mkdirp.sync(dirname(newFile));
+    writeFileSync(newFile, recast.print(targetsAst, { tabWidth: 2, quote: 'single' }).code);
+
+    return this._super.install.apply(this, arguments);
   }
 };
