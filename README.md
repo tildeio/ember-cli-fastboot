@@ -44,7 +44,6 @@ You can also specify the port (default is 4200):
 ```sh
 ember serve --port 8088
 ```
-
 See `ember help` for more.
 
 ### Disabling FastBoot with `ember serve`
@@ -704,6 +703,10 @@ are using any versions between v8.0 and v8.4 we would recommend upgrading to at 
 
 For any versions prior to 6.4 the previous version of this documentation is still valid.
 Please follow those instructions [here](https://github.com/ember-fastboot/ember-cli-fastboot/tree/v1.0.4#developer-tools)
+
+### Service Workers
+
+[Service workers](https://developers.google.com/web/fundamentals/primers/service-workers/) should be [disabled](https://github.com/ember-fastboot/ember-cli-fastboot/issues/572#issuecomment-364468056) for development builds, otherwise your app may not be served via FastBoot. Instructions on how to do this for [ember-service-worker](http://ember-service-worker.com/) can be found [here](http://ember-service-worker.com/documentation/configuration/#disabling-the-service-worker).
 
 ## Tests
 
