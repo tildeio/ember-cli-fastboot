@@ -6,7 +6,7 @@ const expect = require('chai').use(require('chai-string')).expect;
 const { startServer, stopServer } = require('../../test-libs');
 
 describe('shoebox - put', function() {
-  this.timeout(80000);
+  this.timeout(120000);
 
   before(function() {
     return startServer();
